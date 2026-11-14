@@ -1,57 +1,66 @@
 using Godot;
-using System.Collections.Generic;
-
-public struct PlanetData
-{
-	public string type;
-	public float Perihelion;  // (r_p) Найближча точка
-	public float Aphelion;    // (r_a) Найдальша точка
-	public float BaseSpeed;   // Базова кутова швидкість
-	public float Inclination; // Нахил орбіти в градусах
-	public float OrbitYaw;    // Поворот орбіти навколо зірки (0..360)
-
-	public PlanetData(string Type, float perihelion, float aphelion, float baseSpeed, float inclination = 0f, float orbitYaw = 0f)
-	{
-		type = Type;
-		Perihelion = Mathf.Min(perihelion, aphelion);
-		Aphelion = Mathf.Max(perihelion, aphelion);
-		BaseSpeed = baseSpeed;
-		Inclination = inclination;
-		OrbitYaw = orbitYaw;
-	}
-}
 
 public static class SpaceGlobals
 {
-	public static double WarpSpeed = 1.0;
+    public static string manageroforder(int seed, int n, int x)
+    {
+        RandomNumberGenerator rng = new RandomNumberGenerator();
+        rng.Seed = (ulong)Mathf.Abs(seed);
 
-	// Глобальний список усіх заспавнених планет (доступний звідусіль)
-	public static List<PlanetOrbit> Planets = new List<PlanetOrbit>();
+        int split = rng.RandiRange(1, Mathf.Max(1, n - 1));
+        bool ordering = rng.RandiRange(0, 1) == 1;
 
-	public static void SetWarp(double multiplier)
-	{
-		WarpSpeed = Mathf.Max(0.0, multiplier);
-	}
+        if (ordering)
+            return (x >= split) ? "GasGigant" : "Rocky";
+        else
+            return (x < split) ? "GasGigant" : "Rocky";
+    }
 
-	// Глобальна RNG-функція, яка повертає випадкову структуру для планети № index
-	public static PlanetData GenerateRandomPlanet(int index)
-	{
-		string[] types = { "Rocky", "GasGiant", "Dwarf", "Water" };
-		string chosenType = types[GD.RandRange(0, types.Length - 1)];
+    public static PlanetData GeneratePlanet(int systemSeed, int order, string type)
+    {
+        PlanetData d = new PlanetData();
+        d.Type = type;
+        d.Order = order;
+        d.PlanetSeed = systemSeed + (order * 1000);
 
-		// Кожна наступна планета (index = 0, 1, 2...) спавниться далі від зірки
-		float minDistance = 8.0f + (index * 10.0f);
-		float perihelion = minDistance + (float)GD.RandRange(-1.5, 2.0);
-		float aphelion = perihelion + (float)GD.RandRange(2.0, 12.0);
+        RandomNumberGenerator rng = new RandomNumberGenerator();
+        rng.Seed = (ulong)Mathf.Abs(d.PlanetSeed);
 
-		// За 3-м законом Кеплера: чим далі планета, тим менша базова швидкість
-		float a = (aphelion + perihelion) * 0.5f;
-		float speed = (8.0f / Mathf.Sqrt(a)) * (float)GD.RandRange(0.8, 1.2);
+        d.NoiseSeed = (int)rng.Randi();
 
-		// Випадковий нахил і розворот орбіти
-		float inclination = (float)GD.RandRange(-18.0, 18.0);
-		float yaw = (float)GD.RandRange(0.0, 360.0);
+        float baseDist = 8.0f + (order * 10.0f);
 
-		return new PlanetData(chosenType, perihelion, aphelion, speed, inclination, yaw);
-	}
+        if (type == "Rocky")
+        {
+            d.Perihelion = baseDist + rng.RandfRange(-1.5f, 1.5f);
+            d.Aphelion = d.Perihelion + rng.RandfRange(1.0f, 6.0f);
+            d.Distance = (d.Aphelion + d.Perihelion) * 0.5f;
+
+            d.Inclination = rng.RandfRange(-7.0f, 7.0f);
+            d.OrbitYaw = rng.RandfRange(0.0f, 360.0f);
+
+            d.Radius = rng.RandfRange(0.4f, 0.9f);
+            d.Gravity = rng.RandfRange(3.5f, 11.5f);
+            d.Temperature = (300.0f / Mathf.Sqrt(d.Distance)) + rng.RandfRange(-20.0f, 20.0f);
+            d.rotationspeed = rng.RandfRange(0.5f, 2.0f);
+        }
+        else if (type == "GasGigant")
+        {
+            d.Perihelion = baseDist + rng.RandfRange(-1.5f, 1.5f);
+            d.Aphelion = d.Perihelion + rng.RandfRange(1.0f, 6.0f);
+            d.Distance = (d.Aphelion + d.Perihelion) * 0.5f;
+
+            d.Inclination = rng.RandfRange(-7.0f, 7.0f);
+            d.OrbitYaw = rng.RandfRange(0.0f, 360.0f);
+
+            d.Radius = rng.RandfRange(4.0f, 9.0f);
+            d.Gravity = rng.RandfRange(12.0f, 25.0f);
+            d.Temperature = (300.0f / Mathf.Sqrt(d.Distance)) + rng.RandfRange(-40.0f, 10.0f);
+            d.rotationspeed = rng.RandfRange(1.5f, 4.0f);
+        }
+
+        d.BaseSpeed = (6.0f / Mathf.Sqrt(Mathf.Max(d.Distance, 0.1f))) * rng.RandfRange(0.9f, 1.1f);
+
+        return d;
+    }
 }
