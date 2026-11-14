@@ -4,8 +4,7 @@ using System;
 public class GameData
 {
 	// 'static' makes it globally accessible
-	public static bool isPlayerInside = false;
-	public static bool isPlayerNearDoor = false;
-	public static int runtime = 0; //placeholder
+	public static int CameraIndex = 0;
+	public static bool InSpectatorMode = true;
 }
 // GameData.active
