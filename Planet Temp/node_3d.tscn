@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://pt1d5fhls00k"]
 
+[ext_resource type="Script" uid="uid://ykbg07ofwwyu" path="res://SystemValues.cs" id="1_a0tk4"]
 [ext_resource type="Script" uid="uid://bv3qyb2cam411" path="res://PlanetOrbit.cs" id="1_a202f"]
 [ext_resource type="Script" uid="uid://duxsjrnk4utex" path="res://SpectatorCam.cs" id="2_noarx"]
 
@@ -25,7 +26,10 @@ height = 3.847
 inner_radius = 1.0
 outer_radius = 1.001
 
-[node name="Node3D" type="Node3D" unique_id=926188908]
+[node name="System" type="Node3D" unique_id=926188908]
+
+[node name="1Systemvalues" type="Node3D" parent="." unique_id=1468122526]
+script = ExtResource("1_a0tk4")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1988504191]
 transform = Transform3D(0.45554495, -0.7071981, 0.54069376, 0, 0.60737586, 0.79441464, -0.8902128, -0.36189157, 0.276687, 0, 0, 0)
