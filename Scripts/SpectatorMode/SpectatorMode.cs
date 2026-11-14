@@ -1,4 +1,4 @@
-``` 
+
 using Godot;
 
 public partial class SpectatorCam : Camera3D
@@ -102,4 +102,3 @@ public partial class SpectatorCam : Camera3D
 		Translate(direction);
 	}
 }
- ``
