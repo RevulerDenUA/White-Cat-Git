@@ -39,16 +39,16 @@ mesh = SubResource("SphereMesh_ri4pv")
 [node name="PlanetOrbit" type="Node3D" parent="." unique_id=1650810182 node_paths=PackedStringArray("StarNode", "OrbitRingMesh", "PlanetNode", "PerihelionPoint", "AphelionPoint")]
 script = ExtResource("1_mg2au")
 StarNode = NodePath("../CSGMesh3D")
-OrbitRingMesh = NodePath("Orbit")
+OrbitRingMesh = NodePath("")
 PlanetNode = NodePath(".")
 PerihelionPoint = NodePath("Orbit/Marker3D")
 AphelionPoint = NodePath("Orbit/Marker3D2")
 
-[node name="Local Planet" type="CSGMesh3D" parent="PlanetOrbit" unique_id=2107482842]
+[node name="Local Planet" type="MeshInstance3D" parent="PlanetOrbit" unique_id=676723273]
 transform = Transform3D(0.4, 0, 0, 0, 0.35, 0, 0, 0, 0.4, 10, 0, 0)
 mesh = SubResource("SphereMesh_h18hl")
 
-[node name="Orbit" type="CSGMesh3D" parent="PlanetOrbit" unique_id=117366305]
+[node name="Orbit" type="MeshInstance3D" parent="PlanetOrbit" unique_id=1478864943]
 mesh = SubResource("TorusMesh_f2jkv")
 
 [node name="Marker3D" type="Marker3D" parent="PlanetOrbit/Orbit" unique_id=659680366]

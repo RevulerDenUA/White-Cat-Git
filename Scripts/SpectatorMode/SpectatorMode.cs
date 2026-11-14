@@ -1,7 +1,7 @@
 
 using Godot;
 
-public partial class SpectatorCam : Camera3D
+public partial class SpectatorMode : Camera3D
 {
 	[Export] public float MoveSpeed = 10.0f;
 	[Export] public float MouseSensitivity = 0.1f;

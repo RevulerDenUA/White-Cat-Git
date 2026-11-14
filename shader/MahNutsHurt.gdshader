@@ -1,4 +1,4 @@
-// Ч/б камера марсохода з перешкодами і "просіданням бітрейту":
+// Камера марсохода (ч/б або кольорова) з перешкодами і "просіданням бітрейту":
 // зерно, сканлайни, тремтіння рядків, смуга перешкод, сніг,
 // а час від часу — пікселізація макроблоками, з'їхавші блоки і бендинг, як у стисненому відео.
 shader_type canvas_item;
@@ -6,6 +6,8 @@ shader_type canvas_item;
 uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;
 
 group_uniforms Image;
+uniform bool color_mode = false;                               // true — кольорова камера, false — ч/б
+uniform float chroma_shift : hint_range(0.0, 20.0) = 6.0;      // розїзд RGB при поганому сигналі (кольоровий режим), px
 uniform float contrast : hint_range(0.5, 2.5) = 1.35;
 uniform float brightness : hint_range(-0.5, 0.5) = 0.02;
 uniform vec4 tint : source_color = vec4(1.0, 1.0, 1.0, 1.0);
@@ -78,12 +80,21 @@ void fragment() {
 	// ── 4. Вибірка: блок береться з mip-рівня, тобто усереднений колір ──
 	vec2 p = frag + vec2(jitter, 0.0) + shift;
 	vec2 cell = (floor(p / block) + 0.5) * block;
-	vec3 src = textureLod(screen_texture, clamp(cell * px, vec2(0.0), vec2(1.0)), log2(block)).rgb;
+	vec2 uv = clamp(cell * px, vec2(0.0), vec2(1.0));
+	float lod = log2(block);
+	vec3 src = textureLod(screen_texture, uv, lod).rgb;
+	if (color_mode) {
+		// хроматичне розшарування, сильніше при поганому сигналі
+		vec2 ca = vec2(chroma_shift * (0.3 + bad) * px.x, 0.0);
+		src.r = textureLod(screen_texture, clamp(uv + ca, vec2(0.0), vec2(1.0)), lod).r;
+		src.b = textureLod(screen_texture, clamp(uv - ca, vec2(0.0), vec2(1.0)), lod).b;
+	} else {
+		src = vec3(dot(src, vec3(0.299, 0.587, 0.114)));
+	}
 
-	float l = dot(src, vec3(0.299, 0.587, 0.114));
-	l = (l - 0.5) * contrast + 0.5 + brightness;
+	vec3 l = (src - 0.5) * contrast + 0.5 + brightness;
 
-	// бендинг: менше відтінків сірого при поганому сигналі
+	// бендинг: менше відтінків при поганому сигналі
 	float levels = mix(256.0, min_gray_levels, bad);
 	l = floor(l * levels + 0.5) / levels;
 
@@ -95,10 +106,15 @@ void fragment() {
 	// ── 5. Шуми ──
 	float n = hash(frag + vec2(fract(TIME * 7.13) * 431.0, fract(TIME * 3.71) * 217.0));
 	l += (n - 0.5) * (grain_amount + bad * 0.2);
+	if (color_mode) {
+		// кольоровий шум, як у аналоговому сигналі
+		vec3 cn = vec3(hash(frag + fast * 1.1), hash(frag + fast * 2.3), hash(frag + fast * 3.7)) - 0.5;
+		l += cn * bad * 0.35;
+	}
 
 	// сніг: цілі рядки білого шуму
 	float snow = step(1.0 - bad * 0.08, hash(vec2(row, fast + 3.0)));
-	l = mix(l, hash(frag + fast), snow * 0.8);
+	l = mix(l, vec3(hash(frag + fast)), snow * 0.8);
 
 	// смуга перешкод, що повзе вниз
 	float d = abs(SCREEN_UV.y - fract(TIME * band_speed));
@@ -114,7 +130,7 @@ void fragment() {
 	vec2 v = SCREEN_UV - 0.5;
 	l *= clamp(1.0 - dot(v, v) * vignette_strength * 1.6, 0.0, 1.0);
 
-	vec3 col = vec3(clamp(l, 0.0, 1.0)) * tint.rgb;
+	vec3 col = clamp(l, 0.0, 1.0) * tint.rgb;
 
 	// ── 6. Приціл ──
 	vec2 c = abs(frag - 0.5 / px);
