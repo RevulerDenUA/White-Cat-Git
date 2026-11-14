@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://pt1d5fhls00k"]
+[gd_scene format=3 uid="uid://bts5ryqkwjjed"]
 
-[ext_resource type="Script" uid="uid://bv3qyb2cam411" path="res://PlanetOrbit.cs" id="1_a202f"]
+[ext_resource type="Script" uid="uid://bv3qyb2cam411" path="res://Planet Temp/PlanetOrbit.cs" id="1_mg2au"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_a202f"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -37,10 +37,10 @@ environment = SubResource("Environment_a0tk4")
 mesh = SubResource("SphereMesh_ri4pv")
 
 [node name="PlanetOrbit" type="Node3D" parent="." unique_id=1650810182 node_paths=PackedStringArray("StarNode", "OrbitRingMesh", "PlanetNode", "PerihelionPoint", "AphelionPoint")]
-script = ExtResource("1_a202f")
+script = ExtResource("1_mg2au")
 StarNode = NodePath("../CSGMesh3D")
 OrbitRingMesh = NodePath("Orbit")
-PlanetNode = NodePath("Local Planet")
+PlanetNode = NodePath(".")
 PerihelionPoint = NodePath("Orbit/Marker3D")
 AphelionPoint = NodePath("Orbit/Marker3D2")
 
