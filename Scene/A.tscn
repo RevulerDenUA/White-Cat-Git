@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cngcee24uhrrv" path="res://Scene/JEEP.tscn" id="1_3ustj"]
 [ext_resource type="Script" uid="uid://ba56kkounl0aj" path="res://Scripts/SpectatorMode/SpectatorMode.gd" id="3_udcss"]
+[ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="4_kmbin"]
 [ext_resource type="Shader" uid="uid://bdrf3l2s7ry0e" path="res://shader/MahNutsHurt.gdshader" id="6_1n6c4"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r0yfe"]
@@ -45,11 +46,8 @@ shader_parameter/reticle_alpha = 0.55
 
 [node name="Node3D" type="Node3D" unique_id=957672029]
 
-[node name="CharacterBody3D" parent="." unique_id=1208391488 node_paths=PackedStringArray("JeepCamera1", "JeepCamera2", "JeepCamera3", "ExitPoint") instance=ExtResource("1_3ustj")]
+[node name="CharacterBody3D" parent="." unique_id=1208391488 node_paths=PackedStringArray("ExitPoint") instance=ExtResource("1_3ustj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05016011, 1.8825481, 13.729987)
-JeepCamera1 = NodePath("CarCamera")
-JeepCamera2 = NodePath("CarCamera2")
-JeepCamera3 = NodePath("CarCamera3")
 ExitPoint = NodePath("DoorTrigger/ExitPoint")
 
 [node name="CarCamera" type="Camera3D" parent="CharacterBody3D" unique_id=992078577]
@@ -100,5 +98,12 @@ color = Color(1, 1, 1, 0)
 
 [node name="SpectatorMode" type="Camera3D" parent="." unique_id=1258418072]
 script = ExtResource("3_udcss")
+
+[node name="CameraControl" type="Node3D" parent="." unique_id=1429019729 node_paths=PackedStringArray("JeepCamera1", "JeepCamera2", "JeepCamera3", "SpecCamera")]
+script = ExtResource("4_kmbin")
+JeepCamera1 = NodePath("../CharacterBody3D/CarCamera")
+JeepCamera2 = NodePath("../CharacterBody3D/CarCamera2")
+JeepCamera3 = NodePath("../CharacterBody3D/CarCamera3")
+SpecCamera = NodePath("../SpectatorMode")
 
 [editable path="CharacterBody3D"]

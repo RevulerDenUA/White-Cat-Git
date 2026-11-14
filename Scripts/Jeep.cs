@@ -7,32 +7,17 @@ public partial class Jeep : VehicleBody3D
 	float steerInput;
 	float gasInput;
 	[Export] Label label;
-	[Export] public Camera3D JeepCamera1;
-	[Export] public Camera3D JeepCamera2;
-	[Export] public Camera3D JeepCamera3;
+
 	[Export] public Node3D ExitPoint;
 
 
 	public override void _Ready()
 	{
-		JeepCamera1.MakeCurrent();
 	}
 
 
 	public override void _Process(double delta)
 	{
-		if (Input.IsActionJustPressed("Camera1"))
-		{
-			JeepCamera1.MakeCurrent();
-		}
-		else if (Input.IsActionJustPressed("Camera2"))
-		{
-			JeepCamera2.MakeCurrent();
-		}
-		else if (Input.IsActionJustPressed("Camer3"))
-		{
-			JeepCamera3.MakeCurrent();
-		}
 	}
 
 	public override void _PhysicsProcess(double delta)
