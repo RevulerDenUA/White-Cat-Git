@@ -2,19 +2,13 @@
 
 [ext_resource type="Script" uid="uid://bv3qyb2cam411" path="res://Planet Temp/PlanetOrbit.cs" id="1_mg2au"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_a202f"]
-sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-
-[sub_resource type="Sky" id="Sky_noarx"]
-sky_material = SubResource("ProceduralSkyMaterial_a202f")
-
-[sub_resource type="Environment" id="Environment_a0tk4"]
-background_mode = 2
-sky = SubResource("Sky_noarx")
-glow_enabled = true
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mg2au"]
+emission_enabled = true
+emission = Color(0.973535, 0.9735351, 0.973535, 1)
+emission_energy_multiplier = 26.45
 
 [sub_resource type="SphereMesh" id="SphereMesh_ri4pv"]
+material = SubResource("StandardMaterial3D_mg2au")
 radius = 2.0
 height = 3.847
 
@@ -28,18 +22,27 @@ outer_radius = 1.001
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1988504191]
 transform = Transform3D(0.45554495, -0.7071981, 0.54069376, 0, 0.60737586, 0.79441464, -0.8902128, -0.36189157, 0.276687, 0, 0, 0)
+visible = false
 shadow_enabled = true
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1415081086]
-environment = SubResource("Environment_a0tk4")
-
-[node name="CSGMesh3D" type="CSGMesh3D" parent="." unique_id=1876235231]
+[node name="CSGMesh3D" type="MeshInstance3D" parent="." unique_id=777778681]
+gi_mode = 0
 mesh = SubResource("SphereMesh_ri4pv")
 
-[node name="PlanetOrbit" type="Node3D" parent="." unique_id=1650810182 node_paths=PackedStringArray("StarNode", "OrbitRingMesh", "PlanetNode", "PerihelionPoint", "AphelionPoint")]
+[node name="OmniLight3D" type="OmniLight3D" parent="CSGMesh3D" unique_id=1711896659]
+light_energy = 16.0
+light_indirect_energy = 16.0
+light_volumetric_fog_energy = 2.09
+light_size = 0.951
+distance_fade_enabled = true
+distance_fade_begin = 1225.37
+distance_fade_shadow = 998.15
+distance_fade_length = 4096.0
+omni_range = 4096.0
+
+[node name="PlanetOrbit" type="Node3D" parent="." unique_id=1650810182 node_paths=PackedStringArray("OrbitRingMesh", "PlanetNode", "PerihelionPoint", "AphelionPoint")]
 script = ExtResource("1_mg2au")
-StarNode = NodePath("../CSGMesh3D")
-OrbitRingMesh = NodePath("")
+OrbitRingMesh = NodePath("Orbit")
 PlanetNode = NodePath(".")
 PerihelionPoint = NodePath("Orbit/Marker3D")
 AphelionPoint = NodePath("Orbit/Marker3D2")
@@ -59,3 +62,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1777896729]
 transform = Transform3D(0.12834811, -0.68790525, 0.71436214, -0.03268296, 0.71699464, 0.6963121, -0.99119055, -0.11271782, 0.0695421, 12.449778, 10.863235, 0.3217392)
+
+[connection signal="tree_entered" from="PlanetOrbit/Local Planet" to="PlanetOrbit" method="_on_local_planet_tree_entered"]

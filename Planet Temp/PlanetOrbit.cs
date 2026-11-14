@@ -2,6 +2,7 @@ using Godot;
 
 public partial class PlanetOrbit : Node3D
 {
+	[Export] public WorldEnvironment WorldEnv;
 	[Export] public Node3D StarNode;
 	[Export] public Node3D OrbitRingMesh;
 	[Export] public Node3D PlanetNode;
@@ -17,6 +18,15 @@ public partial class PlanetOrbit : Node3D
 	private float _c;
 	private float _speed = 0.1f;
 	private float _angleE = 0.0f;
+
+	public double timerultra = 0.0f;
+
+	public bool dimed = false;
+
+	public void _on_local_planet_tree_entered ()
+	{
+	SystemValues.Instance.PlanetCount = SystemValues.Getplanet(SystemValues.Instance.SystemSeed);
+	}
 
 	public override void _Ready()
 	{
@@ -76,13 +86,39 @@ public partial class PlanetOrbit : Node3D
 			AphelionPoint.Position = new Vector3(-d.Aphelion, 0f, 0f);
 
 		if (PlanetNode != null)
+		{
 			PlanetNode.Scale = Vector3.One * d.Radius;
-
+			PlanetPackets.ApplyTexture(PlanetNode, d); 
+		}
 		RotationDegrees = new Vector3(d.Inclination, d.OrbitYaw, 0f);
 	}
 
 	public override void _Process(double delta)
 	{
+
+	if (!_isClone && WorldEnv?.Environment != null)
+		{
+			if (timerultra <= 0)
+			{
+				if (dimed)
+				{
+					WorldEnv.Environment.BackgroundEnergyMultiplier = 1.0f;
+					dimed = false;
+					timerultra = 0.1;
+				}
+				else
+				{
+					WorldEnv.Environment.BackgroundEnergyMultiplier = 0.8f;
+					dimed = true; // <-- THIS WAS MISSING
+					timerultra = 0.1;
+				}
+			}
+			else
+			{
+				timerultra -= delta;
+			}
+		}
+
 		if (PlanetNode == null) return;
 
 		float dt = (float)(delta * SystemValues.WarpSpeed);

@@ -1,0 +1,19 @@
+[gd_resource type="Environment" format=3 uid="uid://bvk5mrno3ev1d"]
+
+[ext_resource type="Texture2D" uid="uid://uww6p53iy3hk" path="res://ASS/Sky/plain_starfield_1.png" id="1_4inwn"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ydlia"]
+panorama = ExtResource("1_4inwn")
+energy_multiplier = 0.5
+
+[sub_resource type="Sky" id="Sky_mg2au"]
+sky_material = SubResource("PanoramaSkyMaterial_ydlia")
+process_mode = 1
+
+[resource]
+background_mode = 2
+background_energy_multiplier = 4.73
+sky = SubResource("Sky_mg2au")
+tonemap_mode = 1
+glow_enabled = true
+glow_normalized = true

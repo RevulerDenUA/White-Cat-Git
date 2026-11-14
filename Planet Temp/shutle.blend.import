@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://fg8qwvinxot6"
-path="res://.godot/imported/shutle.blend-2e97946684d1514aa46d1e3d809697e8.scn"
+path="res://.godot/imported/shutle.blend-248124d14fe9adb9618dc201720a3092.scn"
 
 [deps]
 
-source_file="res://shutle.blend"
-dest_files=["res://.godot/imported/shutle.blend-2e97946684d1514aa46d1e3d809697e8.scn"]
+source_file="res://Planet Temp/shutle.blend"
+dest_files=["res://.godot/imported/shutle.blend-248124d14fe9adb9618dc201720a3092.scn"]
 
 [params]
 
