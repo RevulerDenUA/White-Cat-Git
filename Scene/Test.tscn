@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dnhkmfqcv8rvy"]
+
+[ext_resource type="PackedScene" uid="uid://cngcee24uhrrv" path="res://Scene/JEEP.tscn" id="1_fqvlb"]
+
+[node name="Test" type="Node2D" unique_id=82283613]
+
+[node name="Jeep" parent="." unique_id=73140632 instance=ExtResource("1_fqvlb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7550033, 0, -2.088017)

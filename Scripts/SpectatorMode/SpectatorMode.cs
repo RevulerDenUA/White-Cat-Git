@@ -62,16 +62,16 @@ public partial class SpectatorCam : Camera3D
 		Vector3 right = GlobalTransform.Basis.X;
 		Vector3 up = GlobalTransform.Basis.Y;
 
-		if (Input.IsKeyPressed(Key.W))
+		if (Input.IsActionJustPressed("forwardy"))
 			direction += forward;
 
-		if (Input.IsKeyPressed(Key.S))
+		if (Input.IsActionJustPressed("backwardy"))
 			direction -= forward;
 
-		if (Input.IsKeyPressed(Key.A))
+		if (Input.IsActionJustPressed("right"))
 			direction -= right;
 
-		if (Input.IsKeyPressed(Key.D))
+		if (Input.IsActionJustPressed("left"))
 			direction += right;
 
 		if (Input.IsKeyPressed(Key.E))
