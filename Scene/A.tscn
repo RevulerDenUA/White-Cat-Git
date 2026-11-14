@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cngcee24uhrrv" path="res://Scene/JEEP.tscn" id="1_3ustj"]
 [ext_resource type="Script" uid="uid://ba56kkounl0aj" path="res://Scripts/SpectatorMode/SpectatorMode.gd" id="3_udcss"]
+[ext_resource type="PackedScene" uid="uid://dfkkp15660yp" path="res://Scene/camera_control.tscn" id="4_kmbin"]
 [ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="4_kmbin"]
 [ext_resource type="Shader" uid="uid://bdrf3l2s7ry0e" path="res://shader/MahNutsHurt.gdshader" id="6_1n6c4"]
 
