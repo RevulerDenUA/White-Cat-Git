@@ -1,6 +1,8 @@
-[gd_scene format=3 uid="uid://cn4kqtcgjkcic"]
+[gd_scene format=3 uid="uid://de48dpchyfvt8"]
 
 [ext_resource type="PackedScene" uid="uid://cngcee24uhrrv" path="res://Scene/JEEP.tscn" id="1_3ustj"]
+[ext_resource type="Script" uid="uid://dlxdo8fpkeuo6" path="res://Scripts/SpectatorMode/SpectatorMode.cs" id="3_kmbin"]
+[ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="4_kmbin"]
 [ext_resource type="Shader" uid="uid://bdrf3l2s7ry0e" path="res://shader/MahNutsHurt.gdshader" id="6_1n6c4"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r0yfe"]
@@ -89,7 +91,7 @@ material = SubResource("StandardMaterial3D_3ustj")
 [node name="Filter" type="ColorRect" parent="Shader" unique_id=1982494344]
 material = SubResource("ShaderMaterial_ui4kf")
 use_parent_material = true
-offset_right = 40.0
+offset_right = 40.230118
 offset_bottom = 40.0
 scale = Vector2(47.80001, 27.080002)
 color = Color(1, 1, 1, 0)
@@ -97,7 +99,8 @@ color = Color(1, 1, 1, 0)
 [node name="SpectatorMode" type="Camera3D" parent="." unique_id=1258418072]
 script = ExtResource("3_kmbin")
 
-[node name="CameraControl" parent="." unique_id=484975143 node_paths=PackedStringArray("JeepCamera1", "JeepCamera2", "JeepCamera3", "SpecCamera") instance=ExtResource("4_kmbin")]
+[node name="CameraControl" type="Node3D" parent="." unique_id=1429019729 node_paths=PackedStringArray("JeepCamera1", "JeepCamera2", "JeepCamera3", "SpecCamera")]
+script = ExtResource("4_kmbin")
 JeepCamera1 = NodePath("../CharacterBody3D/CarCamera")
 JeepCamera2 = NodePath("../CharacterBody3D/CarCamera2")
 JeepCamera3 = NodePath("../CharacterBody3D/CarCamera3")
