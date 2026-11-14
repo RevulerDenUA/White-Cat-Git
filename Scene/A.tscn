@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cn4kqtcgjkcic"]
 
 [ext_resource type="PackedScene" uid="uid://cngcee24uhrrv" path="res://Scene/JEEP.tscn" id="1_3ustj"]
-[ext_resource type="Script" uid="uid://ba56kkounl0aj" path="res://Scripts/SpectatorMode/SpectatorMode.gd" id="3_udcss"]
+[ext_resource type="Script" uid="uid://dlxdo8fpkeuo6" path="res://Scripts/SpectatorMode/SpectatorMode.cs" id="3_kmbin"]
 [ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="4_kmbin"]
 [ext_resource type="Shader" uid="uid://bdrf3l2s7ry0e" path="res://shader/MahNutsHurt.gdshader" id="6_1n6c4"]
 
@@ -97,7 +97,7 @@ scale = Vector2(47.80001, 27.080002)
 color = Color(1, 1, 1, 0)
 
 [node name="SpectatorMode" type="Camera3D" parent="." unique_id=1258418072]
-script = ExtResource("3_udcss")
+script = ExtResource("3_kmbin")
 
 [node name="CameraControl" type="Node3D" parent="." unique_id=1429019729 node_paths=PackedStringArray("JeepCamera1", "JeepCamera2", "JeepCamera3", "SpecCamera")]
 script = ExtResource("4_kmbin")
