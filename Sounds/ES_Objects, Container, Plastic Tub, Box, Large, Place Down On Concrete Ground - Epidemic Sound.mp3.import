@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://daix5db2dof65"
+path="res://.godot/imported/ES_Objects, Container, Plastic Tub, Box, Large, Place Down On Concrete Ground - Epidemic Sound.mp3-e9d28001f84a6905ce6a13d9fe00f282.mp3str"
+
+[deps]
+
+source_file="res://Sounds/ES_Objects, Container, Plastic Tub, Box, Large, Place Down On Concrete Ground - Epidemic Sound.mp3"
+dest_files=["res://.godot/imported/ES_Objects, Container, Plastic Tub, Box, Large, Place Down On Concrete Ground - Epidemic Sound.mp3-e9d28001f84a6905ce6a13d9fe00f282.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

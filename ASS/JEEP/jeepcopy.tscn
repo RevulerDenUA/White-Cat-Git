@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://clqh4gxtr7gu"]
+
+[ext_resource type="PackedScene" uid="uid://bek7dtj3vvahs" path="res://ASS/JEEP/scene.gltf" id="1_ovq43"]
+
+[node name="Sketchfab_Scene" unique_id=99341074 instance=ExtResource("1_ovq43")]
+
+[node name="Sketchfab_model" parent="." index="0" unique_id=2052412629]
+transform = Transform3D(0.02, 0, 0, 0, -8.7422775e-10, 0.02, 0, -0.02, -8.7422775e-10, -1.1930933, 0, 2.1720202)

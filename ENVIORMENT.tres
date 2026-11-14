@@ -1,0 +1,40 @@
+[gd_resource type="Environment" format=3 uid="uid://20idlscrtcxf"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1n6c4"]
+sky_top_color = Color(0, 0, 0, 1)
+sky_horizon_color = Color(0.6049543, 0.61443186, 0.6286522, 1)
+sky_curve = 0.34460926
+ground_bottom_color = Color(0.54488564, 0.5503466, 0.5503457, 1)
+ground_horizon_color = Color(0.6180023, 0.626103, 0.6423059, 1)
+ground_curve = 0.8157182
+
+[sub_resource type="Sky" id="Sky_r0yfe"]
+sky_material = SubResource("ProceduralSkyMaterial_1n6c4")
+
+[resource]
+background_mode = 2
+background_energy_multiplier = 0.34
+sky = SubResource("Sky_r0yfe")
+tonemap_mode = 1
+tonemap_exposure = 1.67
+tonemap_white = 2.39
+ssr_fade_in = 0.3958511
+ssr_fade_out = 1.4640856
+ssao_enabled = true
+glow_normalized = true
+glow_intensity = 1.4
+glow_strength = 0.95
+glow_blend_mode = 2
+glow_hdr_threshold = 2.4
+glow_hdr_scale = 2.75
+fog_mode = 1
+fog_light_color = Color(0.19830269, 0.49318165, 1, 1)
+fog_light_energy = 0.67
+fog_sun_scatter = 0.14
+fog_density = 1.0
+fog_sky_affect = 0.195
+volumetric_fog_density = 0.4418
+volumetric_fog_albedo = Color(0.47755903, 0.47337085, 0.42423123, 1)
+volumetric_fog_emission = Color(0.13319641, 0.13319641, 0.13319638, 1)
+volumetric_fog_ambient_inject = 2.5
+volumetric_fog_sky_affect = 0.814

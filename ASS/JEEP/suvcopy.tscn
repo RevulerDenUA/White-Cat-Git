@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://bih5h8ubyowr7"]
+
+[ext_resource type="PackedScene" uid="uid://y45yhlvujqmy" path="res://ASS/JEEP/suv.glb" id="1_vojt7"]
+
+[node name="suv" unique_id=1733916566 instance=ExtResource("1_vojt7")]
