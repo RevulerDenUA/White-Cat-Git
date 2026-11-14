@@ -28,7 +28,7 @@ public partial class SystemValues : Node3D
 	// Allows other scripts to access the Inspector values on this node
 	public static SystemValues Instance { get; private set; } = new SystemValues();
 
-	[Export] public int SystemSeed = 67691488;
+	[Export] public int SystemSeed = 12345;
 	[Export] public int PlanetCount = 1;
 	[Export] public float MeshBaseRadius = 1.0f;
 

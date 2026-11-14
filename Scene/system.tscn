@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://bts5ryqkwjjed"]
 
+[ext_resource type="Environment" uid="uid://bvk5mrno3ev1d" path="res://Planet Temp/new_environment.tres" id="1_ghylp"]
 [ext_resource type="Script" uid="uid://bv3qyb2cam411" path="res://Planet Temp/PlanetOrbit.cs" id="1_mg2au"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mg2au"]
@@ -19,6 +20,9 @@ inner_radius = 1.0
 outer_radius = 1.001
 
 [node name="Node3D" type="Node3D" unique_id=926188908]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1261749978]
+environment = ExtResource("1_ghylp")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1988504191]
 transform = Transform3D(0.45554495, -0.7071981, 0.54069376, 0, 0.60737586, 0.79441464, -0.8902128, -0.36189157, 0.276687, 0, 0, 0)
@@ -40,8 +44,9 @@ distance_fade_shadow = 998.15
 distance_fade_length = 4096.0
 omni_range = 4096.0
 
-[node name="PlanetOrbit" type="Node3D" parent="." unique_id=1650810182 node_paths=PackedStringArray("OrbitRingMesh", "PlanetNode", "PerihelionPoint", "AphelionPoint")]
+[node name="PlanetOrbit" type="Node3D" parent="." unique_id=1650810182 node_paths=PackedStringArray("StarNode", "OrbitRingMesh", "PlanetNode", "PerihelionPoint", "AphelionPoint")]
 script = ExtResource("1_mg2au")
+StarNode = NodePath("../CSGMesh3D")
 OrbitRingMesh = NodePath("Orbit")
 PlanetNode = NodePath(".")
 PerihelionPoint = NodePath("Orbit/Marker3D")
