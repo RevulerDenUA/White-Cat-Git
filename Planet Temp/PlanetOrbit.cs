@@ -2,108 +2,99 @@ using Godot;
 
 public partial class PlanetOrbit : Node3D
 {
-	[Export] public int PlanetCount = 7;      // Впиши сюди кількість планет в Інспекторі!
+    [Export] public Node3D StarNode;
+    [Export] public Node3D OrbitRingMesh;
+    [Export] public Node3D PlanetNode;
+    [Export] public Marker3D PerihelionPoint;
+    [Export] public Marker3D AphelionPoint;
 
-	[Export] public Node3D StarNode;          // Зірка
-	[Export] public Node3D OrbitRingMesh;     // Orbit
-	[Export] public Node3D PlanetNode;        // Local Planet
-	[Export] public Marker3D PerihelionPoint; // Marker3D
-	[Export] public Marker3D AphelionPoint;   // Marker3D2
+    public PlanetData Data;
+    public int OrbitIndex = 0;
+    public bool _isClone = false;
 
-	[Export] public float MeshBaseRadius = 1.0f; // Залиш те значення, яке зараз працює у тебе (1.0 або 4.0)
+    private float _a;
+    private float _b;
+    private float _c;
+    private float _speed = 0.1f;
+    private float _angleE = 0.0f;
 
-	// Локальна структура конкретно цієї планети (можна читати через planet.Data)
-	public PlanetData Data;
-	public int OrbitIndex = 0;
+    public override void _Ready()
+    {
+        donotopen();
+    }
 
-	private bool _isClone = false;
-	private float _a;
-	private float _b;
-	private float _c;
-	private float _speed = 1.0f;
-	private float _angleE = 0.0f;
+    public void donotopen()
+    {
+        if (!_isClone)
+            SystemValues.Planets.Clear();
 
-	public override void _Ready()
-	{
-		// Гарантуємо, що кожен клон керує власними дочірніми нодами Orbit і Local Planet
-		OrbitRingMesh = GetNodeOrNull<Node3D>("Orbit") ?? OrbitRingMesh;
-		PlanetNode = GetNodeOrNull<Node3D>("Local Planet") ?? PlanetNode;
-		PerihelionPoint = GetNodeOrNull<Marker3D>("Orbit/Marker3D") ?? PerihelionPoint;
-		AphelionPoint = GetNodeOrNull<Marker3D>("Orbit/Marker3D2") ?? AphelionPoint;
+        OrbitRingMesh = GetNodeOrNull<Node3D>("Orbit") ?? OrbitRingMesh;
+        PlanetNode = GetNodeOrNull<Node3D>("Local Planet") ?? PlanetNode;
+        PerihelionPoint = GetNodeOrNull<Marker3D>("Orbit/Marker3D") ?? PerihelionPoint;
+        AphelionPoint = GetNodeOrNull<Marker3D>("Orbit/Marker3D2") ?? AphelionPoint;
 
-		// Випадкова стартова точка на орбіті, щоб усі 7 планет не стартували в одній лінії
-		_angleE = (float)GD.RandRange(0.0, Mathf.Tau);
+        string type = SpaceGlobals.manageroforder(SystemValues.SystemSeed, SystemValues.PlanetCount, OrbitIndex);
+        Data = SpaceGlobals.GeneratePlanet(SystemValues.SystemSeed, OrbitIndex, type);
 
-		// Генеруємо випадкові параметри для цієї планети через глобальну функцію
-		Data = SpaceGlobals.GenerateRandomPlanet(OrbitIndex);
-		SetupOrbit(Data);
+        RandomNumberGenerator rng = new RandomNumberGenerator();
+        rng.Seed = (ulong)Mathf.Abs(Data.PlanetSeed);
+        _angleE = rng.RandfRange(0.0f, Mathf.Tau);
 
-		SpaceGlobals.Planets.Add(this);
+        SetupOrbit(Data);
+        SystemValues.Planets.Add(this);
 
-		// Якщо це перша (оригінальна) нода на сцені — спавнимо решту (PlanetCount - 1) планет
-		if (!_isClone && PlanetCount > 1)
-		{
-			SpawnAdditionalPlanets(PlanetCount - 1);
-		}
-	}
+        if (!_isClone && SystemValues.PlanetCount > 1)
+            SpawnClones(SystemValues.PlanetCount - 1);
+    }
 
-	private void SpawnAdditionalPlanets(int extraCount)
-	{
-		Node parent = GetParent();
-		for (int i = 1; i <= extraCount; i++)
-		{
-			PlanetOrbit clone = (PlanetOrbit)Duplicate();
-			clone._isClone = true;
-			clone.OrbitIndex = i;
-			clone.StarNode = StarNode;
-			clone.MeshBaseRadius = MeshBaseRadius;
+    public void SpawnClones(int extraCount)
+    {
+        SystemValues.SpawnClones(this, extraCount);
+    }
 
-			parent.CallDeferred(Node.MethodName.AddChild, clone);
-		}
-	}
+    public void SetupOrbit(PlanetData d)
+    {
+        _a = (d.Aphelion + d.Perihelion) * 0.5f;
+        _b = Mathf.Sqrt(d.Aphelion * d.Perihelion);
+        _c = (d.Aphelion - d.Perihelion) * 0.5f;
+        _speed = d.BaseSpeed;
 
-	public void CalculateOrbit(float aphelion, float perihelion, float speed)
-	{
-		_a = (aphelion + perihelion) * 0.5f;
-		_b = Mathf.Sqrt(aphelion * perihelion);
-		_c = (aphelion - perihelion) * 0.5f;
-		_speed = speed;
-	}
+        if (OrbitRingMesh != null)
+        {
+            OrbitRingMesh.Scale = new Vector3(_a / SystemValues.MeshBaseRadius, 1.0f, _b / SystemValues.MeshBaseRadius);
+            OrbitRingMesh.Position = new Vector3(-_c, 0f, 0f);
+        }
 
-	public void SetupOrbit(PlanetData data)
-	{
-		CalculateOrbit(data.Aphelion, data.Perihelion, data.BaseSpeed);
+        if (PerihelionPoint != null)
+            PerihelionPoint.Position = new Vector3(d.Perihelion, 0f, 0f);
+        if (AphelionPoint != null)
+            AphelionPoint.Position = new Vector3(-d.Aphelion, 0f, 0f);
 
-		float scaleX = _a / MeshBaseRadius;
-		float scaleZ = _b / MeshBaseRadius;
+        if (PlanetNode != null)
+            PlanetNode.Scale = Vector3.One * d.Radius;
 
-		if (OrbitRingMesh != null)
-		{
-			OrbitRingMesh.Scale = new Vector3(scaleX, 1.0f, scaleZ);
-			OrbitRingMesh.Position = new Vector3(-_c, 0f, 0f);
-		}
+        RotationDegrees = new Vector3(d.Inclination, d.OrbitYaw, 0f);
+    }
 
-		if (PerihelionPoint != null)
-			PerihelionPoint.Position = new Vector3(data.Perihelion, 0f, 0f);
-		if (AphelionPoint != null)
-			AphelionPoint.Position = new Vector3(-data.Aphelion, 0f, 0f);
+    public override void _Process(double delta)
+    {
+        if (PlanetNode == null) return;
 
-		RotationDegrees = new Vector3(data.Inclination, data.OrbitYaw, 0f);
-	}
+        float dt = (float)(delta * SystemValues.WarpSpeed);
 
-	public override void _Process(double delta)
-	{
-		if (StarNode == null || PlanetNode == null) return;
+        float cosE = Mathf.Cos(_angleE);
+        float sinE = Mathf.Sin(_angleE);
 
-		float distance = StarNode.GlobalPosition.DistanceTo(PlanetNode.GlobalPosition);
-		if (distance < 0.001f) distance = _a;
+        float x = _a * cosE - _c;
+        float z = _b * sinE;
 
-		float dE = (float)(_speed * (_a / distance) * delta * SpaceGlobals.WarpSpeed);
-		_angleE = (_angleE + dE) % Mathf.Tau;
+        // Instant math distance to Star (no slow GlobalPosition tree lookups!)
+        float dist = Mathf.Sqrt(x * x + z * z);
+        if (dist < 0.001f) dist = _a;
 
-		float x = _a * Mathf.Cos(_angleE) - _c;
-		float z = _b * Mathf.Sin(_angleE);
+        _angleE = (_angleE + _speed * (_a / dist) * dt) % Mathf.Tau;
 
-		PlanetNode.Position = new Vector3(x, 0f, z);
-	}
+        PlanetNode.Position = new Vector3(x, 0f, z);
+        PlanetNode.RotateY(Data.rotationspeed * dt);
+    }
 }
