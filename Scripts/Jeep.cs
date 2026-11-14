@@ -18,8 +18,9 @@ public partial class Jeep : VehicleBody3D
     public override void _PhysicsProcess(double delta)
     {
 
-        if (GameData.InSpectatorMode)
+        if (GameData.InSpectatorMode || GameData.ActiveVehicle != this)
         {
+            EngineForce = 0;
             return;
         }
         steerInput = 0.0f;

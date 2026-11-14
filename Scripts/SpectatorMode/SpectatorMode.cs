@@ -1,7 +1,7 @@
 
 using Godot;
 
-public partial class SpectatorCam : Camera3D
+public partial class SpectatorMode : Camera3D
 {
 	[Export] public float MoveSpeed = 10.0f;
 	[Export] public float MouseSensitivity = 0.1f;
@@ -62,16 +62,16 @@ public partial class SpectatorCam : Camera3D
 		Vector3 right = GlobalTransform.Basis.X;
 		Vector3 up = GlobalTransform.Basis.Y;
 
-		if (Input.IsActionJustPressed("forwardy"))
+		if (Input.IsKeyPressed(Key.W))
 			direction += forward;
 
-		if (Input.IsActionJustPressed("backwardy"))
+		if (Input.IsKeyPressed(Key.S))
 			direction -= forward;
 
-		if (Input.IsActionJustPressed("right"))
+		if (Input.IsKeyPressed(Key.A))
 			direction -= right;
 
-		if (Input.IsActionJustPressed("left"))
+		if (Input.IsKeyPressed(Key.D))
 			direction += right;
 
 		if (Input.IsKeyPressed(Key.E))
