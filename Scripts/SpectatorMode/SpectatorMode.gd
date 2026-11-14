@@ -1,5 +1,5 @@
 extends Camera3D
-
+#Sanya
 @export var move_speed: float = 10.0  # Speed of movement
 @export var mouse_sensitivity: float = 0.1  # Sensitivity of mouse movement
 
