@@ -90,10 +90,9 @@ material = SubResource("StandardMaterial3D_3ustj")
 [node name="Shader" type="CanvasLayer" parent="." unique_id=1642968934]
 
 [node name="Filter" type="ColorRect" parent="Shader" unique_id=1982494344]
-visible = false
 material = SubResource("ShaderMaterial_ui4kf")
 use_parent_material = true
-offset_right = 40.0
+offset_right = 40.230118
 offset_bottom = 40.0
 scale = Vector2(47.80001, 27.080002)
 color = Color(1, 1, 1, 0)
