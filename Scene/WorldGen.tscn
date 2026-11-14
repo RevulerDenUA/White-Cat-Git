@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://7xye8xkp5v31"]
+
+[ext_resource type="Script" uid="uid://yfaks876t78r" path="res://Scripts/TerrainWorld.cs" id="1_d48c2"]
+[ext_resource type="PackedScene" uid="uid://cngcee24uhrrv" path="res://Scene/JEEP.tscn" id="2_w222j"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_w222j"]
+
+[node name="WorldGen" type="Node3D" unique_id=1762984832 node_paths=PackedStringArray("Player")]
+script = ExtResource("1_d48c2")
+Seed = 12346
+Player = NodePath("CharacterBody3D")
+
+[node name="CharacterBody3D" parent="." unique_id=73140632 node_paths=PackedStringArray("ExitPoint") instance=ExtResource("2_w222j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05016011, 112.44499, 13.729987)
+collision_mask = 3
+ExitPoint = NodePath("DoorTrigger/ExitPoint")
+
+[node name="CollisionShape3D" parent="CharacterBody3D/DoorTrigger" parent_id_path=PackedInt32Array(73140632, 2062596507) index="0" unique_id=2102337142]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.056739748, 0, 0)
+shape = SubResource("BoxShape3D_w222j")
+
+[node name="CarCamera" type="Camera3D" parent="CharacterBody3D" unique_id=1428337986]
+transform = Transform3D(-1, -3.813328e-09, -8.733957e-08, 0, 0.99904823, -0.043619387, 8.742278e-08, -0.043619387, -0.99904823, 0.047723338, 0.6605232, 2.406703)
+current = true
+fov = 75.7
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CharacterBody3D" unique_id=2100274960]
+transform = Transform3D(-1, -3.3173112e-08, 8.088439e-08, 0, 0.9252097, 0.3794561, -8.742278e-08, 0.37945616, -0.9252096, 0, 1.984, 0)
+collision_mask = 3
+spring_length = 2.0
+
+[node name="CarCamera2" type="Camera3D" parent="CharacterBody3D" unique_id=1874320639]
+transform = Transform3D(1, 3.813328e-09, 1.7476235e-07, -3.813328e-09, 1, -6.664262e-16, -1.7476235e-07, 7.7610073e-23, 1, -6.413956e-07, 0.96893287, -2.4762135)
+current = true
+fov = 75.7
+
+[node name="CarCamera3" type="Camera3D" parent="CharacterBody3D" unique_id=1493431340]
+transform = Transform3D(-1, 8.742278e-08, 0, 8.742278e-08, 1, -8.742278e-08, -7.642742e-15, -8.742278e-08, -1, 1.7752849, -0.3583837, 1.3931394)
+current = true
+fov = 114.6
+
+[editable path="CharacterBody3D"]
