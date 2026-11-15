@@ -29,13 +29,24 @@ public partial class DrillManager : Node3D
 	private ResourceVein _placeVein;
 	private float _autosaveTimer;
 	private Label _hud;
+	private Label _drillHints;
+	private Label _notice;
+	private CanvasLayer _hudLayer;
 	private string _message = "";
 	private float _messageTimer;
 	private float _pickupHold;
+	private Node3D _placingVehicle;
+	private Node _settings;
+	private Callable _settingsChanged;
+	private readonly Dictionary<string, string> _bindingLabels = new();
 
 	public override void _Ready()
 	{
 		DrillScene ??= GD.Load<PackedScene>("res://Scene/Drill.tscn");
+		_settings = GetNodeOrNull<Node>("/root/UserSettings");
+		_settingsChanged = Callable.From(ReadBindings);
+		_settings?.Connect("changed", _settingsChanged);
+		ReadBindings();
 		CreateHud();
 		CreateGhost();
 		CallDeferred(MethodName.Load); // після _Ready жил, щоб їхнє каміння вже існувало
@@ -50,6 +61,7 @@ public partial class DrillManager : Node3D
 
 		var model = GD.Load<PackedScene>("res://ASS/Drill/Research_Drill/Research_Drill.glb");
 		_ghost = model.Instantiate<Node3D>();
+		_ghost.Name = "DrillBlueprint";
 		_ghost.Visible = false;
 		AddChild(_ghost);
 		SetGhostMaterial(_ghostOk);
@@ -75,6 +87,7 @@ public partial class DrillManager : Node3D
 	}
 
 	private Node3D Vehicle => GameData.InSpectatorMode ? null : GameData.ActiveVehicle;
+	private bool CanUseInput => Vehicle != null && GameData.CanDrive(Vehicle) && !GetTree().Paused;
 
 	private void UpdateGhost()
 	{
@@ -263,7 +276,7 @@ public partial class DrillManager : Node3D
 	{
 		var start = DrillCost.StartResources;
 		foreach (var (name, amount) in start) GameData.Storage.Add(name, amount);
-		if (start.Count > 0) Notify("Стартовий набір: " + FormatItems(start));
+		if (start.Count > 0) Notify("Надано стартовий набір");
 	}
 
 	// Немає жодного бура й не вистачає на новий — додаємо те, чого бракує
@@ -273,7 +286,7 @@ public partial class DrillManager : Node3D
 		var missing = GameData.Storage.Missing(DrillCost.Cost);
 		if (missing.Count == 0) return;
 		foreach (var (name, amount) in missing) GameData.Storage.Add(name, amount);
-		Notify("Аварійний набір на 1 бур: " + FormatItems(missing));
+		Notify("Додано аварійний набір на один бур");
 		Save();
 	}
 
@@ -281,33 +294,44 @@ public partial class DrillManager : Node3D
 
 	public override void _UnhandledInput(InputEvent e)
 	{
-		if (_placing && e is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
+		if (!CanUseInput || e.IsEcho()) return;
+		if (e.IsActionPressed("DrillPlace"))
+		{
+			EnsureCanBuild();
+			_placing = !_placing;
+			_placingVehicle = _placing ? Vehicle : null;
+			if (!_placing) _ghost.Visible = false;
+			GetViewport().SetInputAsHandled();
+		}
+		else if (_placing && (e.IsActionPressed("DrillConfirm")
+			|| e is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left))
 		{
 			PlaceDrill();
+			GetViewport().SetInputAsHandled();
+		}
+		else if (e.IsActionPressed("interact"))
+		{
+			Collect();
 			GetViewport().SetInputAsHandled();
 		}
 	}
 
 	public override void _Process(double delta)
 	{
-		if (Input.IsActionJustPressed("DrillPlace"))
+		if (_placing && (!CanUseInput || _placingVehicle != Vehicle))
 		{
-			EnsureCanBuild();
-			_placing = !_placing && Vehicle != null;
-			if (!_placing) _ghost.Visible = false;
+			_placing = false;
+			_placingVehicle = null;
+			_ghost.Visible = false;
 		}
-		if (_placing && Vehicle == null) { _placing = false; _ghost.Visible = false; }
 
 		if (_placing)
 		{
 			UpdateGhost();
-			if (Input.IsActionJustPressed("DrillConfirm")) PlaceDrill();
 		}
 
-		if (Input.IsActionJustPressed("interact")) Collect();
-
 		// розбирання — треба утримувати X, щоб не розібрати випадково
-		var near = _placing ? null : DrillNearVehicle(CollectRadius);
+		var near = _placing || !CanUseInput ? null : DrillNearVehicle(CollectRadius);
 		if (near != null && Input.IsActionPressed("DrillPickup"))
 		{
 			_pickupHold += (float)delta;
@@ -331,42 +355,95 @@ public partial class DrillManager : Node3D
 
 	private void CreateHud()
 	{
-		var layer = new CanvasLayer { Layer = 10 };
-		AddChild(layer);
-		_hud = new Label { Position = new Vector2(16, 16) };
-		_hud.AddThemeFontSizeOverride("font_size", 18);
-		_hud.AddThemeColorOverride("font_outline_color", Colors.Black);
-		_hud.AddThemeConstantOverride("outline_size", 6);
-		layer.AddChild(_hud);
+		_hudLayer = new CanvasLayer { Layer = 11 };
+		Node room = GetParent().GetNodeOrNull<Node>("CommandRoom");
+		Node display = this;
+		if (room != null && room.HasMethod("get_display_viewport"))
+			display = room.Call("get_display_viewport").AsGodotObject() as Node ?? this;
+		display.AddChild(_hudLayer);
+		var layout = new Control { Name = "ResourcesOverlay", MouseFilter = Control.MouseFilterEnum.Ignore };
+		_hudLayer.AddChild(layout);
+		layout.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+		_hud = MakeHudLabel(layout, "ResourceHud", 20, 1);
+		_hud.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.TopWide);
+		_hud.OffsetLeft = 24;
+		_hud.OffsetRight = -280; // Reserve the two vehicle identification cutouts.
+		_hud.OffsetTop = 54;
+		_hud.OffsetBottom = 82;
+		_notice = MakeHudLabel(layout, "ResourceNotice", 20, 1);
+		_notice.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.TopWide);
+		_notice.OffsetLeft = 24;
+		_notice.OffsetRight = -280;
+		_notice.OffsetTop = 84;
+		_notice.OffsetBottom = 112;
+		_drillHints = MakeHudLabel(layout, "DrillHints", 21, 2);
+		_drillHints.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.BottomWide);
+		_drillHints.OffsetLeft = 24;
+		_drillHints.OffsetRight = -24;
+		_drillHints.OffsetTop = -132;
+		_drillHints.OffsetBottom = -86;
+		_drillHints.VerticalAlignment = VerticalAlignment.Bottom;
+	}
+
+	private static Label MakeHudLabel(Control parent, string name, int fontSize, int lines)
+	{
+		var label = new Label {
+			Name = name, MouseFilter = Control.MouseFilterEnum.Ignore, Visible = false,
+			ClipText = true, MaxLinesVisible = lines, TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis,
+		};
+		label.AddThemeFontOverride("font", GD.Load<Font>("res://ASS/UI/Fonts/Onest.ttf"));
+		label.AddThemeFontSizeOverride("font_size", fontSize);
+		label.AddThemeColorOverride("font_outline_color", Colors.Black);
+		label.AddThemeConstantOverride("outline_size", 4);
+		parent.AddChild(label);
+		return label;
 	}
 
 	private void Notify(string msg) { _message = msg; _messageTimer = 3f; }
 
 	private void UpdateHud()
 	{
-		var sb = new System.Text.StringBuilder();
-		sb.AppendLine("Сховище:");
+		_hud.Visible = Vehicle != null;
+		_drillHints.Visible = _hud.Visible;
+		_notice.Visible = _hud.Visible && _messageTimer > 0;
+		if (!_hud.Visible) return;
 		var all = GameData.Storage.GetAll();
-		if (all.Count == 0) sb.AppendLine("  порожньо");
-		foreach (var (n, a) in all) sb.AppendLine($"  {n}: {a}");
-
-		var v = Vehicle;
-		if (v != null)
+		var inventory = new List<string>();
+		foreach (var (name, amount) in all) inventory.Add($"{name}: {amount}");
+		_hud.Text = "Сховище · " + (inventory.Count == 0 ? "порожньо" : string.Join("   ·   ", inventory));
+		_notice.Text = _message;
+		if (_placing)
 		{
-			var d = DrillNearVehicle(CollectRadius);
-			if (d != null)
-			{
-				sb.AppendLine($"\nБур ({d.ResourceName}): {d.StoredAmount}/{d.Capacity} {(d.CurrentState == Drill.State.Full ? "(повний)" : "")}");
-				sb.AppendLine(_pickupHold > 0
-					? $"Розбираю... {(int)(100 * _pickupHold / PickupHoldTime)}%"
-					: "[G] забрати ресурси   [X утримуй] розібрати бур");
-			}
-			sb.AppendLine(_placing
-				? (_placeValid ? $"\nЖила: {_placeVein.ResourceName}   [ЛКМ/Enter] поставити бур   [B] скасувати" : $"\n{_invalidReason}   [B] скасувати")
-				: "\n[B] схема бура" + (DrillCost.Cost.Count > 0 ? $"  (ціна: {FormatItems(new Dictionary<string, int>(DrillCost.Cost))})" : ""));
+			string cost = DrillCost.Cost.Count > 0 ? $"Ціна: {FormatItems(new Dictionary<string, int>(DrillCost.Cost))}" : "Схема бура";
+			string action = _placeValid
+				? $"Жила: {_placeVein.ResourceName}   [ЛКМ/{Binding("DrillConfirm")}] поставити бур"
+				: _invalidReason;
+			_drillHints.Text = cost + "\n" + action + $"   [{Binding("DrillPlace")}] скасувати";
+			return;
 		}
-		if (_messageTimer > 0) sb.AppendLine("\n" + _message);
-		_hud.Text = sb.ToString();
+		var drill = DrillNearVehicle(CollectRadius);
+		if (drill == null)
+		{
+			_drillHints.Text = $"[{Binding("DrillPlace")}] схема бура";
+			return;
+		}
+		string progress = _pickupHold > 0 ? $"Розбираю… {(int)(100 * _pickupHold / PickupHoldTime)}%" : $"[{Binding("interact")}] забрати ресурси   [{Binding("DrillPickup")} утримуй] розібрати";
+		_drillHints.Text = $"Бур · {drill.ResourceName}: {drill.StoredAmount}/{drill.Capacity}" + (drill.CurrentState == Drill.State.Full ? " · повний" : "")
+			+ "\n" + progress;
+	}
+
+	private string Binding(string action) => _bindingLabels.GetValueOrDefault(action, "Не призначено");
+	private void ReadBindings()
+	{
+		foreach (string action in new[] { "interact", "DrillPickup", "DrillConfirm", "DrillPlace" })
+			_bindingLabels[action] = _settings?.Call("binding_text", action).AsString() ?? "Не призначено";
+	}
+
+	public override void _ExitTree()
+	{
+		if (GodotObject.IsInstanceValid(_hudLayer)) _hudLayer.QueueFree();
+		if (GodotObject.IsInstanceValid(_settings) && _settings.IsConnected("changed", _settingsChanged))
+			_settings.Disconnect("changed", _settingsChanged);
 	}
 
 	// ---------- Збереження ----------

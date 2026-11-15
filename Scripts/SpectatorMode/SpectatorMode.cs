@@ -1,104 +1,50 @@
-
 using Godot;
 
 public partial class SpectatorMode : Camera3D
 {
 	[Export] public float MoveSpeed = 10.0f;
 	[Export] public float MouseSensitivity = 0.1f;
+	private float _yaw;
+	private float _pitch;
+	private float _speedScale = 1f;
 
-	private float _yaw = 0.0f;
-	private float _pitch = 0.0f;
-	private float _speedScale = 1.0f;
-
-	public override async void _Ready()
+	public void Activate(Transform3D pose)
 	{
-		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-
-		Input.MouseMode = Input.MouseModeEnum.Captured;
-
-		Camera3D currentCamera = GetViewport().GetCamera3D();
-
-		if (currentCamera != null)
-			Position = currentCamera.Position;
+		GlobalTransform = pose;
+		_yaw = GlobalRotation.Y;
+		_pitch = GlobalRotation.X;
 	}
 
-	public override void _Input(InputEvent @event)
+	public override void _UnhandledInput(InputEvent input)
 	{
-		if (@event is InputEventMouseMotion mouseMotion)
+		if (!Current || GameData.Context != ControlContext.Spectator || GetTree().Paused) return;
+		if (input is InputEventMouseMotion motion)
 		{
-			_yaw -= mouseMotion.Relative.X * MouseSensitivity;
-			_pitch -= mouseMotion.Relative.Y * MouseSensitivity;
-
-			_pitch = Mathf.Clamp(_pitch, -89.0f, 89.0f);
+			var settings = GetNodeOrNull<Node>("/root/UserSettings");
+			float sensitivity = settings == null ? 1f : (float)settings.Call("get_value", "mouse_sensitivity").AsDouble();
+			bool invert = settings != null && settings.Call("get_value", "invert_y").AsBool();
+			_yaw -= Mathf.DegToRad(motion.Relative.X * MouseSensitivity * sensitivity);
+			_pitch -= Mathf.DegToRad(motion.Relative.Y * MouseSensitivity * sensitivity * (invert ? -1f : 1f));
+			_pitch = Mathf.Clamp(_pitch, Mathf.DegToRad(-89f), Mathf.DegToRad(89f));
+			GlobalRotation = new Vector3(_pitch, _yaw, 0f);
 		}
-
-		if (@event is InputEventMouseButton mouseButton)
+		if (input is InputEventMouseButton button && button.Pressed)
 		{
-			if (mouseButton.Pressed)
-			{
-				if (mouseButton.ButtonIndex == MouseButton.WheelUp)
-					_speedScale -= 0.1f;
-
-				if (mouseButton.ButtonIndex == MouseButton.WheelDown)
-					_speedScale += 0.1f;
-			}
-
-			_speedScale = Mathf.Max(_speedScale, 0.1f);
-
-			GD.Print(_speedScale);
-		}
-
-		if (@event.IsActionPressed("ui_cancel"))
-		{
-			Input.MouseMode = Input.MouseModeEnum.Visible;
+			if (button.ButtonIndex == MouseButton.WheelUp) _speedScale = Mathf.Max(0.1f, _speedScale - 0.1f);
+			if (button.ButtonIndex == MouseButton.WheelDown) _speedScale = Mathf.Min(10f, _speedScale + 0.1f);
 		}
 	}
 
 	public override void _Process(double delta)
 	{
-		Vector3 direction = Vector3.Zero;
-
-		Vector3 forward = -GlobalTransform.Basis.Z;
-		Vector3 right = GlobalTransform.Basis.X;
-		Vector3 up = GlobalTransform.Basis.Y;
-
-		if (Input.IsKeyPressed(Key.W))
-			direction += forward;
-
-		if (Input.IsKeyPressed(Key.S))
-			direction -= forward;
-
-		if (Input.IsKeyPressed(Key.A))
-			direction -= right;
-
-		if (Input.IsKeyPressed(Key.D))
-			direction += right;
-
-		if (Input.IsKeyPressed(Key.E))
-			direction += up;
-
-		if (Input.IsKeyPressed(Key.Q))
-			direction -= up;
-
-		Basis yawBasis = new Basis(
-			Vector3.Up,
-			Mathf.DegToRad(_yaw)
-		);
-
-		Basis pitchBasis = new Basis(
-			Vector3.Right,
-			Mathf.DegToRad(_pitch)
-		);
-
-		Transform3D cameraTransform = Transform;
-		cameraTransform.Basis = (yawBasis * pitchBasis).Orthonormalized();
-		Transform = cameraTransform;
-
-		direction = direction.Normalized()
-			* MoveSpeed
-			* _speedScale
-			* (float)delta;
-
-		Translate(direction);
+		if (!Current || GameData.Context != ControlContext.Spectator || !GameData.InputArmed) return;
+		var direction = Vector3.Zero;
+		if (Input.IsActionPressed("spectator_forward")) direction -= GlobalBasis.Z;
+		if (Input.IsActionPressed("spectator_backward")) direction += GlobalBasis.Z;
+		if (Input.IsActionPressed("spectator_left")) direction -= GlobalBasis.X;
+		if (Input.IsActionPressed("spectator_right")) direction += GlobalBasis.X;
+		if (Input.IsActionPressed("spectator_up")) direction += Vector3.Up;
+		if (Input.IsActionPressed("spectator_down")) direction -= Vector3.Up;
+		GlobalPosition += direction.Normalized() * MoveSpeed * _speedScale * (float)delta;
 	}
 }

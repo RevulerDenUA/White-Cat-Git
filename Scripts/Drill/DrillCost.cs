@@ -14,8 +14,8 @@ public static class DrillCost
 	};
 
 	// Скільки повертається, коли бур розбираєш (1 = повністю, 0.5 = половина).
-	// Повне повернення — гравець завжди може переставити бур і не застрягне.
-	public const float RefundRatio = 1f;
+	// Погоджене повернення половини вартості; цілі предмети округлюються вниз.
+	public const float RefundRatio = 0.5f;
 
 	// Що гравець отримує на початку нової гри. За замовчуванням — рівно на 1 бур.
 	public static Dictionary<string, int> StartResources => new(Cost);

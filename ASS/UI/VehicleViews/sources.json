@@ -1,0 +1,29 @@
+{
+  "origin": "User-supplied White Cat vehicle renders; originals copied without image editing.",
+  "files": [
+    {
+      "path": "ASS/UI/VehicleViews/Rover/01_front.png",
+      "source_archive": "Rover_6_views_PNG.zip",
+      "source_file": "01_front.png",
+      "sha256": "d897891451cfde70fe4b85e60862610e58a5368ad0ce5c914e461cd368b8faf4"
+    },
+    {
+      "path": "ASS/UI/VehicleViews/Rover/02_left.png",
+      "source_archive": "Rover_6_views_PNG.zip",
+      "source_file": "02_left.png",
+      "sha256": "20b5e94f78911da4c19d645f090e900a109011797aaa468b19d5b71379675f86"
+    },
+    {
+      "path": "ASS/UI/VehicleViews/Ingenuity/01_front.png",
+      "source_archive": "Helicopter_6_views_PNG.zip",
+      "source_file": "01_front.png",
+      "sha256": "13727f39ca7b7360a6ec70f54ec8629766984f4d7d641435fbf4a9af54167c3d"
+    },
+    {
+      "path": "ASS/UI/VehicleViews/Ingenuity/05_top.png",
+      "source_archive": "Helicopter_6_views_PNG.zip",
+      "source_file": "05_top.png",
+      "sha256": "9856f8d70616ac7b6f18162f2bda557e540ad724144387ca6b186a2f050556e5"
+    }
+  ]
+}

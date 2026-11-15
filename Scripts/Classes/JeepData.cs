@@ -8,7 +8,7 @@ public class JeepData
 	// Схил, на який заїде: sin(кут) = MaxTractionForce / (маса * g). 6000 Н, 1000 кг, g=9.8 → ~37°.
 	public static float EnginePower = 4000f;       // Вт (≈ 5.4 к.с.) — разом на всі ведучі колеса; від неї залежить швидкість на підйомі
 	public static float MaxTractionForce = 6000f;  // Н — максимальна тяга разом на всі ведучі колеса
-	public static float MaxSpeed = 1.5f;           // м/с (9 км/год) — вище двигун не тягне
+	public static float MaxSpeed = 1.5f;           // м/с (5.4 км/год) — вище двигун не тягне
 	public static float MaxReverseSpeed = 1.2f;    // м/с назад
 	public static float ThrottleRiseTime = 1.2f;   // с — за скільки «педаль» плавно доходить до упору (м'який старт)
 	public static float MaxSteerAngle = 0.4f;

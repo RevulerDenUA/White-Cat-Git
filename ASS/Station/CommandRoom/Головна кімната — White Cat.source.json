@@ -1,0 +1,9 @@
+{
+  "source_archive": "Головна кімната — White Cat-20261115T131056Z-1-001.zip",
+  "source_file": "Головна кімната — White Cat.blend",
+  "source_sha256": "dfedb1094af0babc330cb4bc3d78ecf824160574a3db90b0f7bdd0fb1051fc8b",
+  "exporter": "Blender 3.6.23",
+  "scene": "White Cat | Main Control Room",
+  "output_sha256": "b978ba40656dac3d77b620b5cdd3f96519cb945d5cc89e54063cc1ed54365681",
+  "note": "Unchanged geometry and authored camera. Procedural colours use the authored base-colour fallback; glazing is converted to a transparent PBR material. Area lights are metadata markers for Godot. Original Blend is never saved or modified."
+}
