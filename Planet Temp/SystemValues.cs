@@ -22,6 +22,10 @@ public struct PlanetData
 	public float Gravity;
 	public float Mass;
 	public float Temperature;
+	public float AxialTilt; 
+	public float Squish;  
+
+
 
 	public Color SkyDark;
 	public Color SkyMid;
