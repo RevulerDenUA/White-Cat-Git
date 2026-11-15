@@ -2,11 +2,11 @@ using Godot;
 
 public partial class CurrentGen : Node
 {
-    // [1] Holds all structure parameters of the planet the player entered
+ 
     public static PlanetData ActivePlanet;
     public static bool HasActivePlanet = false;
 
-    // [2] Saves the planet data before unloading the solar system
+    // Saves the planet data 
     public static void SavePlanetForTransition(PlanetData d)
     {
         ActivePlanet = d;
