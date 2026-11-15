@@ -1,7 +1,7 @@
 [gd_scene format=4 uid="uid://cngcee24uhrrv"]
 
 [ext_resource type="Script" uid="uid://bk5e7t255ry0v" path="res://Scripts/Jeep.cs" id="1_prh16"]
-[ext_resource type="PackedScene" uid="uid://b86wxsbspqjfb" path="res://ASS/RoverNew/White-Cat-Rover.glb" id="9_rover"]
+[ext_resource type="PackedScene" path="res://ASS/RoverNew/White-Cat-Rover.glb" id="9_rover"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_prh16"]
 radius = 0.8690131
@@ -432,6 +432,3 @@ light_color = Color(0.9548126, 0, 0.30472007, 1)
 light_energy = 0.683
 light_volumetric_fog_energy = 0.0
 shadow_enabled = true
-
-[connection signal="body_entered" from="DoorTrigger" to="." method="_on_door_trigger_body_entered"]
-[connection signal="body_exited" from="DoorTrigger" to="." method="_on_door_trigger_body_exited"]

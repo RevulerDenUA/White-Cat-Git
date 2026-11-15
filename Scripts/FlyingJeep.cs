@@ -23,7 +23,7 @@ public partial class FlyingJeep : CharacterBody3D
 	public override void _PhysicsProcess(double delta)
 	{
 		float dt = (float)delta;
-		bool controlled = !GameData.InSpectatorMode && GameData.ActiveVehicle == this;
+		bool controlled = GameData.CanDrive(this);
 
 		float forward = 0f, turn = 0f, vertical = 0f;
 		if (controlled)
@@ -33,7 +33,7 @@ public partial class FlyingJeep : CharacterBody3D
 			if (ControlInput.IsPressed("lefty")) turn += 1f;
 			if (ControlInput.IsPressed("righty")) turn -= 1f;
 			if (ControlInput.IsPressed("spacy")) vertical += 1f;
-			if (ControlInput.IsPressed(ControlInput.Shift)) vertical -= 1f;
+			if (ControlInput.IsPressed("flight_descend")) vertical -= 1f;
 		}
 
 		RotateY(turn * FlyJeepData.TurnSpeed * dt);

@@ -5,9 +5,15 @@
 [ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="4_kmbin"]
 [ext_resource type="Shader" uid="uid://bdrf3l2s7ry0e" path="res://shader/MahNutsHurt.gdshader" id="6_1n6c4"]
 [ext_resource type="PackedScene" uid="uid://bfblajavp7fl4" path="res://Scene/FLYJEEP.tscn" id="7_fly"]
-[ext_resource type="Script" path="res://Scripts/VehicleCamera.cs" id="cam_look"]
+[ext_resource type="Script" uid="uid://c78372mw5ndhr" path="res://Scripts/VehicleCamera.cs" id="cam_look"]
 [ext_resource type="Script" uid="uid://cjhjyt5juikse" path="res://Scripts/Drill/DrillManager.cs" id="drill_mgr"]
 [ext_resource type="PackedScene" path="res://Scene/Vein.tscn" id="vein"]
+[ext_resource type="PackedScene" path="res://Scene/Command/CommandRoom.tscn" id="8_room"]
+[ext_resource type="Script" path="res://Scripts/Command/RemoteVehicle.cs" id="9_remote"]
+[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Rover/01_front.png" id="10_rover_front"]
+[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Rover/02_left.png" id="11_rover_side"]
+[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Ingenuity/01_front.png" id="12_ingenuity_front"]
+[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Ingenuity/05_top.png" id="13_ingenuity_top"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r0yfe"]
 albedo_color = Color(0.5931336, 0.59313357, 0.59313357, 1)
@@ -21,6 +27,14 @@ refraction_scale = 1.0
 albedo_color = Color(0.86825323, 0.19474879, 3.85046e-07, 1)
 metallic = 1.0
 metallic_specular = 0.51
+
+[sub_resource type="Environment" id="Environment_test"]
+background_mode = 1
+background_color = Color(0.031, 0.055, 0.09, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.69, 0.77, 0.83, 1)
+ambient_light_energy = 0.35
+tonemap_mode = 2
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ui4kf"]
 shader = ExtResource("6_1n6c4")
@@ -52,6 +66,16 @@ shader_parameter/reticle_alpha = 0.55
 
 [node name="Node3D" type="Node3D" unique_id=957672029]
 
+[node name="TestEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_test")
+
+[node name="TestLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-48, -32, 0)
+light_color = Color(1, 0.93, 0.82, 1)
+light_energy = 1.2
+light_cull_mask = 1
+shadow_enabled = true
+
 [node name="CharacterBody3D" parent="." unique_id=1208391488 node_paths=PackedStringArray("ExitPoint") instance=ExtResource("1_3ustj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05016011, 2.0534465, 13.729987)
 ExitPoint = NodePath("DoorTrigger/ExitPoint")
@@ -59,7 +83,10 @@ ExitPoint = NodePath("DoorTrigger/ExitPoint")
 [node name="Lights" parent="CharacterBody3D" index="12" unique_id=2089141798]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.70636237, 0)
 
-[node name="OmniLight3D2" parent="CharacterBody3D/Lights/SpotLight3D2" parent_id_path=PackedInt32Array(1208391488, 42901079) index="1" unique_id=671121260]
+[node name="SpotLight3D2" parent="CharacterBody3D/Lights" index="1" unique_id=42901079]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.9235292, 0.04321003, 2.1821651)
+
+[node name="OmniLight3D2" parent="CharacterBody3D/Lights/SpotLight3D2" index="1" unique_id=671121260]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.078360334, -0.048604846, 4.999671)
 
 [node name="CarCamera" type="Camera3D" parent="CharacterBody3D" unique_id=992078577]
@@ -94,8 +121,27 @@ RollPerLatAccel = 0.9
 MaxPitch = 6.0
 MaxRoll = 8.0
 
+[node name="RemoteVehicle" type="Node" parent="CharacterBody3D" node_paths=PackedStringArray("Vehicle", "Cameras")]
+script = ExtResource("9_remote")
+TargetId = "rover"
+DisplayName = "Марсохід"
+Vehicle = NodePath("..")
+Cameras = [NodePath("../CarCamera"), NodePath("../CarCamera2")]
+RecoverOnRelease = true
+IdentificationImages = [ExtResource("10_rover_front"), ExtResource("11_rover_side")]
+
 [node name="FlyingJeep" parent="." unique_id=213530330 instance=ExtResource("7_fly")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.263918, 2.0272086, 13.8810425)
+
+[node name="RemoteVehicle" type="Node" parent="FlyingJeep" node_paths=PackedStringArray("Vehicle", "Cameras", "ColorCameras")]
+script = ExtResource("9_remote")
+TargetId = "ingenuity"
+DisplayName = "Інжінюїті"
+Vehicle = NodePath("..")
+Cameras = [NodePath("../CamBW"), NodePath("../CamColor")]
+ColorCameras = [NodePath("../CamColor")]
+SupportsVerticalControl = true
+IdentificationImages = [ExtResource("12_ingenuity_front"), ExtResource("13_ingenuity_top")]
 
 [node name="CSGCombiner3D" type="CSGCombiner3D" parent="." unique_id=1277013944]
 use_collision = true
@@ -118,18 +164,22 @@ material = SubResource("StandardMaterial3D_3ustj")
 [node name="Filter" type="ColorRect" parent="Shader" unique_id=1982494344]
 material = SubResource("ShaderMaterial_ui4kf")
 use_parent_material = true
-offset_right = 40.230118
-offset_bottom = 40.0
-scale = Vector2(47.80001, 27.080002)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 color = Color(1, 1, 1, 0)
 
 [node name="SpectatorMode" type="Camera3D" parent="." unique_id=1258418072]
 script = ExtResource("3_kmbin")
 
-[node name="CameraControl" type="Node3D" parent="." unique_id=1429019729 node_paths=PackedStringArray("Cameras", "ColorCameras", "SpecCamera", "Filter")]
+[node name="CommandRoom" parent="." instance=ExtResource("8_room")]
+
+[node name="CameraControl" type="Node3D" parent="." unique_id=1429019729 node_paths=PackedStringArray("RoomView", "SpecCamera", "Filter")]
 script = ExtResource("4_kmbin")
-Cameras = [NodePath("../CharacterBody3D/CarCamera"), NodePath("../CharacterBody3D/CarCamera2"), null, NodePath("../FlyingJeep/CamBW"), NodePath("../FlyingJeep/CamColor")]
-ColorCameras = [NodePath("../FlyingJeep/CamColor")]
+RoomView = NodePath("../CommandRoom")
 SpecCamera = NodePath("../SpectatorMode")
 Filter = NodePath("../Shader/Filter")
 
@@ -138,6 +188,7 @@ script = ExtResource("drill_mgr")
 
 [node name="VeinIron" parent="." unique_id=1730255002 instance=ExtResource("vein")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 22)
+ResourceName = "Титан"
 
 [node name="VeinIce" parent="." unique_id=1730255003 instance=ExtResource("vein")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 22)

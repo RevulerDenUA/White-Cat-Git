@@ -209,6 +209,3 @@ RollPerYawRate = 0.0
 RollPerLatAccel = 0.9
 MaxPitch = 6.0
 MaxRoll = 8.0
-
-[connection signal="body_entered" from="DoorTrigger" to="." method="_on_door_trigger_body_entered"]
-[connection signal="body_exited" from="DoorTrigger" to="." method="_on_door_trigger_body_exited"]

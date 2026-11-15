@@ -3,6 +3,8 @@
 [ext_resource type="Environment" uid="uid://bvk5mrno3ev1d" path="res://Planet Temp/new_environment.tres" id="1_ghylp"]
 [ext_resource type="Script" uid="uid://ykbg07ofwwyu" path="res://Planet Temp/SystemValues.cs" id="1_kk3s5"]
 [ext_resource type="Script" uid="uid://bv3qyb2cam411" path="res://Planet Temp/PlanetOrbit.cs" id="1_mg2au"]
+[ext_resource type="Script" path="res://Planet Temp/PlanetSelector.cs" id="5_psel"]
+[ext_resource type="Script" path="res://Planet Temp/SystemCamera.cs" id="6_scam"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mg2au"]
 emission_enabled = true
@@ -65,6 +67,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 0)
 mesh = SubResource("SphereMesh_h18hl")
 
 [node name="Area3D" type="Area3D" parent="PlanetOrbit/Local Planet" unique_id=400221893]
+transform = Transform3D(1, 0, 0, 0, 1.1428572, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PlanetOrbit/Local Planet/Area3D" unique_id=466735882]
 shape = SubResource("SphereShape3D_f2jkv")
@@ -79,6 +82,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1777896729]
-transform = Transform3D(0.12834811, -0.6879052, 0.7143622, -0.03268296, 0.7169946, 0.6963122, -0.99119055, -0.11271782, 0.06954212, 579.16376, 473.54065, -5.552986)
+
+transform = Transform3D(0.12834811, -0.68790525, 0.71436214, -0.03268296, 0.71699464, 0.6963121, -0.99119055, -0.11271782, 0.0695421, 12.449778, 10.863235, 0.3217392)
+script = ExtResource("6_scam")
+
+[node name="PlanetSelector" type="Node" parent="."]
+script = ExtResource("5_psel")
+
 
 [connection signal="tree_entered" from="PlanetOrbit/Local Planet" to="PlanetOrbit" method="_on_local_planet_tree_entered"]

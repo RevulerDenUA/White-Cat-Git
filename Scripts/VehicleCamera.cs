@@ -32,10 +32,17 @@ public partial class VehicleCamera : Camera3D
 	private Vector3 _prevFwd;
 	private float _prevSpeed, _accel;
 	private bool _hasPrev;
+	private Node _settings;
+	private Callable _settingsChanged;
+	private bool _reducedMotion;
 
 	public override void _Ready()
 	{
 		_startBasis = Basis;
+		_settings = GetNodeOrNull<Node>("/root/UserSettings");
+		_settingsChanged = Callable.From(ReadSettings);
+		_settings?.Connect("changed", _settingsChanged);
+		ReadSettings();
 		for (Node n = GetParent(); n != null; n = n.GetParent())
 			if (n is PhysicsBody3D body) { _vehicle = body; break; }
 	}
@@ -49,7 +56,7 @@ public partial class VehicleCamera : Camera3D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (!EnableTilt || _vehicle == null) { _targetPitch = _targetRoll = 0; return; }
+		if (!EnableTilt || _reducedMotion || _vehicle == null) { _targetPitch = _targetRoll = 0; _hasPrev = false; return; }
 		float dt = (float)delta;
 
 		// перед машини/дрона = +Z, ліво = +X
@@ -78,7 +85,7 @@ public partial class VehicleCamera : Camera3D
 	{
 		float dt = (float)delta;
 
-		if (EnableLook && Current)
+		if (EnableLook && GameData.ActiveCamera == this && GameData.CanDrive(_vehicle) && !GetTree().Paused)
 		{
 			float input = Input.GetAxis("CameraRight", "CameraLeft");
 			if (input != 0f) _yaw += input * TurnSpeed * dt;
@@ -87,12 +94,20 @@ public partial class VehicleCamera : Camera3D
 		}
 
 		float k = 1f - Mathf.Exp(-Smoothing * dt);
-		_pitch = Mathf.Lerp(_pitch, _targetPitch, k);
-		_roll = Mathf.Lerp(_roll, _targetRoll, k);
+		_pitch = _reducedMotion ? 0f : Mathf.Lerp(_pitch, _targetPitch, k);
+		_roll = _reducedMotion ? 0f : Mathf.Lerp(_roll, _targetRoll, k);
 
 		// нахил — у системі координат машини: тангаж навколо її осі X, крен навколо осі Z.
 		// Нахил «у бік повороту вліво» = ліва сторона вниз = від'ємний кут навколо +Z.
 		var tilt = new Basis(Vector3.Right, Mathf.DegToRad(_pitch)) * new Basis(Vector3.Back, Mathf.DegToRad(-_roll));
 		Basis = tilt * new Basis(Vector3.Up, Mathf.DegToRad(_yaw)) * _startBasis;
+	}
+
+	private void ReadSettings() => _reducedMotion = _settings != null && _settings.Call("get_value", "reduced_motion").AsBool();
+
+	public override void _ExitTree()
+	{
+		if (GodotObject.IsInstanceValid(_settings) && _settings.IsConnected("changed", _settingsChanged))
+			_settings.Disconnect("changed", _settingsChanged);
 	}
 }

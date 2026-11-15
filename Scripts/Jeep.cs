@@ -76,9 +76,10 @@ public partial class Jeep : VehicleBody3D
     {
         ApplyStabilizers();
 
-        if (GameData.InSpectatorMode || GameData.ActiveVehicle != this)
+        if (!GameData.CanDrive(this))
         {
             EngineForce = 0;
+            _throttle = 0;
             Brake = JeepData.IdleBrake; // ніхто не керує — машина стоїть на ручнику
             return;
         }

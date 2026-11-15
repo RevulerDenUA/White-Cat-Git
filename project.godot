@@ -10,21 +10,28 @@ config_version=5
 
 [application]
 
-config/name="Midnight Monitoring"
-config/description="The night of."
-run/main_scene="uid://de48dpchyfvt8"
+config/name="White Cat"
+config/description="Space Mission Design Game"
+run/main_scene="res://Scene/UI/MainMenu.tscn"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 
-[audio]
+[autoload]
 
-buses/default_bus_layout="uid://nmrct6fblj0a"
+UserSettings="*res://Scripts/Settings/user_settings.gd"
+StationPreview="*res://Scripts/UI/station_preview.gd"
+MenuAudio="*res://Scripts/UI/menu_audio.gd"
+DeveloperOverlay="*res://Scripts/Settings/developer_overlay.gd"
 
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/stretch/mode="viewport"
+window/size/window_width_override=1600
+window/size/window_height_override=900
+window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+window/size/min_width=960
+window/size/min_height=540
 
 [dotnet]
 

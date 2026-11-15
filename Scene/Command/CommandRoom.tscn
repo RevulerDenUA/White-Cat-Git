@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Command/command_room.gd" id="1_room"]
+[ext_resource type="PackedScene" path="res://ASS/Station/CommandRoom/Головна кімната — White Cat.glb" id="2_model"]
+
+[node name="CommandRoom" type="Node3D"]
+script = ExtResource("1_room")
+controller_path = NodePath("../CameraControl")
+
+[node name="Interior" parent="." instance=ExtResource("2_model")]
