@@ -9,5 +9,7 @@ public class GameData
 	public static bool InSpectatorMode = true;
 	// Машина, якою зараз керує гравець (та, до якої прикріплена активна камера)
 	public static Node3D ActiveVehicle = null;
+	// Сховище предметів гравця (сюди падає все, що зібрали з бурів)
+	public static Resources Storage = new Resources();
 }
 // GameData.active
