@@ -83,7 +83,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1777896729]
 
-transform = Transform3D(0.12834811, -0.68790525, 0.71436214, -0.03268296, 0.71699464, 0.6963121, -0.99119055, -0.11271782, 0.0695421, 12.449778, 10.863235, 0.3217392)
+transform = Transform3D(0.12834811, -0.6879052, 0.7143622, -0.03268296, 0.7169946, 0.6963122, -0.99119055, -0.11271782, 0.06954212, 579.16376, 473.54065, -5.552986)
 script = ExtResource("6_scam")
 
 [node name="PlanetSelector" type="Node" parent="."]

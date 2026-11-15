@@ -28,6 +28,7 @@ public partial class PlanetOrbit : Node3D
 	// Ставить PlanetSelector: FreezeOrbit — планета стоїть на орбіті, FreezeSpin — не крутиться навколо осі
 	public bool FreezeOrbit = false;
 	public bool FreezeSpin = false;
+	public const string GroupName = "PlanetOrbits";
 
 	public void _on_local_planet_tree_entered()
 	{
@@ -43,6 +44,9 @@ public partial class PlanetOrbit : Node3D
 	{
 		if (!_isClone && !_isMoon)
 			SystemValues.Planets.Clear();
+
+		// усі планети й місяці — для PlanetSelector (місяців немає в SystemValues.Planets)
+		AddToGroup(GroupName);
 
 		if (StarNode != null)
 				StarNode.Scale = Vector3.One * SystemValues.Instance.StarRadius;
@@ -121,13 +125,12 @@ public partial class PlanetOrbit : Node3D
 		if (PlanetNode != null)
 		{
 			PlanetNode.Scale = new Vector3(d.Radius, d.Radius * d.Squish, d.Radius);
+			PlanetNode.RotationDegrees = new Vector3(0f, 0f, d.AxialTilt);
 
 			// Тригер-сфера має лишатись рівномірно масштабованою (Jolt не підтримує сплюснуту сферу)
-			if (d.Squish > 0.001f && PlanetNode.GetNodeOrNull<Area3D>("Area3D") is { } area)
-				area.Scale = new Vector3(1f, 1f / d.Squish, 1f);
-
-			// Tilt the planet's poles
-			PlanetNode.RotationDegrees = new Vector3(0f, 0f, d.AxialTilt);
+			Area3D trigger = PlanetNode.GetNodeOrNull<Area3D>("Area3D");
+			if (trigger != null && d.Squish > 0.001f)
+				trigger.Scale = new Vector3(1.0f, 1.0f / d.Squish, 1.0f);
 
 			PlanetPackets.ApplyTexture(PlanetNode, d);
 		}
@@ -180,9 +183,8 @@ public partial class PlanetOrbit : Node3D
 
 		float dt = (float)(delta * SystemValues.WarpSpeed);
 
-		// Обертання навколо власної (нахиленої) осі планети
 		if (!FreezeSpin)
-			PlanetNode.RotateObjectLocal(Vector3.Up, Data.rotationspeed * dt);
+			PlanetNode.RotateObjectLocal(Vector3.Up, Data.rotationspeed * dt); // навколо нахиленої осі
 		if (FreezeOrbit) return;
 
 		float cosE = Mathf.Cos(_angleE);

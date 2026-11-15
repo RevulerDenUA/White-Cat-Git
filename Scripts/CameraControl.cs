@@ -10,6 +10,8 @@ public partial class CameraControl : Node
 	[Signal] public delegate void SessionChangedEventHandler();
 	[Signal] public delegate void RegistryChangedEventHandler();
 	[Signal] public delegate void DiagnosticEventHandler(string message);
+	// Сцена без командної кімнати (поверхня планети): Esc просить вийти назад у шатл
+	[Signal] public delegate void ExitRequestedEventHandler();
 
 	[Export] public Node3D RoomView;
 	[Export] public Camera3D SpecCamera;
@@ -57,6 +59,8 @@ public partial class CameraControl : Node
 	}
 
 	public uint get_room_layer() => RoomLayerMask;
+	// Без кімнати камера апарата показується на весь екран напряму
+	public bool HasRoom => RemoteVehicle.IsLive(_roomCamera);
 	public Camera3D get_active_camera() => RemoteVehicle.IsLive(_camera) ? _camera : null;
 	public Material get_signal_material() => Filter?.Material;
 	private bool Setting(string key) => _settings != null && _settings.Call("get_value", key).AsBool();
@@ -196,7 +200,8 @@ public partial class CameraControl : Node
 		GameData.InputArmed = false;
 		ControlInput.Reset();
 		// The room camera stays current; RoomView renders this source on the monitor.
-		if (RemoteVehicle.IsLive(_roomCamera)) _roomCamera.MakeCurrent();
+		if (HasRoom) _roomCamera.MakeCurrent();
+		else chosen.MakeCurrent();
 		Input.MouseMode = Input.MouseModeEnum.Visible;
 		EmitSignal(SignalName.SessionChanged);
 		return "";
@@ -243,6 +248,7 @@ public partial class CameraControl : Node
 		int next = (cameras.IndexOf(_camera) + 1) % cameras.Count;
 		_camera = cameras[next];
 		GameData.CameraIndex = next;
+		if (!HasRoom) _camera.MakeCurrent();
 		EmitSignal(SignalName.SessionChanged);
 	}
 
@@ -251,7 +257,8 @@ public partial class CameraControl : Node
 		if (input.IsActionPressed("ui_cancel") && !input.IsEcho())
 		{
 			GetViewport().SetInputAsHandled();
-			return_to_room();
+			if (HasRoom) return_to_room();
+			else EmitSignal(SignalName.ExitRequested);
 		}
 	}
 
@@ -311,7 +318,8 @@ public partial class CameraControl : Node
 	private void UpdateFilter()
 	{
 		if (!GodotObject.IsInstanceValid(Filter)) return;
-		Filter.Visible = false; // The same effect is composited inside the physical display.
+		// З кімнатою ефект накладається всередині фізичного дисплея; без неї — на весь екран.
+		Filter.Visible = !HasRoom && RemoteVehicle.IsLive(_active) && GameData.Context == ControlContext.Vehicle;
 		if (_filterMat == null || !RemoteVehicle.IsLive(_active)) return;
 		Node3D vehicle = _active.Vehicle;
 		float speed = vehicle switch { RigidBody3D rb => rb.LinearVelocity.Length(), CharacterBody3D cb => cb.Velocity.Length(), _ => 0f };

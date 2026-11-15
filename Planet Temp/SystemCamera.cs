@@ -17,6 +17,16 @@ public partial class SystemCamera : Camera3D
 	private float _yaw, _pitch, _dist;
 	private float _yawT, _pitchT, _distT;
 	private bool _rotating, _panning;
+	private Node3D _follow; // вибрана планета — точка огляду їде за нею
+
+	// Плавно перелетіти до тіла й тримати його в центрі (кут огляду зберігається)
+	public void FocusOn(Node3D target, float distance)
+	{
+		_follow = target;
+		_distT = Mathf.Clamp(distance, MinDistance, MaxDistance);
+	}
+
+	public void ClearFocus() => _follow = null;
 
 	public override void _Ready()
 	{
@@ -72,6 +82,7 @@ public partial class SystemCamera : Camera3D
 			}
 			if (_panning)
 			{
+				_follow = null; // ручний зсув скасовує стеження
 				float k = _distT * PanSensitivity;
 				_pivotT += (-GlobalBasis.X * mm.ScreenRelative.X + GlobalBasis.Y * mm.ScreenRelative.Y) * k;
 			}
@@ -83,6 +94,12 @@ public partial class SystemCamera : Camera3D
 		// вікно втратило фокус і кнопку відпустили поза ним
 		if (_rotating && !Input.IsMouseButtonPressed(MouseButton.Right)) _rotating = false;
 		if (_panning && !Input.IsMouseButtonPressed(MouseButton.Middle)) _panning = false;
+
+		if (_follow != null)
+		{
+			if (IsInstanceValid(_follow) && _follow.IsInsideTree()) _pivotT = _follow.GlobalPosition;
+			else _follow = null;
+		}
 
 		float w = 1f - Mathf.Exp(-Smoothing * (float)delta);
 		_yaw = Mathf.Lerp(_yaw, _yawT, w);

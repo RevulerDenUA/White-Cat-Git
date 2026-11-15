@@ -5,6 +5,18 @@
 [ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="3_m50oi"]
 [ext_resource type="PackedScene" path="res://Scene/Rover.tscn" id="4_3hs8j"]
 [ext_resource type="Shader" uid="uid://bdrf3l2s7ry0e" path="res://shader/MahNutsHurt.gdshader" id="6_s8iv6"]
+[ext_resource type="PackedScene" uid="uid://bfblajavp7fl4" path="res://Scene/FLYJEEP.tscn" id="7_fly"]
+[ext_resource type="Script" uid="uid://ghnu06g7kg2s" path="res://Scripts/Command/RemoteVehicle.cs" id="8_remote"]
+[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Rover/01_front.png" id="9_rover_front"]
+[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Rover/02_left.png" id="10_rover_side"]
+[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Ingenuity/01_front.png" id="11_ing_front"]
+[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Ingenuity/05_top.png" id="12_ing_top"]
+[ext_resource type="Script" uid="uid://dlxdo8fpkeuo6" path="res://Scripts/SpectatorMode/SpectatorMode.cs" id="13_spec"]
+[ext_resource type="Script" path="res://Scripts/Planet/ShuttlePad.cs" id="14_pad"]
+[ext_resource type="Script" path="res://Scripts/Planet/PlanetSession.cs" id="15_session"]
+[ext_resource type="Script" uid="uid://bw1h7husr85qn" path="res://Scripts/Planet/OreGenerator.cs" id="16_ores"]
+[ext_resource type="Script" uid="uid://cjhjyt5juikse" path="res://Scripts/Drill/DrillManager.cs" id="17_drill"]
+[ext_resource type="PackedScene" path="res://Scene/Vein.tscn" id="18_vein"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m50oi"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -60,17 +72,62 @@ transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545
 shadow_enabled = true
 script = ExtResource("2_3hs8j")
 
-[node name="CameraControl" type="Node3D" parent="." unique_id=329043057 node_paths=PackedStringArray("Cameras", "Filter")]
+[node name="CameraControl" type="Node3D" parent="." unique_id=329043057 node_paths=PackedStringArray("SpecCamera", "Filter")]
 script = ExtResource("3_m50oi")
-Cameras = [NodePath("../Rover/CarCamera"), NodePath("../Rover/CarCamera2")]
+SpecCamera = NodePath("../SpectatorMode")
 Filter = NodePath("../Shader/Filter")
+
+[node name="SpectatorMode" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9238795, 0.38268343, 0, -0.38268343, 0.9238795, 0, 25, 40)
+script = ExtResource("13_spec")
 
 [node name="Rover" parent="." unique_id=73140632 instance=ExtResource("4_3hs8j")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.963835, 0)
-collision_mask = 1
+collision_mask = 3
+
+[node name="RemoteVehicle" type="Node" parent="Rover" node_paths=PackedStringArray("Vehicle", "Cameras")]
+script = ExtResource("8_remote")
+TargetId = "rover"
+DisplayName = "Марсохід"
+Vehicle = NodePath("..")
+Cameras = [NodePath("../CarCamera"), NodePath("../CarCamera2")]
+IdentificationImages = [ExtResource("9_rover_front"), ExtResource("10_rover_side")]
+
+[node name="FlyingJeep" parent="." instance=ExtResource("7_fly")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, 0)
+collision_mask = 3
+
+[node name="RemoteVehicle" type="Node" parent="FlyingJeep" node_paths=PackedStringArray("Vehicle", "Cameras", "ColorCameras")]
+script = ExtResource("8_remote")
+TargetId = "ingenuity"
+DisplayName = "Інжінюїті"
+Vehicle = NodePath("..")
+Cameras = [NodePath("../CamBW"), NodePath("../CamColor")]
+ColorCameras = [NodePath("../CamColor")]
+SupportsVerticalControl = true
+IdentificationImages = [ExtResource("11_ing_front"), ExtResource("12_ing_top")]
+
+[node name="ShuttlePad" type="Node3D" parent="."]
+script = ExtResource("14_pad")
+
+[node name="OreGenerator" type="Node3D" parent="." node_paths=PackedStringArray("Terrain")]
+script = ExtResource("16_ores")
+Terrain = NodePath("..")
+VeinScene = ExtResource("18_vein")
+KeepOutRadius = 45.0
+
+[node name="DrillManager" type="Node3D" parent="."]
+script = ExtResource("17_drill")
+
+[node name="PlanetSession" type="Node" parent="." node_paths=PackedStringArray("Controller", "Terrain", "Pad", "Rover", "Ingenuity")]
+script = ExtResource("15_session")
+Controller = NodePath("../CameraControl")
+Terrain = NodePath("..")
+Pad = NodePath("../ShuttlePad")
+Rover = NodePath("../Rover/RemoteVehicle")
+Ingenuity = NodePath("../FlyingJeep/RemoteVehicle")
 
 [node name="Shader" type="CanvasLayer" parent="." unique_id=315058984]
-visible = false
 
 [node name="Filter" type="ColorRect" parent="Shader" unique_id=775133974]
 material = SubResource("ShaderMaterial_3hs8j")

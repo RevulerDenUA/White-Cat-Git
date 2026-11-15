@@ -4,11 +4,22 @@ using Godot;
 // Наведення мишею — планета підсвічується, всі планети зупиняються на орбітах,
 // наведена тільки крутиться навколо осі.
 // ЛКМ по планеті — панель з інформацією про неї. ЛКМ у порожнечу, ✕ або Esc — закрити.
+// A / D (дії lefty / righty) — попередня / наступна планета, камера летить до неї.
+// Телескоп шатла керує цим вузлом через публічні методи (SelectStep, Selected, MouseEnabled).
 public partial class PlanetSelector : Node
 {
+	[Signal] public delegate void SelectionChangedEventHandler();
+
 	[Export] public Color HoverColor = new(0.45f, 0.75f, 1f);
 	[Export] public Color SelectColor = new(1f, 0.8f, 0.35f);
 	[Export] public float RayLength = 5000f;
+	[Export] public float PickTolerancePx = 12f; // якщо промінь промахнувся — тіло в межах стількох пікселів від курсора
+	[Export] public bool MouseEnabled = true;     // телескоп вимикає — там лише клавіатура
+	[Export] public bool KeyboardEnabled = true;  // A/D у самій сцені; телескоп викликає SelectStep сам
+	[Export] public bool ShowPanel = true;        // у телескопі своя панель
+	[Export] public string HelpText = "A / D — перемикати планети   ЛКМ — вибрати   ПКМ — обертати камеру   СКМ — зсунути   Колесо — наблизити";
+
+	public PlanetOrbit Selected => _selected != null && IsInstanceValid(_selected) ? _selected : null;
 
 	// Світіння по краю планети, накладається поверх її матеріалу (MaterialOverlay)
 	private const string HighlightShader = @"
@@ -37,8 +48,15 @@ void fragment() {
 
 	public override void _ExitTree()
 	{
-		foreach (var p in SystemValues.Planets)
-			if (p != null && IsInstanceValid(p)) { p.FreezeOrbit = false; p.FreezeSpin = false; }
+		foreach (var p in AllOrbits())
+			{ p.FreezeOrbit = false; p.FreezeSpin = false; }
+	}
+
+	// Планети й місяці (місяці не входять у SystemValues.Planets)
+	private System.Collections.Generic.IEnumerable<PlanetOrbit> AllOrbits()
+	{
+		foreach (Node n in GetTree().GetNodesInGroup(PlanetOrbit.GroupName))
+			if (n is PlanetOrbit p && IsInstanceValid(p)) yield return p;
 	}
 
 	private static ShaderMaterial MakeMat(Shader shader, Color c)
@@ -52,8 +70,39 @@ void fragment() {
 
 	public override void _PhysicsProcess(double delta)
 	{
-		_hovered = PickPlanet();
+		_hovered = MouseEnabled ? PickPlanet() : null;
 		ApplyState();
+	}
+
+	// ---------- A / D ----------
+
+	// Планети (без місяців) за порядком від зірки
+	public System.Collections.Generic.List<PlanetOrbit> OrderedPlanets()
+	{
+		var list = new System.Collections.Generic.List<PlanetOrbit>();
+		foreach (var p in AllOrbits()) if (!p.Data.IsMoon) list.Add(p);
+		list.Sort((a, b) => a.Data.Order.CompareTo(b.Data.Order));
+		return list;
+	}
+
+	// dir = -1 / +1. Місяць вибраний — крок іде від його планети.
+	public void SelectStep(int dir)
+	{
+		var list = OrderedPlanets();
+		if (list.Count == 0) return;
+		PlanetOrbit current = Selected;
+		if (current != null && current.Data.IsMoon) current = current.ParentOrbit;
+		int i = current == null ? (dir > 0 ? -1 : list.Count) : list.IndexOf(current);
+		Select(list[((i + dir) % list.Count + list.Count) % list.Count]);
+	}
+
+	// Камера летить до вибраної планети й тримає її в центрі
+	private void FocusCamera(PlanetOrbit p)
+	{
+		if (GetViewport().GetCamera3D() is not SystemCamera cam) return;
+		if (p?.PlanetNode == null) { cam.ClearFocus(); return; }
+		float r = 0.5f * p.PlanetNode.GlobalBasis.Scale.X;
+		cam.FocusOn(p.PlanetNode, Mathf.Max(r * 9f, 6f));
 	}
 
 	private PlanetOrbit PickPlanet()
@@ -75,11 +124,32 @@ void fragment() {
 		q.CollideWithBodies = false;
 
 		var hit = cam.GetWorld3D().DirectSpaceState.IntersectRay(q);
-		if (hit.Count == 0) return null;
+		if (hit.Count > 0)
+			for (Node n = hit["collider"].AsGodotObject() as Node; n != null; n = n.GetParent())
+				if (n is PlanetOrbit p) return p;
 
-		for (Node n = hit["collider"].AsGodotObject() as Node; n != null; n = n.GetParent())
-			if (n is PlanetOrbit p) return p;
-		return null;
+		return PickNearScreen(cam, screenPos);
+	}
+
+	// Дрібні/далекі тіла (місяці) бувають меншими за піксель — беремо найближче до курсора на екрані
+	private PlanetOrbit PickNearScreen(Camera3D cam, Vector2 screenPos)
+	{
+		PlanetOrbit best = null;
+		float bestDist = float.MaxValue;
+		foreach (var p in AllOrbits())
+		{
+			if (p.PlanetNode == null) continue;
+			Vector3 c = p.PlanetNode.GlobalPosition;
+			if (cam.IsPositionBehind(c)) continue;
+
+			Vector2 sc = cam.UnprojectPosition(c);
+			// видимий радіус тіла на екрані (меш — сфера радіусом 0.5 у локальних координатах)
+			float worldR = 0.5f * p.PlanetNode.GlobalBasis.Scale.X;
+			float screenR = sc.DistanceTo(cam.UnprojectPosition(c + cam.GlobalBasis.X * worldR));
+			float d = sc.DistanceTo(screenPos);
+			if (d <= Mathf.Max(screenR, PickTolerancePx) && d < bestDist) { best = p; bestDist = d; }
+		}
+		return best;
 	}
 
 	private void ApplyState()
@@ -89,9 +159,8 @@ void fragment() {
 		// Поки є наведена/вибрана планета — всі стоять на орбітах (інакше наведена виїжджає
 		// з-під курсора і все починає мерехтіти), а сама вона крутиться навколо осі.
 		PlanetOrbit focus = _hovered ?? _selected;
-		foreach (var p in SystemValues.Planets)
+		foreach (var p in AllOrbits())
 		{
-			if (p == null || !IsInstanceValid(p)) continue;
 			p.FreezeOrbit = focus != null;
 			p.FreezeSpin = focus != null && p != focus;
 
@@ -107,6 +176,13 @@ void fragment() {
 
 	public override void _UnhandledInput(InputEvent e)
 	{
+		if (KeyboardEnabled && !e.IsEcho() && (e.IsActionPressed("lefty") || e.IsActionPressed("righty")))
+		{
+			SelectStep(e.IsActionPressed("lefty") ? -1 : 1);
+			GetViewport().SetInputAsHandled();
+			return;
+		}
+		if (!MouseEnabled) return;
 		if (e is InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true })
 		{
 			if (_hovered != null) Select(_hovered);
@@ -120,20 +196,26 @@ void fragment() {
 		}
 	}
 
-	private void Select(PlanetOrbit p)
+	public void Select(PlanetOrbit p)
 	{
+		if (p == null) { Deselect(); return; }
 		_selected = p;
 		_title.Text = PlanetName(p.Data);
 		_info.Text = InfoText(p);
-		_panel.Visible = true;
+		_panel.Visible = ShowPanel;
 		ApplyState();
+		FocusCamera(p);
+		EmitSignal(SignalName.SelectionChanged);
 	}
 
-	private void Deselect()
+	public void Deselect()
 	{
+		bool had = _selected != null;
 		_selected = null;
 		_panel.Visible = false;
 		ApplyState();
+		if (GetViewport().GetCamera3D() is SystemCamera cam) cam.ClearFocus();
+		if (had) EmitSignal(SignalName.SelectionChanged);
 	}
 
 	public override void _Process(double delta)
@@ -154,36 +236,83 @@ void fragment() {
 
 	// ---------- Текст ----------
 
-	private static string PlanetName(PlanetData d) => $"Планета {d.Order + 1}";
+	public static string PlanetName(PlanetData d) => d.IsMoon
+		? $"Місяць {d.Order + 1} планети {d.ParentPlanet.Order + 1}"
+		: $"Планета {d.Order + 1}";
 
-	private static string TypeName(string t) => t switch
+	public static string TypeName(string t) => t switch
 	{
 		"Rocky" => "Кам'яниста",
 		"GasGigant" => "Газовий гігант",
 		_ => t,
 	};
 
+	private static string Ua(string s) => s switch
+	{
+		null or "" => "—",
+		"None" => "немає",
+		"Vacuum" => "вакуум",
+		"Cryo-Gas" => "кріогазова",
+		"Hydrogen-Helium" => "воднево-гелієва",
+		"Dense-Sulfuric" => "щільна сірчана",
+		"Methane-Haze" => "метановий серпанок",
+		"Nitrogen-Oxygen" => "азотно-киснева",
+		"Compressed-Core" => "стиснене ядро",
+		"Iron-Rich" => "багаті на залізо",
+		"Cryo-Rock" => "кріопорода",
+		"Silicate-Core" => "силікатне ядро",
+		"Hydrogen" => "водень",
+		"Nitrogen" => "азот",
+		"CarbonDioxide" => "вуглекислий газ",
+		"Iron" => "залізо",
+		"Silicates" => "силікати",
+		"WaterIce" => "водяний лід",
+		_ => s,
+	};
+
+	// "Назва 12.3%" для ненульових складників, від найбільшого
+	private static string Composition(params (string Name, float Value)[] parts)
+	{
+		var list = new System.Collections.Generic.List<(string Name, float Value)>();
+		foreach (var p in parts) if (p.Value > 0.05f) list.Add(p);
+		list.Sort((a, b) => b.Value.CompareTo(a.Value));
+		var sb = new System.Text.StringBuilder();
+		foreach (var p in list) sb.Append($"\n   {p.Name} {p.Value:0.#}%");
+		return sb.Length > 0 ? sb.ToString() : " —";
+	}
+
 	private static string InfoText(PlanetOrbit p)
 	{
 		PlanetData d = p.Data;
-		float dist = p.StarNode != null && p.PlanetNode != null
-			? p.PlanetNode.GlobalPosition.DistanceTo(p.StarNode.GlobalPosition)
+		Node3D center = d.IsMoon ? p.ParentOrbit?.PlanetNode : p.StarNode;
+		float dist = center != null && p.PlanetNode != null
+			? p.PlanetNode.GlobalPosition.DistanceTo(center.GlobalPosition)
 			: d.Distance;
 
-		return
-			$"Тип: {TypeName(d.Type)}\n" +
-			$"Радіус: {d.Radius:0.00}\n" +
-			$"Маса: {d.Mass:0.000}\n" +
-			$"Гравітація: {d.Gravity:0.00}\n" +
-			$"Температура: {d.Temperature:0}\n" +
-			$"\n" +
-			$"Відстань до зірки: {dist:0.0}\n" +
-			$"Перигелій / афелій: {d.Perihelion:0.0} / {d.Aphelion:0.0}\n" +
-			$"Нахил орбіти: {d.Inclination:0.0}°\n" +
-			$"Нахил осі: {d.AxialTilt:0.0}°\n" +
-			$"Швидкість обертання: {d.rotationspeed:0.00}\n" +
-			$"Сплюснутість: {(1f - d.Squish) * 100f:0.0}%\n" +
-			$"Сід: {d.PlanetSeed}";
+		var t = new System.Text.StringBuilder();
+		t.Append(d.IsMoon ? "Тип: місяць\n" : $"Тип: {TypeName(d.Type)}\n");
+		if (!d.IsMoon) t.Append($"Місяців: {d.MoonCount}\n");
+		t.Append($"Радіус: {d.Radius:0.00}\n");
+		t.Append($"Маса: {d.Mass:0.000}\n");
+		t.Append($"Гравітація: {d.Gravity:0.00}\n");
+		t.Append($"Температура: {d.Temperature:0}\n\n");
+
+		t.Append($"Атмосфера: {Ua(d.AtmoTemplate)}, тиск {d.AtmospherePressure:0.##}\n");
+		if (d.AtmospherePressure > 0f)
+			t.Append("Гази:" + Composition(
+				("водень", d.Hydrogen), ("гелій", d.Helium), ("азот", d.Nitrogen), ("кисень", d.Oxygen),
+				("CO₂", d.CarbonDioxide), ("метан", d.Methane), ("аміак", d.Ammonia), ("SO₂", d.SulfurDioxide)) + "\n");
+		t.Append($"Надра: {Ua(d.CoreTemplate)}" + Composition(
+			("залізо", d.Iron), ("силікати", d.Silicates), ("водяний лід", d.WaterIce), ("вуглець", d.Carbon), ("сірка", d.Sulfur)) + "\n\n");
+
+		t.Append(d.IsMoon ? $"Відстань до планети: {dist:0.0}\n" : $"Відстань до зірки: {dist:0.0}\n");
+		t.Append($"Перигелій / афелій: {d.Perihelion:0.0} / {d.Aphelion:0.0}\n");
+		t.Append($"Нахил орбіти: {d.Inclination:0.0}°\n");
+		t.Append($"Нахил осі: {d.AxialTilt:0.0}°\n");
+		t.Append($"Швидкість обертання: {d.rotationspeed:0.00}\n");
+		t.Append($"Сплюснутість: {(1f - d.Squish) * 100f:0.0}%\n");
+		t.Append($"Сід: {d.PlanetSeed}");
+		return t.ToString();
 	}
 
 	// ---------- UI ----------
@@ -201,13 +330,14 @@ void fragment() {
 
 		var help = new Label
 		{
-			Text = "ЛКМ — вибрати планету   ПКМ — обертати камеру   СКМ — зсунути   Колесо — наблизити",
+			Text = HelpText,
 			MouseFilter = Control.MouseFilterEnum.Ignore,
 			AnchorTop = 1f, AnchorBottom = 1f,
 			OffsetLeft = 16f, OffsetTop = -36f,
 			GrowVertical = Control.GrowDirection.Begin,
 			Modulate = new Color(1f, 1f, 1f, 0.6f),
 		};
+		help.Visible = HelpText != "";
 		help.AddThemeFontSizeOverride("font_size", 14);
 		help.AddThemeColorOverride("font_outline_color", Colors.Black);
 		help.AddThemeConstantOverride("outline_size", 4);
