@@ -1,7 +1,8 @@
 using Godot;
 
 // Рудна жила. Став її на землю (інстанс Scene/Vein.tscn) і налаштуй в інспекторі ресурс.
-// На жилі автоматично генерується камінь — бур ставиться зверху на нього.
+// На жилі автоматично ставиться камінь з набору White Cat (за назвою ресурсу) — бур ставиться зверху на нього.
+// Для невідомого ресурсу камінь генерується процедурно.
 // На одну жилу — один бур.
 [GlobalClass]
 public partial class ResourceVein : Area3D
@@ -42,7 +43,76 @@ public partial class ResourceVein : Area3D
 				ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
 			};
 
-		GenerateRock();
+		if (!BuildModelRock()) GenerateRock();
+	}
+
+	private const string RockDir = "res://ASS/QweQ/White cat камінці/glb/";
+
+	// Модель і зсув UV по спільному атласу (тайл 0.25) — так вибирається кольоровий варіант.
+	// Взято камені з пласким верхом, щоб бур стояв рівно.
+	private static (string File, Vector2 UvOffset)? RockModelFor(string resource)
+	{
+		string r = resource.ToLowerInvariant();
+		if (r.Contains("титан")) return ("outcrop_shale_sheet.glb", Vector2.Zero);                 // сірий сланець
+		if (r.Contains("мід")) return ("outcrop_sandstone_terrace.glb", new Vector2(0.25f, 0f));   // рудо-червоний (bed_iron)
+		if (r.Contains("лід") || r.Contains("льод")) return ("ice_tabular_floe.glb", new Vector2(-0.25f, 0f)); // блакитний лід
+		return null;
+	}
+
+	private bool BuildModelRock()
+	{
+		if (RockModelFor(ResourceName) is not { } model) return false;
+		if (GD.Load<PackedScene>(RockDir + model.File) is not { } scene) return false;
+
+		var root = scene.Instantiate();
+		var srcMi = root as MeshInstance3D;
+		if (srcMi == null)
+			foreach (var n in root.FindChildren("*", "MeshInstance3D", true, false)) { srcMi = (MeshInstance3D)n; break; }
+		Mesh mesh = srcMi?.Mesh;
+		root.Free();
+		if (mesh == null) return false;
+
+		// масштаб: вужчий бік каменя = діаметр площадки
+		Aabb box = mesh.GetAabb();
+		float scale = 2f * RockRadius / Mathf.Max(0.01f, Mathf.Min(box.Size.X, box.Size.Z));
+
+		int seed = RockSeed != 0 ? RockSeed : (int)GD.Hash(Name.ToString());
+		float yaw = new RandomNumberGenerator { Seed = (ulong)(uint)seed }.Randf() * Mathf.Tau;
+
+		var mi = new MeshInstance3D { Name = "RockMesh", Mesh = mesh, Scale = Vector3.One * scale };
+		if (model.UvOffset != Vector2.Zero && mesh.SurfaceGetMaterial(0) is BaseMaterial3D baseMat)
+		{
+			var mat = (BaseMaterial3D)baseMat.Duplicate();
+			mat.Uv1Offset = new Vector3(model.UvOffset.X, model.UvOffset.Y, 0f);
+			mi.SetSurfaceOverrideMaterial(0, mat);
+		}
+
+		// колізія з уже відмасштабованих трикутників (без масштабу на фізичному тілі)
+		Vector3[] faces = mesh.GetFaces();
+		for (int i = 0; i < faces.Length; i++) faces[i] *= scale;
+		var shape = new ConcavePolygonShape3D();
+		shape.SetFaces(faces);
+
+		RockHeight = TopAtCenter(faces, box.End.Y * scale);
+
+		Rock = new StaticBody3D { Name = "Rock", CollisionLayer = RockLayer, CollisionMask = 0, Rotation = new Vector3(0f, yaw, 0f) };
+		Rock.AddChild(mi);
+		Rock.AddChild(new CollisionShape3D { Shape = shape });
+		AddChild(Rock);
+		return true;
+	}
+
+	// Висота поверхні каменя над його pivot (x = z = 0)
+	private static float TopAtCenter(Vector3[] faces, float fallback)
+	{
+		float best = float.MinValue;
+		var from = new Vector3(0f, 1000f, 0f);
+		for (int i = 0; i + 2 < faces.Length; i += 3)
+		{
+			Variant hit = Geometry3D.RayIntersectsTriangle(from, Vector3.Down, faces[i], faces[i + 1], faces[i + 2]);
+			if (hit.VariantType == Variant.Type.Vector3) best = Mathf.Max(best, hit.AsVector3().Y);
+		}
+		return best == float.MinValue ? fallback : best;
 	}
 
 	private void GenerateRock()
