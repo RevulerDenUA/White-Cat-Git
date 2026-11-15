@@ -7,6 +7,7 @@ using System.Text.Json;
 //   B     — показати/сховати схему бура перед машиною
 //   ЛКМ / Enter — поставити бур (схема має бути синя, червона = не можна)
 //   G     — забрати ресурси з найближчого бура
+//   X (утримувати) — розібрати бур: його ресурси + вартість повертаються у сховище
 public partial class DrillManager : Node3D
 {
 	[Export] public PackedScene DrillScene;
@@ -16,8 +17,9 @@ public partial class DrillManager : Node3D
 	[Export] public float CollectRadius = 4f;
 	[Export(PropertyHint.Layers3DPhysics)] public uint GroundMask = 2;
 	[Export] public float AutosaveInterval = 30f;
+	[Export] public float PickupHoldTime = 1f;    // с — скільки тримати X, щоб розібрати бур
 
-	private const string SavePath = "user://save.json";
+	private const string SavePath = "user://save1.json";
 
 	private readonly List<Drill> _drills = new();
 	private Node3D _ghost;
@@ -29,6 +31,7 @@ public partial class DrillManager : Node3D
 	private Label _hud;
 	private string _message = "";
 	private float _messageTimer;
+	private float _pickupHold;
 
 	public override void _Ready()
 	{
@@ -196,13 +199,19 @@ public partial class DrillManager : Node3D
 
 	// ---------- Збір ----------
 
-	private Drill NearestDrill(Vector3 p, float radius)
+	// Найближчий бур до машини. Для дрона відстань по горизонталі — можна працювати з повітря.
+	private Drill DrillNearVehicle(float radius)
 	{
-		Drill best = null;
-		float bestD = radius;
+		var v = Vehicle;
+		if (v == null) return null;
+		Vector3 p = v.GlobalPosition;
+		Drill best = null; float bestD = radius;
 		foreach (var d in _drills)
 		{
-			float dist = d.GlobalPosition.DistanceTo(p);
+			Vector3 a = d.GlobalPosition;
+			float dist = v is CharacterBody3D
+				? new Vector2(a.X - p.X, a.Z - p.Z).Length()
+				: a.DistanceTo(p);
 			if (dist <= bestD) { bestD = dist; best = d; }
 		}
 		return best;
@@ -210,25 +219,61 @@ public partial class DrillManager : Node3D
 
 	private void Collect()
 	{
-		var v = Vehicle;
-		if (v == null) return;
-		// для дрона рахуємо відстань по горизонталі, щоб можна було забирати з повітря
-		Vector3 p = v.GlobalPosition;
-		Drill best = null; float bestD = CollectRadius;
-		foreach (var d in _drills)
-		{
-			Vector3 a = d.GlobalPosition, b = p;
-			float dist = v is CharacterBody3D
-				? new Vector2(a.X - b.X, a.Z - b.Z).Length()
-				: a.DistanceTo(b);
-			if (dist <= bestD) { bestD = dist; best = d; }
-		}
+		if (Vehicle == null) return;
+		var best = DrillNearVehicle(CollectRadius);
 		if (best == null) { Notify("Поруч немає бура"); return; }
 
 		int amount = best.StoredAmount;
 		if (amount == 0) { Notify("Бур ще нічого не накопав"); return; }
 		best.TakeAllTo(GameData.Storage);
 		Notify($"Зібрано: {best.ResourceName} ×{amount}");
+		Save();
+	}
+
+	// ---------- Розбирання ----------
+
+	private void Pickup(Drill d)
+	{
+		int mined = d.StoredAmount;
+		d.TakeAllTo(GameData.Storage);
+
+		var refund = new Dictionary<string, int>();
+		foreach (var (name, amount) in DrillCost.Cost)
+		{
+			int back = Mathf.FloorToInt(amount * DrillCost.RefundRatio);
+			if (back <= 0) continue;
+			GameData.Storage.Add(name, back);
+			refund[name] = back;
+		}
+
+		if (d.Vein != null && IsInstanceValid(d.Vein) && d.Vein.Drill == d) d.Vein.Drill = null;
+		_drills.Remove(d);
+		d.QueueFree();
+
+		string msg = "Бур розібрано";
+		if (mined > 0) msg += $", зібрано {d.ResourceName} ×{mined}";
+		if (refund.Count > 0) msg += $", повернуто: {FormatItems(refund)}";
+		Notify(msg);
+		Save();
+	}
+
+	// ---------- Старт і захист від глухого кута ----------
+
+	private void GrantStartResources()
+	{
+		var start = DrillCost.StartResources;
+		foreach (var (name, amount) in start) GameData.Storage.Add(name, amount);
+		if (start.Count > 0) Notify("Стартовий набір: " + FormatItems(start));
+	}
+
+	// Немає жодного бура й не вистачає на новий — додаємо те, чого бракує
+	private void EnsureCanBuild()
+	{
+		if (!DrillCost.SoftlockProtection || _drills.Count > 0) return;
+		var missing = GameData.Storage.Missing(DrillCost.Cost);
+		if (missing.Count == 0) return;
+		foreach (var (name, amount) in missing) GameData.Storage.Add(name, amount);
+		Notify("Аварійний набір на 1 бур: " + FormatItems(missing));
 		Save();
 	}
 
@@ -247,6 +292,7 @@ public partial class DrillManager : Node3D
 	{
 		if (Input.IsActionJustPressed("DrillPlace"))
 		{
+			EnsureCanBuild();
 			_placing = !_placing && Vehicle != null;
 			if (!_placing) _ghost.Visible = false;
 		}
@@ -259,6 +305,15 @@ public partial class DrillManager : Node3D
 		}
 
 		if (Input.IsActionJustPressed("interact")) Collect();
+
+		// розбирання — треба утримувати X, щоб не розібрати випадково
+		var near = _placing ? null : DrillNearVehicle(CollectRadius);
+		if (near != null && Input.IsActionPressed("DrillPickup"))
+		{
+			_pickupHold += (float)delta;
+			if (_pickupHold >= PickupHoldTime) { _pickupHold = 0; Pickup(near); }
+		}
+		else _pickupHold = 0;
 
 		_autosaveTimer += (float)delta;
 		if (_autosaveTimer >= AutosaveInterval) { _autosaveTimer = 0; Save(); }
@@ -298,9 +353,14 @@ public partial class DrillManager : Node3D
 		var v = Vehicle;
 		if (v != null)
 		{
-			var d = NearestDrill(v.GlobalPosition, CollectRadius + 2f);
+			var d = DrillNearVehicle(CollectRadius);
 			if (d != null)
-				sb.AppendLine($"\nБур ({d.ResourceName}): {d.StoredAmount}/{d.Capacity} {(d.CurrentState == Drill.State.Full ? "(повний)" : "")}  [G] забрати");
+			{
+				sb.AppendLine($"\nБур ({d.ResourceName}): {d.StoredAmount}/{d.Capacity} {(d.CurrentState == Drill.State.Full ? "(повний)" : "")}");
+				sb.AppendLine(_pickupHold > 0
+					? $"Розбираю... {(int)(100 * _pickupHold / PickupHoldTime)}%"
+					: "[G] забрати ресурси   [X утримуй] розібрати бур");
+			}
 			sb.AppendLine(_placing
 				? (_placeValid ? $"\nЖила: {_placeVein.ResourceName}   [ЛКМ/Enter] поставити бур   [B] скасувати" : $"\n{_invalidReason}   [B] скасувати")
 				: "\n[B] схема бура" + (DrillCost.Cost.Count > 0 ? $"  (ціна: {FormatItems(new Dictionary<string, int>(DrillCost.Cost))})" : ""));
@@ -360,7 +420,13 @@ public partial class DrillManager : Node3D
 
 	private void Load()
 	{
-		if (!FileAccess.FileExists(SavePath)) return;
+		if (!FileAccess.FileExists(SavePath))
+		{
+			// нова гра
+			GrantStartResources();
+			Save();
+			return;
+		}
 
 		SaveFile data;
 		try
@@ -403,6 +469,8 @@ public partial class DrillManager : Node3D
 
 		if (offlineTotal > 0)
 			Notify($"Поки тебе не було ({FormatTime(away)}), бури накопали {offlineTotal}");
+
+		EnsureCanBuild(); // старе збереження, де гравець уже застряг
 	}
 
 	private static string FormatTime(double s)
