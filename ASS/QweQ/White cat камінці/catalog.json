@@ -1,0 +1,1360 @@
+{
+  "schema_version": "1.0",
+  "pack": "White Cat Terrain Scatter",
+  "units": "meters",
+  "blender_up": "+Z",
+  "glb_up": "+Y",
+  "pivot": "area-weighted centroid of the planar footprint at elevation zero",
+  "path_base": "catalog.json",
+  "placement": {
+    "surface_types_are_generator_tags": true,
+    "yaw_units": "radians",
+    "random_yaw_interval": [
+      0,
+      6.283185307179586
+    ],
+    "uniform_scale_only": true,
+    "lod_metric": "projected diameter in pixels, switch to LOD1 at or below threshold",
+    "material_variants": "KHR_materials_variants. Use named variant when supported. Default is the top-level material_id.",
+    "atlas": "All GLBs embed the same byte-identical atlas. Deduplicate the texture by image content at import or bind a shared atlas per runtime material."
+  },
+  "assets": [
+    {
+      "name": "River Pebble",
+      "id": "stone_river_pebble",
+      "glb": "glb/stone_river_pebble.glb",
+      "category": "stone",
+      "surface_types": [
+        "rocky_regolith",
+        "glacial_till"
+      ],
+      "material_id": "gray",
+      "dimensions_m": {
+        "width_x": 0.31,
+        "depth_y_blender": 0.23,
+        "height_z_blender": 0.13
+      },
+      "triangles": 26,
+      "random_uniform_scale": [
+        0.62,
+        1.38
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "graphite",
+          "surface_types": [
+            "rocky_regolith",
+            "basaltic_lava"
+          ]
+        },
+        {
+          "name": "sand",
+          "surface_types": [
+            "sandy_desert",
+            "rocky_regolith"
+          ]
+        },
+        {
+          "name": "iron",
+          "surface_types": [
+            "iron_oxide_regolith",
+            "sandy_desert"
+          ]
+        }
+      ],
+      "lods": [],
+      "source_triangles": 78
+    },
+    {
+      "name": "Wind Cobble",
+      "id": "stone_wind_cobble",
+      "glb": "glb/stone_wind_cobble.glb",
+      "category": "stone",
+      "surface_types": [
+        "sandy_desert",
+        "rocky_regolith"
+      ],
+      "material_id": "sand",
+      "dimensions_m": {
+        "width_x": 0.46,
+        "depth_y_blender": 0.25,
+        "height_z_blender": 0.16
+      },
+      "triangles": 26,
+      "random_uniform_scale": [
+        0.62,
+        1.38
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "gray",
+          "surface_types": [
+            "rocky_regolith",
+            "glacial_till"
+          ]
+        },
+        {
+          "name": "graphite",
+          "surface_types": [
+            "rocky_regolith",
+            "basaltic_lava"
+          ]
+        },
+        {
+          "name": "iron",
+          "surface_types": [
+            "iron_oxide_regolith",
+            "sandy_desert"
+          ]
+        }
+      ],
+      "lods": [],
+      "source_triangles": 62
+    },
+    {
+      "name": "Flint Wedge",
+      "id": "stone_flint_wedge",
+      "glb": "glb/stone_flint_wedge.glb",
+      "category": "stone",
+      "surface_types": [
+        "rocky_regolith",
+        "basaltic_lava"
+      ],
+      "material_id": "graphite",
+      "dimensions_m": {
+        "width_x": 0.49,
+        "depth_y_blender": 0.33,
+        "height_z_blender": 0.25
+      },
+      "triangles": 38,
+      "random_uniform_scale": [
+        0.62,
+        1.38
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "gray",
+          "surface_types": [
+            "rocky_regolith",
+            "glacial_till"
+          ]
+        },
+        {
+          "name": "sand",
+          "surface_types": [
+            "sandy_desert",
+            "rocky_regolith"
+          ]
+        },
+        {
+          "name": "iron",
+          "surface_types": [
+            "iron_oxide_regolith",
+            "sandy_desert"
+          ]
+        }
+      ],
+      "lods": [],
+      "source_triangles": 44
+    },
+    {
+      "name": "Rust Cleaver",
+      "id": "stone_rust_cleaver",
+      "glb": "glb/stone_rust_cleaver.glb",
+      "category": "stone",
+      "surface_types": [
+        "iron_oxide_regolith",
+        "sandy_desert"
+      ],
+      "material_id": "iron",
+      "dimensions_m": {
+        "width_x": 0.38,
+        "depth_y_blender": 0.32,
+        "height_z_blender": 0.27
+      },
+      "triangles": 30,
+      "random_uniform_scale": [
+        0.62,
+        1.38
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "gray",
+          "surface_types": [
+            "rocky_regolith",
+            "glacial_till"
+          ]
+        },
+        {
+          "name": "graphite",
+          "surface_types": [
+            "rocky_regolith",
+            "basaltic_lava"
+          ]
+        },
+        {
+          "name": "sand",
+          "surface_types": [
+            "sandy_desert",
+            "rocky_regolith"
+          ]
+        }
+      ],
+      "lods": [],
+      "source_triangles": 36
+    },
+    {
+      "name": "Shale Splinter",
+      "id": "stone_shale_splinter",
+      "glb": "glb/stone_shale_splinter.glb",
+      "category": "stone",
+      "surface_types": [
+        "rocky_regolith",
+        "glacial_till"
+      ],
+      "material_id": "slate",
+      "dimensions_m": {
+        "width_x": 0.54,
+        "depth_y_blender": 0.19,
+        "height_z_blender": 0.12
+      },
+      "triangles": 26,
+      "random_uniform_scale": [
+        0.62,
+        1.38
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "bed_sand",
+          "surface_types": [
+            "sandy_desert",
+            "iron_oxide_regolith"
+          ]
+        },
+        {
+          "name": "bed_iron",
+          "surface_types": [
+            "iron_oxide_regolith",
+            "sandy_desert"
+          ]
+        }
+      ],
+      "lods": [],
+      "source_triangles": 52
+    },
+    {
+      "name": "Broken Cobble",
+      "id": "stone_broken_cobble",
+      "glb": "glb/stone_broken_cobble.glb",
+      "category": "stone",
+      "surface_types": [
+        "rocky_regolith",
+        "glacial_till"
+      ],
+      "material_id": "gray",
+      "dimensions_m": {
+        "width_x": 0.42,
+        "depth_y_blender": 0.35,
+        "height_z_blender": 0.26
+      },
+      "triangles": 22,
+      "random_uniform_scale": [
+        0.62,
+        1.38
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "graphite",
+          "surface_types": [
+            "rocky_regolith",
+            "basaltic_lava"
+          ]
+        },
+        {
+          "name": "sand",
+          "surface_types": [
+            "sandy_desert",
+            "rocky_regolith"
+          ]
+        },
+        {
+          "name": "iron",
+          "surface_types": [
+            "iron_oxide_regolith",
+            "sandy_desert"
+          ]
+        }
+      ],
+      "lods": [],
+      "source_triangles": 68
+    },
+    {
+      "name": "Glacial Erratic",
+      "id": "boulder_glacial_erratic",
+      "glb": "glb/boulder_glacial_erratic.glb",
+      "category": "boulder",
+      "surface_types": [
+        "rocky_regolith",
+        "glacial_till"
+      ],
+      "material_id": "gray",
+      "dimensions_m": {
+        "width_x": 2.24,
+        "depth_y_blender": 1.81,
+        "height_z_blender": 1.44
+      },
+      "triangles": 46,
+      "random_uniform_scale": [
+        0.76,
+        1.27
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "graphite",
+          "surface_types": [
+            "rocky_regolith",
+            "basaltic_lava"
+          ]
+        },
+        {
+          "name": "sand",
+          "surface_types": [
+            "sandy_desert",
+            "rocky_regolith"
+          ]
+        },
+        {
+          "name": "iron",
+          "surface_types": [
+            "iron_oxide_regolith",
+            "sandy_desert"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/boulder_glacial_erratic_LOD1.glb",
+          "triangles": 36,
+          "switch_projected_diameter_px": 42,
+          "source_triangles": 62
+        }
+      ],
+      "source_triangles": 126
+    },
+    {
+      "name": "Split Monolith",
+      "id": "boulder_split_monolith",
+      "glb": "glb/boulder_split_monolith.glb",
+      "category": "boulder",
+      "surface_types": [
+        "rocky_regolith",
+        "basaltic_lava"
+      ],
+      "material_id": "graphite",
+      "dimensions_m": {
+        "width_x": 1.64,
+        "depth_y_blender": 1.21,
+        "height_z_blender": 2.29
+      },
+      "triangles": 34,
+      "random_uniform_scale": [
+        0.76,
+        1.27
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "gray",
+          "surface_types": [
+            "rocky_regolith",
+            "glacial_till"
+          ]
+        },
+        {
+          "name": "sand",
+          "surface_types": [
+            "sandy_desert",
+            "rocky_regolith"
+          ]
+        },
+        {
+          "name": "iron",
+          "surface_types": [
+            "iron_oxide_regolith",
+            "sandy_desert"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/boulder_split_monolith_LOD1.glb",
+          "triangles": 30,
+          "switch_projected_diameter_px": 42,
+          "source_triangles": 58
+        }
+      ],
+      "source_triangles": 116
+    },
+    {
+      "name": "Wind-sculpted Tor",
+      "id": "boulder_wind_sculpted",
+      "glb": "glb/boulder_wind_sculpted.glb",
+      "category": "boulder",
+      "surface_types": [
+        "sandy_desert",
+        "rocky_regolith"
+      ],
+      "material_id": "sand",
+      "dimensions_m": {
+        "width_x": 2.84,
+        "depth_y_blender": 1.64,
+        "height_z_blender": 1.22
+      },
+      "triangles": 56,
+      "random_uniform_scale": [
+        0.76,
+        1.27
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "gray",
+          "surface_types": [
+            "rocky_regolith",
+            "glacial_till"
+          ]
+        },
+        {
+          "name": "graphite",
+          "surface_types": [
+            "rocky_regolith",
+            "basaltic_lava"
+          ]
+        },
+        {
+          "name": "iron",
+          "surface_types": [
+            "iron_oxide_regolith",
+            "sandy_desert"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/boulder_wind_sculpted_LOD1.glb",
+          "triangles": 40,
+          "switch_projected_diameter_px": 36,
+          "source_triangles": 76
+        }
+      ],
+      "source_triangles": 152
+    },
+    {
+      "name": "Ironstone Hogback",
+      "id": "boulder_ironstone_hogback",
+      "glb": "glb/boulder_ironstone_hogback.glb",
+      "category": "boulder",
+      "surface_types": [
+        "iron_oxide_regolith",
+        "sandy_desert"
+      ],
+      "material_id": "iron",
+      "dimensions_m": {
+        "width_x": 2.68,
+        "depth_y_blender": 1.65,
+        "height_z_blender": 1.56
+      },
+      "triangles": 38,
+      "random_uniform_scale": [
+        0.76,
+        1.27
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "gray",
+          "surface_types": [
+            "rocky_regolith",
+            "glacial_till"
+          ]
+        },
+        {
+          "name": "graphite",
+          "surface_types": [
+            "rocky_regolith",
+            "basaltic_lava"
+          ]
+        },
+        {
+          "name": "sand",
+          "surface_types": [
+            "sandy_desert",
+            "rocky_regolith"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/boulder_ironstone_hogback_LOD1.glb",
+          "triangles": 34,
+          "switch_projected_diameter_px": 36,
+          "source_triangles": 56
+        }
+      ],
+      "source_triangles": 114
+    },
+    {
+      "name": "Sandstone Terrace",
+      "id": "outcrop_sandstone_terrace",
+      "glb": "glb/outcrop_sandstone_terrace.glb",
+      "category": "outcrop",
+      "surface_types": [
+        "sandy_desert",
+        "iron_oxide_regolith"
+      ],
+      "material_id": "bed_sand",
+      "dimensions_m": {
+        "width_x": 3.03,
+        "depth_y_blender": 1.94,
+        "height_z_blender": 0.71
+      },
+      "triangles": 44,
+      "random_uniform_scale": [
+        0.82,
+        1.23
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "slate",
+          "surface_types": [
+            "rocky_regolith",
+            "glacial_till"
+          ]
+        },
+        {
+          "name": "bed_iron",
+          "surface_types": [
+            "iron_oxide_regolith",
+            "sandy_desert"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/outcrop_sandstone_terrace_LOD1.glb",
+          "triangles": 20,
+          "switch_projected_diameter_px": 36,
+          "source_triangles": 100
+        }
+      ],
+      "source_triangles": 176
+    },
+    {
+      "name": "Shale Sheet",
+      "id": "outcrop_shale_sheet",
+      "glb": "glb/outcrop_shale_sheet.glb",
+      "category": "outcrop",
+      "surface_types": [
+        "rocky_regolith",
+        "glacial_till"
+      ],
+      "material_id": "slate",
+      "dimensions_m": {
+        "width_x": 2.32,
+        "depth_y_blender": 1.29,
+        "height_z_blender": 0.36
+      },
+      "triangles": 22,
+      "random_uniform_scale": [
+        0.82,
+        1.23
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "bed_sand",
+          "surface_types": [
+            "sandy_desert",
+            "iron_oxide_regolith"
+          ]
+        },
+        {
+          "name": "bed_iron",
+          "surface_types": [
+            "iron_oxide_regolith",
+            "sandy_desert"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/outcrop_shale_sheet_LOD1.glb",
+          "triangles": 16,
+          "switch_projected_diameter_px": 36,
+          "source_triangles": 80
+        }
+      ],
+      "source_triangles": 104
+    },
+    {
+      "name": "Raised Bedding",
+      "id": "outcrop_raised_bedding",
+      "glb": "glb/outcrop_raised_bedding.glb",
+      "category": "outcrop",
+      "surface_types": [
+        "iron_oxide_regolith",
+        "sandy_desert"
+      ],
+      "material_id": "bed_iron",
+      "dimensions_m": {
+        "width_x": 2.75,
+        "depth_y_blender": 1.29,
+        "height_z_blender": 1.18
+      },
+      "triangles": 32,
+      "random_uniform_scale": [
+        0.82,
+        1.23
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "slate",
+          "surface_types": [
+            "rocky_regolith",
+            "glacial_till"
+          ]
+        },
+        {
+          "name": "bed_sand",
+          "surface_types": [
+            "sandy_desert",
+            "iron_oxide_regolith"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/outcrop_raised_bedding_LOD1.glb",
+          "triangles": 20,
+          "switch_projected_diameter_px": 36,
+          "source_triangles": 70
+        }
+      ],
+      "source_triangles": 124
+    },
+    {
+      "name": "Fault Bench",
+      "id": "outcrop_fault_bench",
+      "glb": "glb/outcrop_fault_bench.glb",
+      "category": "outcrop",
+      "surface_types": [
+        "rocky_regolith",
+        "basaltic_lava"
+      ],
+      "material_id": "graphite",
+      "dimensions_m": {
+        "width_x": 2.54,
+        "depth_y_blender": 1.82,
+        "height_z_blender": 0.83
+      },
+      "triangles": 38,
+      "random_uniform_scale": [
+        0.82,
+        1.23
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "gray",
+          "surface_types": [
+            "rocky_regolith",
+            "glacial_till"
+          ]
+        },
+        {
+          "name": "sand",
+          "surface_types": [
+            "sandy_desert",
+            "rocky_regolith"
+          ]
+        },
+        {
+          "name": "iron",
+          "surface_types": [
+            "iron_oxide_regolith",
+            "sandy_desert"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/outcrop_fault_bench_LOD1.glb",
+          "triangles": 24,
+          "switch_projected_diameter_px": 36,
+          "source_triangles": 60
+        }
+      ],
+      "source_triangles": 86
+    },
+    {
+      "name": "Basalt Joint Cluster",
+      "id": "volcanic_basalt_columns",
+      "glb": "glb/volcanic_basalt_columns.glb",
+      "category": "volcanic",
+      "surface_types": [
+        "basaltic_lava",
+        "rocky_regolith"
+      ],
+      "material_id": "basalt",
+      "dimensions_m": {
+        "width_x": 2.33,
+        "depth_y_blender": 1.91,
+        "height_z_blender": 1.92
+      },
+      "triangles": 164,
+      "random_uniform_scale": [
+        0.78,
+        1.23
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/volcanic_basalt_columns_LOD1.glb",
+          "triangles": 126,
+          "switch_projected_diameter_px": 42,
+          "source_triangles": 214
+        }
+      ],
+      "source_triangles": 302
+    },
+    {
+      "name": "Vesicular Scoria",
+      "id": "volcanic_scoria_bomb",
+      "glb": "glb/volcanic_scoria_bomb.glb",
+      "category": "volcanic",
+      "surface_types": [
+        "basaltic_lava",
+        "iron_oxide_regolith"
+      ],
+      "material_id": "scoria",
+      "dimensions_m": {
+        "width_x": 1.1,
+        "depth_y_blender": 0.84,
+        "height_z_blender": 0.61
+      },
+      "triangles": 66,
+      "random_uniform_scale": [
+        0.78,
+        1.23
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [],
+      "lods": [],
+      "source_triangles": 124
+    },
+    {
+      "name": "Ropy Lava",
+      "id": "volcanic_rope_lava",
+      "glb": "glb/volcanic_rope_lava.glb",
+      "category": "volcanic",
+      "surface_types": [
+        "basaltic_lava"
+      ],
+      "material_id": "lava",
+      "dimensions_m": {
+        "width_x": 2.63,
+        "depth_y_blender": 1.53,
+        "height_z_blender": 0.52
+      },
+      "triangles": 50,
+      "random_uniform_scale": [
+        0.78,
+        1.23
+      ],
+      "allow_random_yaw": false,
+      "material_variants": [],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/volcanic_rope_lava_LOD1.glb",
+          "triangles": 48,
+          "switch_projected_diameter_px": 36,
+          "source_triangles": 106
+        }
+      ],
+      "yaw_hint": "Align the long axis (+X) with local flow.",
+      "source_triangles": 212
+    },
+    {
+      "name": "ʻAʻā Clinker",
+      "id": "volcanic_aa_clinker",
+      "glb": "glb/volcanic_aa_clinker.glb",
+      "category": "volcanic",
+      "surface_types": [
+        "basaltic_lava"
+      ],
+      "material_id": "lava",
+      "dimensions_m": {
+        "width_x": 1.53,
+        "depth_y_blender": 1.12,
+        "height_z_blender": 1.06
+      },
+      "triangles": 114,
+      "random_uniform_scale": [
+        0.78,
+        1.23
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/volcanic_aa_clinker_LOD1.glb",
+          "triangles": 50,
+          "switch_projected_diameter_px": 42,
+          "source_triangles": 152
+        }
+      ],
+      "source_triangles": 306
+    },
+    {
+      "name": "Tabular Floe",
+      "id": "ice_tabular_floe",
+      "glb": "glb/ice_tabular_floe.glb",
+      "category": "ice",
+      "surface_types": [
+        "glacial_ice",
+        "glacial_till"
+      ],
+      "material_id": "frost",
+      "dimensions_m": {
+        "width_x": 3.08,
+        "depth_y_blender": 1.87,
+        "height_z_blender": 0.47
+      },
+      "triangles": 38,
+      "random_uniform_scale": [
+        0.82,
+        1.24
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "blue_ice",
+          "surface_types": [
+            "glacial_ice",
+            "glacial_till"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/ice_tabular_floe_LOD1.glb",
+          "triangles": 24,
+          "switch_projected_diameter_px": 36,
+          "source_triangles": 82
+        }
+      ],
+      "source_triangles": 106
+    },
+    {
+      "name": "Serac Ridge",
+      "id": "ice_serac_ridge",
+      "glb": "glb/ice_serac_ridge.glb",
+      "category": "ice",
+      "surface_types": [
+        "glacial_ice",
+        "glacial_till"
+      ],
+      "material_id": "blue_ice",
+      "dimensions_m": {
+        "width_x": 2.63,
+        "depth_y_blender": 1.28,
+        "height_z_blender": 2.21
+      },
+      "triangles": 118,
+      "random_uniform_scale": [
+        0.82,
+        1.24
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "frost",
+          "surface_types": [
+            "glacial_ice",
+            "glacial_till"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/ice_serac_ridge_LOD1.glb",
+          "triangles": 66,
+          "switch_projected_diameter_px": 42,
+          "source_triangles": 182
+        }
+      ],
+      "source_triangles": 364
+    },
+    {
+      "name": "Blue Calved Block",
+      "id": "ice_blue_calved_block",
+      "glb": "glb/ice_blue_calved_block.glb",
+      "category": "ice",
+      "surface_types": [
+        "glacial_ice",
+        "glacial_till"
+      ],
+      "material_id": "blue_ice",
+      "dimensions_m": {
+        "width_x": 1.79,
+        "depth_y_blender": 1.42,
+        "height_z_blender": 1.32
+      },
+      "triangles": 32,
+      "random_uniform_scale": [
+        0.82,
+        1.24
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "frost",
+          "surface_types": [
+            "glacial_ice",
+            "glacial_till"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/ice_blue_calved_block_LOD1.glb",
+          "triangles": 20,
+          "switch_projected_diameter_px": 42,
+          "source_triangles": 70
+        }
+      ],
+      "source_triangles": 92
+    },
+    {
+      "name": "Quartz Spray",
+      "id": "crystal_quartz_spray",
+      "glb": "glb/crystal_quartz_spray.glb",
+      "category": "crystal",
+      "surface_types": [
+        "mineralized_rock",
+        "rocky_regolith"
+      ],
+      "material_id": "quartz",
+      "dimensions_m": {
+        "width_x": 1.39,
+        "depth_y_blender": 1.09,
+        "height_z_blender": 1.25
+      },
+      "triangles": 134,
+      "random_uniform_scale": [
+        0.72,
+        1.3
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "amethyst",
+          "surface_types": [
+            "mineralized_rock",
+            "basaltic_lava"
+          ]
+        },
+        {
+          "name": "calcite",
+          "surface_types": [
+            "mineralized_rock",
+            "sandy_desert"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/crystal_quartz_spray_LOD1.glb",
+          "triangles": 68,
+          "switch_projected_diameter_px": 42,
+          "source_triangles": 180
+        }
+      ],
+      "source_triangles": 254
+    },
+    {
+      "name": "Amethyst Druse",
+      "id": "crystal_amethyst_druse",
+      "glb": "glb/crystal_amethyst_druse.glb",
+      "category": "crystal",
+      "surface_types": [
+        "mineralized_rock",
+        "basaltic_lava"
+      ],
+      "material_id": "amethyst",
+      "dimensions_m": {
+        "width_x": 1.36,
+        "depth_y_blender": 1.12,
+        "height_z_blender": 0.65
+      },
+      "triangles": 128,
+      "random_uniform_scale": [
+        0.72,
+        1.3
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "quartz",
+          "surface_types": [
+            "mineralized_rock",
+            "rocky_regolith"
+          ]
+        }
+      ],
+      "lods": [
+        {
+          "level": 1,
+          "glb": "glb/lod1/crystal_amethyst_druse_LOD1.glb",
+          "triangles": 84,
+          "switch_projected_diameter_px": 36,
+          "source_triangles": 236
+        }
+      ],
+      "source_triangles": 416
+    },
+    {
+      "name": "Calcite Steps",
+      "id": "crystal_calcite_steps",
+      "glb": "glb/crystal_calcite_steps.glb",
+      "category": "crystal",
+      "surface_types": [
+        "mineralized_rock",
+        "sandy_desert"
+      ],
+      "material_id": "calcite",
+      "dimensions_m": {
+        "width_x": 1.43,
+        "depth_y_blender": 1.1,
+        "height_z_blender": 0.94
+      },
+      "triangles": 118,
+      "random_uniform_scale": [
+        0.72,
+        1.3
+      ],
+      "allow_random_yaw": true,
+      "material_variants": [
+        {
+          "name": "quartz",
+          "surface_types": [
+            "mineralized_rock",
+            "rocky_regolith"
+          ]
+        }
+      ],
+      "lods": [],
+      "source_triangles": 162
+    }
+  ],
+  "materials": [
+    {
+      "id": "gray",
+      "name": "Stone | Ash Gray",
+      "atlas_tile_xy_bottom_left": [
+        0,
+        0
+      ],
+      "representative_srgb_8bit": [
+        135,
+        138,
+        136
+      ],
+      "roughness": 0.87,
+      "opaque": true
+    },
+    {
+      "id": "graphite",
+      "name": "Stone | Graphite",
+      "atlas_tile_xy_bottom_left": [
+        1,
+        0
+      ],
+      "representative_srgb_8bit": [
+        95,
+        102,
+        108
+      ],
+      "roughness": 0.87,
+      "opaque": true
+    },
+    {
+      "id": "sand",
+      "name": "Stone | Dust Sand",
+      "atlas_tile_xy_bottom_left": [
+        2,
+        0
+      ],
+      "representative_srgb_8bit": [
+        172,
+        144,
+        110
+      ],
+      "roughness": 0.89,
+      "opaque": true
+    },
+    {
+      "id": "iron",
+      "name": "Stone | Iron Oxide",
+      "atlas_tile_xy_bottom_left": [
+        3,
+        0
+      ],
+      "representative_srgb_8bit": [
+        155,
+        91,
+        64
+      ],
+      "roughness": 0.9,
+      "opaque": true
+    },
+    {
+      "id": "slate",
+      "name": "Bedding | Shale",
+      "atlas_tile_xy_bottom_left": [
+        0,
+        1
+      ],
+      "representative_srgb_8bit": [
+        104,
+        111,
+        117
+      ],
+      "roughness": 0.86,
+      "opaque": true
+    },
+    {
+      "id": "bed_sand",
+      "name": "Bedding | Sandstone",
+      "atlas_tile_xy_bottom_left": [
+        1,
+        1
+      ],
+      "representative_srgb_8bit": [
+        175,
+        133,
+        93
+      ],
+      "roughness": 0.89,
+      "opaque": true
+    },
+    {
+      "id": "bed_iron",
+      "name": "Bedding | Ironstone",
+      "atlas_tile_xy_bottom_left": [
+        2,
+        1
+      ],
+      "representative_srgb_8bit": [
+        146,
+        81,
+        58
+      ],
+      "roughness": 0.9,
+      "opaque": true
+    },
+    {
+      "id": "basalt",
+      "name": "Lava | Basalt",
+      "atlas_tile_xy_bottom_left": [
+        3,
+        1
+      ],
+      "representative_srgb_8bit": [
+        70,
+        74,
+        83
+      ],
+      "roughness": 0.82,
+      "opaque": true
+    },
+    {
+      "id": "scoria",
+      "name": "Lava | Scoria",
+      "atlas_tile_xy_bottom_left": [
+        0,
+        2
+      ],
+      "representative_srgb_8bit": [
+        109,
+        72,
+        64
+      ],
+      "roughness": 0.93,
+      "opaque": true
+    },
+    {
+      "id": "lava",
+      "name": "Lava | Glassy Rind",
+      "atlas_tile_xy_bottom_left": [
+        1,
+        2
+      ],
+      "representative_srgb_8bit": [
+        77,
+        75,
+        83
+      ],
+      "roughness": 0.69,
+      "opaque": true
+    },
+    {
+      "id": "blue_ice",
+      "name": "Ice | Glacial Blue",
+      "atlas_tile_xy_bottom_left": [
+        2,
+        2
+      ],
+      "representative_srgb_8bit": [
+        99,
+        165,
+        191
+      ],
+      "roughness": 0.43,
+      "opaque": true
+    },
+    {
+      "id": "frost",
+      "name": "Ice | Frost",
+      "atlas_tile_xy_bottom_left": [
+        3,
+        2
+      ],
+      "representative_srgb_8bit": [
+        167,
+        199,
+        211
+      ],
+      "roughness": 0.59,
+      "opaque": true
+    },
+    {
+      "id": "quartz",
+      "name": "Mineral | Smoky Quartz",
+      "atlas_tile_xy_bottom_left": [
+        0,
+        3
+      ],
+      "representative_srgb_8bit": [
+        169,
+        153,
+        137
+      ],
+      "roughness": 0.41,
+      "opaque": true
+    },
+    {
+      "id": "amethyst",
+      "name": "Mineral | Amethyst",
+      "atlas_tile_xy_bottom_left": [
+        1,
+        3
+      ],
+      "representative_srgb_8bit": [
+        139,
+        113,
+        165
+      ],
+      "roughness": 0.39,
+      "opaque": true
+    },
+    {
+      "id": "calcite",
+      "name": "Mineral | Honey Calcite",
+      "atlas_tile_xy_bottom_left": [
+        2,
+        3
+      ],
+      "representative_srgb_8bit": [
+        187,
+        152,
+        96
+      ],
+      "roughness": 0.43,
+      "opaque": true
+    }
+  ],
+  "references": [
+    {
+      "category": "stone",
+      "subject": "Angular talus and rounded glacial clasts, figures 9–11",
+      "url": "https://temple.manifoldapp.org/read/sediments-and-sedimentary-rocks/section/943ee9dc-db36-4399-8198-f308e0f5e522"
+    },
+    {
+      "category": "outcrop",
+      "subject": "Navajo sandstone cross-bedding at Checkerboard Mesa",
+      "url": "https://www.nps.gov/media/photo/gallery-item.htm?pg=2122026&id=BC785694-155D-451F-67AFAEA2FABA3A41&gid=BCAE0D0A-155D-451F-67B35D5AE59F10C8"
+    },
+    {
+      "category": "volcanic",
+      "subject": "Basalt columns at Latourell Falls",
+      "url": "https://www.usgs.gov/media/images/columnar-jointing-basalt-cliffs-latourell-falls-or"
+    },
+    {
+      "category": "volcanic",
+      "subject": "Vesicles, pāhoehoe folds and clinker",
+      "url": "https://home.nps.gov/articles/000/lava-flow-surface-features.htm"
+    },
+    {
+      "category": "ice",
+      "subject": "Seracs on the Emmons Glacier",
+      "url": "https://www.nps.gov/articles/seracsandicebergs.htm"
+    },
+    {
+      "category": "ice",
+      "subject": "Tabular and sculpted blue ice in McMurdo Sound",
+      "url": "https://science.nasa.gov/earth/earth-observatory/icebridge-blues-91396/"
+    },
+    {
+      "category": "crystal",
+      "subject": "Quartz points on volcanic matrix",
+      "url": "https://naturalhistory.si.edu/explore/collections/geogallery/10026017"
+    }
+  ],
+  "totals": {
+    "base_models": 24,
+    "lod_meshes": 16,
+    "base_triangles": 1440,
+    "lod_triangles": 706,
+    "shared_asset_materials": 15,
+    "shared_atlas_size_px": [
+      512,
+      512
+    ]
+  }
+}
