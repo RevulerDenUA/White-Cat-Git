@@ -5,6 +5,9 @@
 [ext_resource type="PackedScene" uid="uid://cngcee24uhrrv" path="res://Scene/JEEP.tscn" id="2_w222j"]
 [ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="3_m50oi"]
 [ext_resource type="Script" uid="uid://qsy2ajsgyv57" path="res://Scripts/CameraLook.cs" id="4_jugq3"]
+[ext_resource type="PackedScene" path="res://Scene/Rover.tscn" id="4_3hs8j"]
+[ext_resource type="Script" uid="uid://dlxdo8fpkeuo6" path="res://Scripts/SpectatorMode/SpectatorMode.cs" id="5_spec"]
+[ext_resource type="Shader" uid="uid://bdrf3l2s7ry0e" path="res://shader/MahNutsHurt.gdshader" id="6_s8iv6"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m50oi"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -17,10 +20,38 @@ sky_material = SubResource("ProceduralSkyMaterial_m50oi")
 background_mode = 2
 sky = SubResource("Sky_jugq3")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b2g0b"]
+shader = ExtResource("6_s8iv6")
+shader_parameter/color_mode = false
+shader_parameter/chroma_shift = 6.0
+shader_parameter/contrast = 1.3850000420375
+shader_parameter/brightness = 0.02
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/vignette_strength = 0.9
+shader_parameter/grain_amount = 0.1
+shader_parameter/scanline_strength = 0.07
+shader_parameter/scanline_density = 0.7
+shader_parameter/flicker_amount = 0.04
+shader_parameter/line_jitter = 1.2
+shader_parameter/band_strength = 0.35
+shader_parameter/band_speed = 0.12
+shader_parameter/signal_quality = 1.0
+shader_parameter/forced_drop = 0.0
+shader_parameter/auto_drops = true
+shader_parameter/drop_chance = 0.12
+shader_parameter/drop_interval = 0.35
+shader_parameter/max_block_size = 24.0
+shader_parameter/macroblock_size = 48.0
+shader_parameter/block_shift = 10.0
+shader_parameter/min_gray_levels = 6.0
+shader_parameter/reticle_size = 18.0
+shader_parameter/reticle_gap = 5.0
+shader_parameter/reticle_alpha = 0.55
+
 [node name="WorldGen" type="Node3D" unique_id=1762984832 node_paths=PackedStringArray("Player", "FogEnvironment")]
 script = ExtResource("1_d48c2")
 Seed = 12348
-Player = NodePath("")
+Player = NodePath("CharacterBody3D")
 HeightScale = 10.0
 FogEnvironment = NodePath("WorldEnvironment")
 
