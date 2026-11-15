@@ -71,6 +71,8 @@ public static class SpaceGlobals
 
         d.BaseSpeed = (6.0f / Mathf.Sqrt(Mathf.Max(d.Distance, 0.1f))) * rng.RandfRange(0.9f, 1.1f);
 
+		PlanetPackets.GenerateSkyColors(ref d);
+
         return d;
     }
 }
