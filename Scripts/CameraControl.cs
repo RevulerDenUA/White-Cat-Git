@@ -319,7 +319,8 @@ public partial class CameraControl : Node
 	{
 		if (!GodotObject.IsInstanceValid(Filter)) return;
 		// З кімнатою ефект накладається всередині фізичного дисплея; без неї — на весь екран.
-		Filter.Visible = !HasRoom && RemoteVehicle.IsLive(_active) && GameData.Context == ControlContext.Vehicle;
+		Filter.Visible = !HasRoom && RemoteVehicle.IsLive(_active) && GameData.Context == ControlContext.Vehicle
+			&& (_settings == null || Setting("signal_effects"));
 		if (_filterMat == null || !RemoteVehicle.IsLive(_active)) return;
 		Node3D vehicle = _active.Vehicle;
 		float speed = vehicle switch { RigidBody3D rb => rb.LinearVelocity.Length(), CharacterBody3D cb => cb.Velocity.Length(), _ => 0f };

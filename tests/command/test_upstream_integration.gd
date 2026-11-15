@@ -74,6 +74,11 @@ func _run() -> void:
 	var initial: Dictionary = saved()["Storage"]
 	check(not hud.visible, "Resource HUD obscures the command room")
 	check(not initial.is_empty(), "Upstream starter resources were not loaded")
+	# Стартовий капітал — рівно на DrillCost.StartDrills = 3 бури; вартість одного — третина.
+	var cost := {}
+	for resource: String in initial:
+		cost[resource] = int(initial[resource]) / 3
+		check(int(initial[resource]) == int(cost[resource]) * 3, "Starter kit is not three drills of " + resource)
 	rover.freeze = true
 	rover.global_transform = Transform3D(Basis.IDENTITY, Vector3(0, 2, 18))
 	controller.connect_target("rover")
@@ -120,7 +125,7 @@ func _run() -> void:
 	var after_build: Dictionary = saved()
 	check(after_build["Drills"].size() == 1, "Real drill was not built on the supplied vein")
 	for resource: String in initial:
-		check(int(after_build["Storage"].get(resource, 0)) == 0, "Building a drill did not debit its actual cost")
+		check(int(after_build["Storage"].get(resource, 0)) == int(initial[resource]) - int(cost[resource]), "Building a drill did not debit its actual cost")
 	var drill: Node
 	for child: Node in manager.get_children():
 		if child.get_script() != null and child.get_script().resource_path == "res://Scripts/Drill/Drill.cs":
@@ -148,7 +153,7 @@ func _run() -> void:
 	await frames()
 	# Жила в A.tscn дає справжню руду гри; вона може збігатися з ресурсом вартості бура.
 	var ore: String = game.get_node("VeinIron").ResourceName
-	var collected := int(saved()["Storage"].get(ore, 0))
+	var collected := int(saved()["Storage"].get(ore, 0)) - int(after_build["Storage"].get(ore, 0))
 	check(collected > 0, "Collect action did not transfer produced resources")
 	manager.PickupHoldTime = 0.1
 	key(KEY_J, true)
@@ -158,7 +163,7 @@ func _run() -> void:
 	var recovered: Dictionary = saved()
 	check(recovered["Drills"].is_empty(), "Holding the rebound pickup action did not dismantle the drill")
 	for resource: String in initial:
-		var refund := floori(float(initial[resource]) * 0.5)
+		var refund := int(after_build["Storage"].get(resource, 0)) + floori(float(cost[resource]) * 0.5)
 		var stored := int(recovered["Storage"].get(resource, 0))
 		if resource == ore:
 			check(stored >= refund + collected, "Dismantling did not refund 50 percent of " + resource)
@@ -173,10 +178,10 @@ func _run() -> void:
 	await frames()
 	game.get_node("DrillManager").Save()
 	var reloaded: Dictionary = saved()["Storage"]
-	# Upstream explicitly tops up one build kit when no drills remain: only what is missing.
-	check(int(reloaded.get(ore, 0)) == maxi(int(recovered["Storage"].get(ore, 0)), int(initial.get(ore, 0))), "Reloading lost or duplicated harvested inventory")
+	# Upstream tops up one build kit when no drills remain — only what is missing for one drill.
+	check(int(reloaded.get(ore, 0)) == maxi(int(recovered["Storage"].get(ore, 0)), int(cost.get(ore, 0))), "Reloading lost or duplicated harvested inventory")
 	for resource: String in initial:
-		var expected := maxi(int(recovered["Storage"].get(resource, 0)), int(initial[resource]))
+		var expected := maxi(int(recovered["Storage"].get(resource, 0)), int(cost[resource]))
 		check(int(reloaded.get(resource, 0)) == expected, "Upstream emergency build-kit recovery changed unexpectedly")
 	current_scene = null
 	game.queue_free()

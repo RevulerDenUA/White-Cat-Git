@@ -17,8 +17,10 @@ public static class DrillCost
 	// Погоджене повернення половини вартості; цілі предмети округлюються вниз.
 	public const float RefundRatio = 0.5f;
 
-	// Що гравець отримує на початку нової гри. За замовчуванням — рівно на 1 бур.
-	public static Dictionary<string, int> StartResources => new(Cost);
+	// Що гравець отримує на початку нової гри.
+	// Стартовий капітал — рівно на 3 бури
+	public const int StartDrills = 3;
+	public static Dictionary<string, int> StartResources { get { var r = new Dictionary<string, int>(); foreach (var (k, v) in Cost) r[k] = v * StartDrills; return r; } }
 
 	// Якщо в гравця не лишилось жодного бура і не вистачає ресурсів на новий —
 	// він безкоштовно отримує те, чого бракує на 1 бур (щоб не застрягнути).

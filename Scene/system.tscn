@@ -3,8 +3,8 @@
 [ext_resource type="Environment" uid="uid://bvk5mrno3ev1d" path="res://Planet Temp/new_environment.tres" id="1_ghylp"]
 [ext_resource type="Script" uid="uid://ykbg07ofwwyu" path="res://Planet Temp/SystemValues.cs" id="1_kk3s5"]
 [ext_resource type="Script" uid="uid://bv3qyb2cam411" path="res://Planet Temp/PlanetOrbit.cs" id="1_mg2au"]
-[ext_resource type="Script" path="res://Planet Temp/PlanetSelector.cs" id="5_psel"]
-[ext_resource type="Script" path="res://Planet Temp/SystemCamera.cs" id="6_scam"]
+[ext_resource type="Script" uid="uid://dhy4aeuxpo0np" path="res://Planet Temp/PlanetSelector.cs" id="5_psel"]
+[ext_resource type="Script" uid="uid://lu1htipw7wnj" path="res://Planet Temp/SystemCamera.cs" id="6_scam"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mg2au"]
 emission_enabled = true
@@ -21,7 +21,14 @@ height = 3.847
 [sub_resource type="SphereShape3D" id="SphereShape3D_f2jkv"]
 radius = 0.6
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j3pel"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.003921569)
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+
 [sub_resource type="TorusMesh" id="TorusMesh_f2jkv"]
+material = SubResource("StandardMaterial3D_j3pel")
 inner_radius = 1.0
 outer_radius = 1.001
 
@@ -81,12 +88,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1777896729]
-
 transform = Transform3D(0.12834811, -0.6879052, 0.7143622, -0.03268296, 0.7169946, 0.6963122, -0.99119055, -0.11271782, 0.06954212, 579.16376, 473.54065, -5.552986)
 script = ExtResource("6_scam")
 
-[node name="PlanetSelector" type="Node" parent="."]
+[node name="PlanetSelector" type="Node" parent="." unique_id=358755795]
 script = ExtResource("5_psel")
-
 
 [connection signal="tree_entered" from="PlanetOrbit/Local Planet" to="PlanetOrbit" method="_on_local_planet_tree_entered"]

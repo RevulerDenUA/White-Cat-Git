@@ -12,11 +12,22 @@ public partial class PlanetSession : Node
 	[Export] public ShuttlePad Pad;
 	[Export] public RemoteVehicle Rover;
 	[Export] public RemoteVehicle Ingenuity;
+	[Export] public OreGenerator Ores;
 
 	private readonly Dictionary<string, RemoteVehicle> _vehicles = new();
 	private string _active = "";
 	private string _status = "";
-	private Label _line, _hint;
+	private Label _title, _facts, _live, _status_line, _controls, _hint;
+	private readonly TextureRect[] _portraits = new TextureRect[2];
+
+	// Для тестів і іншого UI
+	public string CardTitle => _title?.Text ?? "";
+	public string CardFacts => _facts?.Text ?? "";
+	public bool PhotoVisible => _portraits[0] != null && _portraits[0].Visible;
+
+	// WhiteCatTheme (Scripts/UI/menu_theme.gd)
+	private static readonly Color Ink = new("080e17"), White = new("eef0ec"), Muted = new("a4b0b9"),
+		Dim = new("738492"), Line = new("2c3a47"), Accent = new("c6dae9");
 	private bool _leaving;
 
 	public override void _Ready()
@@ -48,7 +59,7 @@ public partial class PlanetSession : Node
 			}
 			else if (id == _active)
 			{
-				Transform3D spawn = Pad.SpawnTransform(Terrain, id);
+				Transform3D spawn = Pad.SpawnTransform(id); // всередині шатла
 				Place(body, spawn);
 				ShuttleState.SetOutside(id, spawn);
 			}
@@ -65,6 +76,8 @@ public partial class PlanetSession : Node
 			if (error != "") _status = error;
 		}
 		else _status = "Апарата немає в сцені.";
+
+		FillPlanetCard();
 	}
 
 	private static void Place(Node3D body, Transform3D xf)
@@ -95,46 +108,158 @@ public partial class PlanetSession : Node
 
 	public override void _Process(double delta)
 	{
-		if (_line == null) return;
-		string planet = CurrentGen.HasActivePlanet
-			? $"{PlanetSelector.PlanetName(CurrentGen.ActivePlanet)} · {PlanetSelector.TypeName(CurrentGen.ActivePlanet.Type)}"
-			: "Тестовий рельєф";
+		if (_title == null) return;
+		_vehicles.TryGetValue(_active, out RemoteVehicle a);
+		Node3D body = a != null && RemoteVehicle.IsLive(a.Vehicle) ? a.Vehicle : null;
+		bool docked = body != null && Pad != null && Pad.IsDocked(body);
 
-		string where = "";
-		if (_vehicles.TryGetValue(_active, out RemoteVehicle a) && RemoteVehicle.IsLive(a.Vehicle) && Pad != null)
+		// жива частина картки: висота, швидкість, шатл
+		if (body != null)
 		{
-			if (Pad.IsDocked(a.Vehicle)) where = "у шатлі";
-			else
-			{
-				Vector3 d = a.Vehicle.GlobalPosition - Pad.GlobalPosition;
-				d.Y = 0f;
-				where = $"до шатла {d.Length():0} м";
-			}
+			float ground = Terrain != null ? Terrain.GetHeightAt(body.GlobalPosition.X, body.GlobalPosition.Z) : 0f;
+			float speed = body switch { RigidBody3D rb => rb.LinearVelocity.Length(), CharacterBody3D cb => cb.Velocity.Length(), _ => 0f };
+			Vector3 toPad = Pad != null ? body.GlobalPosition - Pad.GlobalPosition : Vector3.Zero;
+			toPad.Y = 0f;
+			_live.Text = $"висота над ґрунтом {Mathf.Max(body.GlobalPosition.Y - ground, 0f):0} м · швидкість {speed:0} м/с\n" +
+				(docked ? "у шатлі" : $"до шатла {toPad.Length():0} м");
 		}
-		_line.Text = $"{ShuttleState.VehicleName(_active)} · {planet}" + (where != "" ? $" · {where}" : "");
 
-		bool docked = where == "у шатлі";
+		var snap = Controller?.snapshot();
+		string camera = snap != null ? snap["camera_name"].AsString() : "";
+		_status_line.Text = ShuttleState.VehicleName(_active) + (camera != "" ? $" / {camera}" : "");
+		_controls.Text = ControlsText(a);
 		_hint.Text = _status != "" ? _status
 			: docked ? "Esc — завершити висадку"
 			: "Esc — до шатла (апарат лишиться тут)";
+
+		var images = a?.IdentificationImages;
+		for (int i = 0; i < _portraits.Length; i++)
+		{
+			_portraits[i].Texture = images != null && i < images.Count ? images[i] : null;
+			_portraits[i].Visible = _portraits[i].Texture != null;
+		}
 	}
+
+	private string ControlsText(RemoteVehicle a)
+	{
+		var settings = GetNodeOrNull<Node>("/root/UserSettings");
+		string B(string action, string fallback) => settings != null && InputMap.HasAction(action)
+			? settings.Call("binding_text", action).AsString() : fallback;
+		string text = $"{B("forwardy", "W")} / {B("backwardy", "S")} — рух   {B("lefty", "A")} / {B("righty", "D")} — поворот";
+		if (a != null && a.SupportsVerticalControl)
+			text += $"   {B("spacy", "Space")} / {B("flight_descend", "Shift")} — висота";
+		return text + $"\n{B("CameraChange", "C")} — камера   {B("DrillPlace", "B")} — бур";
+	}
+
+	// Незмінні дані планети — один раз після висадки
+	private void FillPlanetCard()
+	{
+		if (!CurrentGen.HasActivePlanet)
+		{
+			_title.Text = "Тестовий рельєф";
+			_facts.Text = "планету не вибрано в телескопі";
+			return;
+		}
+		PlanetData d = CurrentGen.ActivePlanet;
+		string kind = d.IsMoon ? "місяць" : PlanetSelector.TypeName(d.Type).ToLowerInvariant();
+		_title.Text = $"{PlanetSelector.PlanetName(d)} · {kind}";
+
+		var facts = new System.Text.StringBuilder();
+		facts.Append($"гравітація {d.Gravity:0.0} · температура {d.Temperature:0}\n");
+		facts.Append($"атмосфера: {PlanetSelector.Ua(d.AtmoTemplate)}" + (d.AtmospherePressure > 0f ? $", тиск {d.AtmospherePressure:0.##}" : "") + "\n");
+		facts.Append($"надра: {PlanetSelector.Ua(d.CoreTemplate)}\n");
+
+		// жили, які реально згенерував OreGenerator
+		var counts = new SortedDictionary<string, int>();
+		if (Ores != null)
+			foreach (ResourceVein v in Ores.Veins)
+				if (IsInstanceValid(v)) counts[v.ResourceName] = counts.GetValueOrDefault(v.ResourceName) + 1;
+		if (counts.Count == 0)
+			facts.Append(ShuttleState.IsGas(d) ? "жил немає — немає твердої поверхні" : "жил поблизу немає");
+		else
+		{
+			var parts = new List<string>();
+			foreach (var (name, n) in counts) parts.Add($"{OreShort(name)} {n}");
+			facts.Append("жили поруч: " + string.Join(" · ", parts));
+		}
+		_facts.Text = facts.ToString();
+	}
+
+	private static string OreShort(string name) => name switch
+	{
+		"Титанова руда" => "титан",
+		"Мідна руда" => "мідь",
+		"Лід" => "лід",
+		_ => name.ToLowerInvariant(),
+	};
 
 	private void BuildHud()
 	{
 		var layer = new CanvasLayer { Layer = 5 };
 		AddChild(layer);
+		var root = new Control { MouseFilter = Control.MouseFilterEnum.Ignore };
+		var themeScript = GD.Load<GDScript>("res://Scripts/UI/menu_theme.gd");
+		if (themeScript != null && themeScript.Call("create").AsGodotObject() is Theme theme) root.Theme = theme;
+		layer.AddChild(root);
+		root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+
+		// праворуч угорі — картка планети
+		var card = new PanelContainer
+		{
+			AnchorLeft = 1f, AnchorRight = 1f, OffsetLeft = -380f, OffsetRight = -20f, OffsetTop = 20f,
+			GrowHorizontal = Control.GrowDirection.Begin, MouseFilter = Control.MouseFilterEnum.Ignore,
+		};
+		card.AddThemeStyleboxOverride("panel", new StyleBoxFlat
+		{
+			BgColor = new Color(Ink, 0.72f), BorderColor = Line,
+			BorderWidthLeft = 1, BorderWidthTop = 1, BorderWidthRight = 1, BorderWidthBottom = 1,
+			ContentMarginLeft = 16, ContentMarginRight = 16, ContentMarginTop = 12, ContentMarginBottom = 12,
+		});
+		root.AddChild(card);
+		var col = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Ignore };
+		col.AddThemeConstantOverride("separation", 6);
+		card.AddChild(col);
+		_title = HudLabel(20, Accent);
+		_facts = HudLabel(15, Muted);
+		_live = HudLabel(15, White);
+		col.AddChild(_title);
+		col.AddChild(_facts);
+		col.AddChild(new HSeparator());
+		col.AddChild(_live);
+
+		// ліворуч — фото апарата (під рядком сховища бурів)
+		var photos = new VBoxContainer { OffsetLeft = 20f, OffsetTop = 92f, MouseFilter = Control.MouseFilterEnum.Ignore };
+		photos.AddThemeConstantOverride("separation", 8);
+		root.AddChild(photos);
+		for (int i = 0; i < _portraits.Length; i++)
+		{
+			_portraits[i] = new TextureRect
+			{
+				CustomMinimumSize = new Vector2(220, 140),
+				ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+				StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+				MouseFilter = Control.MouseFilterEnum.Ignore,
+			};
+			photos.AddChild(_portraits[i]);
+		}
+
+		// праворуч унизу — апарат, керування, вихід
 		var box = new VBoxContainer
 		{
-			AnchorTop = 1f, AnchorBottom = 1f,
-			OffsetLeft = 24f, OffsetTop = -76f, OffsetBottom = -20f,
-			GrowVertical = Control.GrowDirection.Begin,
-			MouseFilter = Control.MouseFilterEnum.Ignore,
+			AnchorLeft = 1f, AnchorRight = 1f, AnchorTop = 1f, AnchorBottom = 1f,
+			OffsetLeft = -620f, OffsetRight = -24f, OffsetTop = -110f, OffsetBottom = -20f,
+			GrowHorizontal = Control.GrowDirection.Begin, GrowVertical = Control.GrowDirection.Begin,
+			Alignment = BoxContainer.AlignmentMode.End, MouseFilter = Control.MouseFilterEnum.Ignore,
 		};
-		layer.AddChild(box);
-		_line = HudLabel(20, new Color("eef0ec")); // WhiteCatTheme.WHITE
-		_hint = HudLabel(16, new Color("a4b0b9")); // WhiteCatTheme.MUTED
-		box.AddChild(_line);
-		box.AddChild(_hint);
+		root.AddChild(box);
+		_status_line = HudLabel(18, White);
+		_controls = HudLabel(14, Muted);
+		_hint = HudLabel(14, Accent);
+		foreach (var l in new[] { _status_line, _controls, _hint })
+		{
+			l.HorizontalAlignment = HorizontalAlignment.Right;
+			box.AddChild(l);
+		}
 	}
 
 	private static Label HudLabel(int size, Color color)
@@ -142,8 +267,8 @@ public partial class PlanetSession : Node
 		var l = new Label { MouseFilter = Control.MouseFilterEnum.Ignore };
 		l.AddThemeFontSizeOverride("font_size", size);
 		l.AddThemeColorOverride("font_color", color);
-		l.AddThemeColorOverride("font_outline_color", new Color("080e17")); // WhiteCatTheme.INK
-		l.AddThemeConstantOverride("outline_size", 5);
+		l.AddThemeColorOverride("font_outline_color", Ink);
+		l.AddThemeConstantOverride("outline_size", 4);
 		return l;
 	}
 

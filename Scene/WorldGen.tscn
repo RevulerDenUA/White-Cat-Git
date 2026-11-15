@@ -32,22 +32,22 @@ sky = SubResource("Sky_jugq3")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3hs8j"]
 shader = ExtResource("6_s8iv6")
 shader_parameter/color_mode = false
-shader_parameter/chroma_shift = 6.0
-shader_parameter/contrast = 1.3850000420375
+shader_parameter/chroma_shift = 3.0
+shader_parameter/contrast = 1.15
 shader_parameter/brightness = 0.02
 shader_parameter/tint = Color(1, 1, 1, 1)
-shader_parameter/vignette_strength = 0.9
-shader_parameter/grain_amount = 0.1
-shader_parameter/scanline_strength = 0.07
+shader_parameter/vignette_strength = 0.55
+shader_parameter/grain_amount = 0.05
+shader_parameter/scanline_strength = 0.04
 shader_parameter/scanline_density = 0.7
-shader_parameter/flicker_amount = 0.04
-shader_parameter/line_jitter = 1.2
-shader_parameter/band_strength = 0.35
+shader_parameter/flicker_amount = 0.02
+shader_parameter/line_jitter = 0.6
+shader_parameter/band_strength = 0.15
 shader_parameter/band_speed = 0.12
 shader_parameter/signal_quality = 1.0
 shader_parameter/forced_drop = 0.0
 shader_parameter/auto_drops = true
-shader_parameter/drop_chance = 0.12
+shader_parameter/drop_chance = 0.05
 shader_parameter/drop_interval = 0.35
 shader_parameter/max_block_size = 24.0
 shader_parameter/macroblock_size = 48.0
@@ -62,6 +62,8 @@ script = ExtResource("1_d48c2")
 Seed = 12348
 Player = NodePath("Rover")
 HeightScale = 10.0
+GasFogDensity = 0.007
+RockyClearFogDensity = 0.004
 FogEnvironment = NodePath("WorldEnvironment")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=353566445]
@@ -76,6 +78,11 @@ script = ExtResource("2_3hs8j")
 script = ExtResource("3_m50oi")
 SpecCamera = NodePath("../SpectatorMode")
 Filter = NodePath("../Shader/Filter")
+NoiseStartHeight = 40.0
+NoiseFullHeight = 220.0
+NoiseStartSpeed = 12.0
+NoiseFullSpeed = 45.0
+MaxNoise = 0.45
 
 [node name="SpectatorMode" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.9238795, 0.38268343, 0, -0.38268343, 0.9238795, 0, 25, 40)
@@ -102,7 +109,7 @@ script = ExtResource("8_remote")
 TargetId = "ingenuity"
 DisplayName = "Інжінюїті"
 Vehicle = NodePath("..")
-Cameras = [NodePath("../CamBW"), NodePath("../CamColor")]
+Cameras = [NodePath("../CamColor"), NodePath("../CamBW")]
 ColorCameras = [NodePath("../CamColor")]
 SupportsVerticalControl = true
 IdentificationImages = [ExtResource("11_ing_front"), ExtResource("12_ing_top")]
@@ -114,18 +121,19 @@ script = ExtResource("14_pad")
 script = ExtResource("16_ores")
 Terrain = NodePath("..")
 VeinScene = ExtResource("18_vein")
-KeepOutRadius = 45.0
+KeepOutRadius = 55.0
 
 [node name="DrillManager" type="Node3D" parent="."]
 script = ExtResource("17_drill")
 
-[node name="PlanetSession" type="Node" parent="." node_paths=PackedStringArray("Controller", "Terrain", "Pad", "Rover", "Ingenuity")]
+[node name="PlanetSession" type="Node" parent="." node_paths=PackedStringArray("Controller", "Terrain", "Pad", "Rover", "Ingenuity", "Ores")]
 script = ExtResource("15_session")
 Controller = NodePath("../CameraControl")
 Terrain = NodePath("..")
 Pad = NodePath("../ShuttlePad")
 Rover = NodePath("../Rover/RemoteVehicle")
 Ingenuity = NodePath("../FlyingJeep/RemoteVehicle")
+Ores = NodePath("../OreGenerator")
 
 [node name="Shader" type="CanvasLayer" parent="." unique_id=315058984]
 

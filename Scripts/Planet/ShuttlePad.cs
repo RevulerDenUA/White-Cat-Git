@@ -44,14 +44,12 @@ public partial class ShuttlePad : Node3D
 
 	public bool IsDocked(Node3D body) => body is PhysicsBody3D pb && _dock != null && _dock.OverlapsBody(pb);
 
-	// Точка на поверхні за рампою, звідки апарат стартує
-	public Transform3D SpawnTransform(TerrainWorld terrain, string vehicleId)
+	// Апарат стартує всередині шатла на палубі, носом до рампи (+Z), і виїжджає сам.
+	// Висота — від низу моделі до її початку координат (ровер ~1.42 м, дрон ~1.0 м) з запасом.
+	public Transform3D SpawnTransform(string vehicleId)
 	{
-		float x = vehicleId == ShuttleState.IngenuityId ? 5f : -2f;
-		float z = _rampEndZ + 7f;
-		float y = terrain.GetHeightAt(x, z) + (vehicleId == ShuttleState.IngenuityId ? 1.2f : 1.6f);
-		// обличчям від шатла
-		return new Transform3D(new Basis(Vector3.Up, Mathf.Pi), new Vector3(x, y, z));
+		float lift = vehicleId == ShuttleState.IngenuityId ? 1.1f : 1.55f;
+		return GlobalTransform * new Transform3D(Basis.Identity, new Vector3(0f, lift, -3f));
 	}
 
 	private void Build(float skirtDepth, TerrainWorld terrain, float top)
@@ -72,11 +70,18 @@ public partial class ShuttlePad : Node3D
 		AddBox(body, "Roof", new Vector3(HullWidth + t, t, HullLength), new Vector3(0, HullHeight, 0), Hull, true);
 		AddBox(body, "Bow", new Vector3(HullWidth + t, HullHeight, t), new Vector3(0, HullHeight / 2f, -hl), Hull, true);
 
-		// рампа від корми вниз до рельєфу
+		// рампа від корми вниз до рельєфу. Кінець має лягти на ґрунт по всій ширині:
+		// беремо найнижчу точку під кінцем і трохи заглиблюємо, щоб не було сходинки.
 		float z0 = PadRadius - 0.5f; // рампа починається з краю майданчика
-		float ground = terrain.GetHeightAt(0f, z0 + 6f);
-		float drop = top - ground;
-		float length = Mathf.Clamp(Mathf.Abs(drop) / Mathf.Tan(Mathf.DegToRad(MaxRampSlopeDeg)), 5f, 30f);
+		float drop = 0f, length = 8f;
+		for (int i = 0; i < 4; i++)
+		{
+			float zEnd = z0 + length, ground = float.MaxValue;
+			for (float x = -RampWidth / 2f; x <= RampWidth / 2f + 0.01f; x += RampWidth / 4f)
+				ground = Mathf.Min(ground, terrain.GetHeightAt(x, zEnd));
+			drop = top - ground + 0.25f;
+			length = Mathf.Clamp(Mathf.Abs(drop) / Mathf.Tan(Mathf.DegToRad(MaxRampSlopeDeg)), 5f, 40f);
+		}
 		float slope = Mathf.Atan2(drop, length);
 		float span = Mathf.Sqrt(length * length + drop * drop) + 1f;
 		var ramp = AddBox(body, "Ramp", new Vector3(RampWidth, 0.4f, span),

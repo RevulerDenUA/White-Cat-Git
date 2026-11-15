@@ -48,6 +48,9 @@ func _run() -> void:
 	check(controller.snapshot()["context"] == "room", "Game did not start in the command room")
 	check(root.get_camera_3d() == room.view_camera, "Authored room camera is not current")
 	for light: Node in room.find_children("*", "OmniLight3D", true, false):
+		# світло зірки в телескопі живе у власному світі SubViewport, кімнату не освітлює
+		if light.get_viewport() != room.get_viewport():
+			continue
 		check(bool(light.layers & room.view_camera.cull_mask), "Authored room light was excluded by camera mask")
 	check(Input.mouse_mode == Input.MOUSE_MODE_VISIBLE, "Spectator captured mouse in room")
 	check(not room._vehicle_images.visible, "Vehicle reference images appeared in the room")

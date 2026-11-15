@@ -48,13 +48,7 @@ public static class PlanetPackets
 		mainNoise.Seed = d.NoiseSeed;
 		mainNoise.NoiseType = FastNoiseLite.NoiseTypeEnum.SimplexSmooth;
 
-		NoiseTexture2D mainTex = new NoiseTexture2D();
-		mainTex.Noise = mainNoise;
-		mainTex.ColorRamp = mainGrad;
-		mainTex.Seamless = true;
-
 		StandardMaterial3D mainMat = new StandardMaterial3D();
-		mainMat.AlbedoTexture = mainTex;
 		mainMat.Uv1Triplanar = true;
 		mainMat.Uv1TriplanarSharpness = 1.0f;
 
@@ -72,14 +66,8 @@ public static class PlanetPackets
 		cloudNoise.DomainWarpAmplitude = 30.0f;
 		cloudNoise.DomainWarpFrequency = 0.04f;
 
-		NoiseTexture2D cloudTex = new NoiseTexture2D();
-		cloudTex.Noise = cloudNoise;
-		cloudTex.ColorRamp = cloudGrad;
-		cloudTex.Seamless = true;
-
 		StandardMaterial3D cloudMat = new StandardMaterial3D();
 		cloudMat.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
-		cloudMat.AlbedoTexture = cloudTex;
 		cloudMat.Uv1Triplanar = true;
 		cloudMat.Uv1TriplanarSharpness = 1.0f;
 
@@ -103,10 +91,75 @@ public static class PlanetPackets
 			cloudMat.Uv1Scale = new Vector3(0.8f, 0.8f, 0.8f);
 		}
 
-		if (!d.IsMoon && d.AtmospherePressure > 0.0f)
+		// Текстури рахуються у фоні (див. SetNoiseTextureAsync); до готовності — колір градієнта
+		SetNoiseTextureAsync(mainMat, $"{d.NoiseSeed}:{d.Type}:main", mainNoise, mainGrad, mainGrad.Sample(0.5f));
+		bool clouds = !d.IsMoon && d.AtmospherePressure > 0.0f;
+		if (clouds)
+		{
+			SetNoiseTextureAsync(cloudMat, $"{d.NoiseSeed}:{d.Type}:cloud", cloudNoise, cloudGrad, new Color(1, 1, 1, 0));
 			mainMat.NextPass = cloudMat;
+		}
 
 		geo.MaterialOverride = mainMat;
+	}
+
+	// ---------- Фонова генерація текстур ----------
+	// NoiseTexture2D уперше генерує текстуру синхронно в головному потоці: 69 тіл × 2 текстури
+	// зупиняли гру на ~19 с. Тут той самий шум (безшовний, нормалізований, skirt 0.1) і та сама
+	// градієнтна заливка, але в пулі потоків. Розмір 256 замість 512 — частоти масштабовані,
+	// тож візерунок той самий. Готові текстури кешуються за сідом на всю сесію гри.
+
+	public const int TextureSize = 256;
+	private const int OriginalSize = 512; // розмір NoiseTexture2D, під який підібрані частоти
+	private static readonly System.Collections.Generic.Dictionary<string, ImageTexture> _textureCache = new();
+	private static int _requested, _done;
+	public static int TexturesRequested => _requested; // для смуги прогресу телескопа
+	public static int TexturesDone => _done;
+
+	private static void SetNoiseTextureAsync(BaseMaterial3D mat, string key, FastNoiseLite noise, Gradient grad, Color placeholder)
+	{
+		if (_textureCache.TryGetValue(key, out ImageTexture cached) && GodotObject.IsInstanceValid(cached))
+		{
+			mat.AlbedoTexture = cached;
+			return;
+		}
+
+		mat.AlbedoColor = placeholder;
+		System.Threading.Interlocked.Increment(ref _requested);
+
+		// частоти задані в пікселях текстури 512 — переводимо на меншу
+		float k = (float)OriginalSize / TextureSize;
+		noise.Frequency *= k;
+		noise.DomainWarpFrequency *= k;
+		noise.DomainWarpAmplitude /= k;
+
+		// градієнт → таблиця кольорів (Gradient читаємо в головному потоці)
+		var lut = new byte[256 * 4];
+		for (int i = 0; i < 256; i++)
+		{
+			Color c = grad.Sample(i / 255f);
+			lut[i * 4] = (byte)c.R8; lut[i * 4 + 1] = (byte)c.G8; lut[i * 4 + 2] = (byte)c.B8; lut[i * 4 + 3] = (byte)c.A8;
+		}
+
+		System.Threading.Tasks.Task.Run(() =>
+		{
+			Image gray = noise.GetSeamlessImage(TextureSize, TextureSize, false, false, 0.1f, true);
+			if (gray.GetFormat() != Image.Format.L8) gray.Convert(Image.Format.L8);
+			byte[] src = gray.GetData();
+			var dst = new byte[TextureSize * TextureSize * 4];
+			for (int i = 0; i < src.Length && i * 4 + 3 < dst.Length; i++)
+				System.Buffer.BlockCopy(lut, src[i] * 4, dst, i * 4, 4);
+			Image img = Image.CreateFromData(TextureSize, TextureSize, false, Image.Format.Rgba8, dst);
+			img.GenerateMipmaps();
+			Callable.From(() =>
+			{
+				var tex = ImageTexture.CreateFromImage(img);
+				_textureCache[key] = tex;
+				mat.AlbedoTexture = tex;
+				mat.AlbedoColor = Colors.White;
+				System.Threading.Interlocked.Increment(ref _done);
+			}).CallDeferred();
+		});
 	}
 
 	public static void ApplyParentSkyboxTexture(Node3D skyboxPlanetMesh, ParentPlanetData p)

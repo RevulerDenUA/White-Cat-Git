@@ -100,6 +100,8 @@ func _ready() -> void:
 		return
 	_build_monitor(layer_mask)
 	_build_ui()
+	# Телескоп будується заздалегідь (прихований), щоб команда telescope відкривала його одразу
+	_preload_telescope.call_deferred()
 	keyboard = PhysicalCommandKeyboard.new()
 	_keyboard_mesh.add_child(keyboard)
 	keyboard.build(_keyboard_mesh, layer_mask)
@@ -334,7 +336,7 @@ func _sync_session() -> void:
 		set_fullscreen(false)
 	terminal.set_hint(_terminal_hint())
 	if _context == "terminal":
-		if is_instance_valid(_telescope):
+		if is_telescope_open():
 			terminal.close()
 		else:
 			terminal.open()
@@ -460,26 +462,39 @@ func _terminal_hint() -> String:
 # ---------- Telescope ----------
 
 func is_telescope_open() -> bool:
-	return is_instance_valid(_telescope)
+	return is_instance_valid(_telescope) and _telescope.visible
 
 func get_telescope() -> Control:
-	return _telescope if is_instance_valid(_telescope) else null
+	return _telescope if is_telescope_open() else null
+
+## Creates the telescope hidden in the display; it stays alive between openings.
+func _preload_telescope() -> void:
+	if is_instance_valid(_telescope) or terminal == null:
+		return
+	var scene := load(TELESCOPE_SCENE) as PackedScene
+	var view: Control = scene.instantiate() as Control if scene != null else null
+	if view == null:
+		return
+	_telescope = view
+	_telescope.name = "Telescope"
+	_telescope.visible = false
+	terminal.get_parent().add_child(_telescope)
+	if _telescope.has_signal("Closed"):
+		_telescope.connect("Closed", _on_telescope_closed)
 
 ## Opens the telescope in place of the terminal. Returns an error message or "".
 func open_telescope() -> String:
 	if _context != "terminal":
 		return "Телескоп доступний тільки з термінала."
-	if is_instance_valid(_telescope):
+	if is_telescope_open():
 		return ""
-	var scene := load(TELESCOPE_SCENE) as PackedScene
-	var view: Control = scene.instantiate() as Control if scene != null else null
-	if view == null:
+	_preload_telescope()
+	if not is_instance_valid(_telescope):
 		return "Телескоп не відповідає."
-	_telescope = view
-	_telescope.name = "Telescope"
-	terminal.get_parent().add_child(_telescope)
-	if _telescope.has_signal("Closed"):
-		_telescope.connect("Closed", _on_telescope_closed)
+	if _telescope.has_method("Open"):
+		_telescope.call("Open")
+	else:
+		_telescope.show()
 	terminal.close()
 	terminal.content_changed.emit()
 	return ""
@@ -492,13 +507,9 @@ func _on_telescope_closed() -> void:
 	_close_telescope.call_deferred(true)
 
 func _close_telescope(reopen_terminal: bool) -> void:
-	if not is_instance_valid(_telescope):
-		_telescope = null
+	if not is_telescope_open():
 		return
-	var view := _telescope
-	_telescope = null
-	view.get_parent().remove_child(view)
-	view.queue_free()
+	_telescope.hide()
 	if reopen_terminal and _context == "terminal":
 		terminal.open()
 

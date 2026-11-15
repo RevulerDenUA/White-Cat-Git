@@ -12,6 +12,9 @@ using Godot;
 public partial class TelescopeView : Control
 {
 	[Signal] public delegate void ClosedEventHandler();
+	// Вид системи готовий (усі тіла на місці, текстури згенеровані)
+	[Signal] public delegate void LoadedEventHandler();
+	[Export] public float LoadTimeout = 20f; // секунд — далі показуємо як є
 
 	[Export] public PackedScene SystemScene = GD.Load<PackedScene>("res://Scene/system.tscn");
 
@@ -25,6 +28,16 @@ public partial class TelescopeView : Control
 	private readonly Dictionary<string, Label> _vehicleRows = new();
 	private string _vehicle = ShuttleState.RoverId;
 	private string _message_text = "";
+
+	// ---- завантаження ----
+	private Control _loading;
+	private ProgressBar _progressBar;
+	private Label _progressLabel;
+	private int _texRequested0, _texDone0; // лічильники PlanetPackets на момент створення
+	private double _loadTime;
+	private int _stableFrames, _lastBodies;
+	public bool IsLoaded { get; private set; }
+	public float Progress { get; private set; }
 
 	public PlanetOrbit Target => _selector?.Selected;
 	public string Vehicle => _vehicle;
@@ -112,7 +125,73 @@ public partial class TelescopeView : Control
 		_hints.AutowrapMode = TextServer.AutowrapMode.WordSmart;
 		col.AddChild(_hints);
 
+		_texRequested0 = PlanetPackets.TexturesRequested;
+		_texDone0 = PlanetPackets.TexturesDone;
+		BuildLoading(container);
 		CallDeferred(MethodName.SelectInitial);
+	}
+
+	// Шар поверх виду системи зі смугою прогресу
+	private void BuildLoading(Control over)
+	{
+		_loading = new PanelContainer { MouseFilter = MouseFilterEnum.Ignore };
+		_loading.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = Ink });
+		over.AddChild(_loading);
+		_loading.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+		var center = new CenterContainer();
+		_loading.AddChild(center);
+		var box = new VBoxContainer { CustomMinimumSize = new Vector2(360, 0) };
+		box.AddThemeConstantOverride("separation", 10);
+		center.AddChild(box);
+		box.AddChild(MakeLabel("Наведення телескопа", 20, White));
+		_progressBar = new ProgressBar { MinValue = 0, MaxValue = 100, ShowPercentage = false, CustomMinimumSize = new Vector2(360, 10) };
+		_progressBar.AddThemeStyleboxOverride("background", new StyleBoxFlat { BgColor = Line });
+		_progressBar.AddThemeStyleboxOverride("fill", new StyleBoxFlat { BgColor = Accent });
+		box.AddChild(_progressBar);
+		_progressLabel = MakeLabel("", 15, Dim);
+		box.AddChild(_progressLabel);
+	}
+
+	public override void _Process(double delta)
+	{
+		if (IsLoaded) return;
+		_loadTime += delta;
+
+		// 1) усі планети й місяці з'явились (клони додаються відкладено) — кількість перестала рости
+		int bodies = 0;
+		foreach (Node n in GetTree().GetNodesInGroup(PlanetOrbit.GroupName))
+		{
+			if (n is PlanetOrbit p && IsAncestorOf(p)) bodies++;
+		}
+		_stableFrames = bodies == _lastBodies && bodies > 0 ? _stableFrames + 1 : 0;
+		_lastBodies = bodies;
+		bool bodiesReady = _stableFrames >= 10;
+
+		// 2) текстури планет згенеровані у фоні (з кешу — миттєво)
+		int requested = PlanetPackets.TexturesRequested - _texRequested0;
+		int done = Mathf.Min(PlanetPackets.TexturesDone - _texDone0, requested);
+		float tex = requested == 0 ? 1f : (float)done / requested;
+		Progress = bodiesReady ? 0.15f + 0.85f * tex : 0.15f * Mathf.Min(_stableFrames / 10f, 1f);
+		_progressBar.Value = Progress * 100f;
+		_progressLabel.Text = bodiesReady
+			? $"текстури {done} з {requested}"
+			: $"тіл у системі: {bodies}";
+
+		if ((bodiesReady && done >= requested) || _loadTime > LoadTimeout)
+		{
+			IsLoaded = true;
+			Progress = 1f;
+			_loading.Visible = false;
+			EmitSignal(SignalName.Loaded);
+		}
+	}
+
+	// Показ із термінала: свіжий стан шатла, ціль — планета шатла
+	public void Open()
+	{
+		_message_text = "";
+		Show();
+		SelectInitial();
 	}
 
 	private void SelectInitial()

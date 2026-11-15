@@ -19,6 +19,13 @@ public partial class PlanetSelector : Node
 	[Export] public bool ShowPanel = true;        // у телескопі своя панель
 	[Export] public string HelpText = "A / D — перемикати планети   ЛКМ — вибрати   ПКМ — обертати камеру   СКМ — зсунути   Колесо — наблизити";
 
+	// Світіння зірки (емісія 26) закриває планети поруч — лишаємо тільки дрібні рівні
+	[ExportGroup("Glow")]
+	[Export] public bool TameGlow = true;
+	[Export(PropertyHint.Range, "0,2,0.05")] public float GlowIntensity = 0.35f;
+	[Export(PropertyHint.Range, "0,4,0.1")] public float GlowHdrThreshold = 1.6f;
+	[ExportGroup("")]
+
 	public PlanetOrbit Selected => _selected != null && IsInstanceValid(_selected) ? _selected : null;
 
 	// Світіння по краю планети, накладається поверх її матеріалу (MaterialOverlay)
@@ -44,6 +51,21 @@ void fragment() {
 		_hoverMat = MakeMat(shader, HoverColor);
 		_selectMat = MakeMat(shader, SelectColor);
 		BuildUi();
+		if (TameGlow) ReduceGlow();
+	}
+
+	// Власна копія оточення сцени (спільний .tres інших сцен не чіпаємо)
+	private void ReduceGlow()
+	{
+		if (GetParent()?.GetNodeOrNull<WorldEnvironment>("WorldEnvironment") is not { Environment: { } env } we) return;
+		var copy = (Godot.Environment)env.Duplicate();
+		copy.GlowIntensity = GlowIntensity;
+		copy.GlowHdrThreshold = GlowHdrThreshold;
+		copy.GlowBloom = 0f;
+		// великі рівні дають ореол на пів екрана — вимикаємо
+		for (int level = 0; level < 7; level++)
+			copy.SetGlowLevel(level, level < 2 ? 1f : level == 2 ? 0.4f : 0f);
+		we.Environment = copy;
 	}
 
 	public override void _ExitTree()

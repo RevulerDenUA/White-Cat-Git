@@ -61,8 +61,17 @@ func wait_scene(path: String) -> bool:
 
 func _run() -> void:
 	await open_shuttle_scene("res://Scene/A.tscn")
+	# Телескоп будується заздалегідь, прихованим
+	var preloaded: Control = current_scene.get_node("CommandRoom").find_child("Telescope", true, false)
+	check(preloaded != null and not preloaded.visible, "telescope is not preloaded hidden")
 	var tel := await open_telescope()
 	check(tel != null, "telescope did not open")
+	check(tel == preloaded, "telescope was rebuilt instead of reusing the preloaded one")
+	for index: int in 300:
+		if tel.IsLoaded:
+			break
+		await frames(1)
+	check(tel.IsLoaded and is_equal_approx(tel.Progress, 1.0), "telescope did not finish loading")
 	if tel == null:
 		_finish()
 		return
@@ -100,8 +109,18 @@ func _run() -> void:
 	check(world.get_viewport().get_camera_3d() != null and drone.is_ancestor_of(world.get_viewport().get_camera_3d()), "drone camera is not current")
 	check(_veins(world) == 0, "veins generated on a gas giant")
 
-	# Заводимо дрон у шатл і виходимо Esc
+	# Апарат стартує всередині шатла; HUD показує планету й фото апарата
 	var pad: Node3D = world.get_node("ShuttlePad")
+	check(pad.IsDocked(drone), "drone did not start inside the shuttle")
+	var session: Node = world.get_node("PlanetSession")
+	await frames(4)
+	check("Планета" in session.CardTitle or "Місяць" in session.CardTitle, "planet card has no title")
+	check("жил немає" in session.CardFacts, "gas planet card does not explain the missing veins")
+	check(session.PhotoVisible, "vehicle photo is not shown")
+	# вилітаємо назовні й повертаємося в шатл
+	drone.global_position = pad.global_position + Vector3(0, 4, 60)
+	await frames(6)
+	check(not pad.IsDocked(drone), "drone far away is still docked")
 	drone.global_position = pad.global_position + Vector3(0, 1.5, 0)
 	await frames(6)
 	check(pad.IsDocked(drone), "drone in the hull is not docked")
@@ -126,9 +145,15 @@ func _run() -> void:
 	var rover: Node3D = world.get_node("Rover")
 	var ground: float = world.GetHeightAt(rover.global_position.x, rover.global_position.z)
 	check(rover.global_position.y > ground - 0.5, "rover spawned under the terrain")
+	check(world.get_node("ShuttlePad").IsDocked(rover), "rover did not start inside the shuttle")
+	check("жили поруч" in world.get_node("PlanetSession").CardFacts, "rocky planet card does not list veins")
+	# виводимо марсохід за рампу і лишаємо там
+	var outside: Node3D = world.get_node("ShuttlePad")
+	rover.global_position = outside.global_position + Vector3(0, 0, 70)
+	rover.global_position.y = world.GetHeightAt(rover.global_position.x, rover.global_position.z) + 1.6
 	await frames(30)
 	var parked := rover.global_position
-	check(not world.get_node("ShuttlePad").IsDocked(rover), "rover spawned inside the dock")
+	check(not world.get_node("ShuttlePad").IsDocked(rover), "rover outside is still docked")
 	await key(KEY_ESCAPE)
 	check(await wait_scene("res://Scene/A.tscn"), "Esc from the rocky planet failed")
 
