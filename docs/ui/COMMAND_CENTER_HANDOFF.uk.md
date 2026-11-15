@@ -29,7 +29,25 @@ connect rover
 connect rover/carcamera2
 connect ingenuity
 connect ingenuity/camcolor
+telescope
+fullscreen
 ```
+
+`telescope` відкриває телескоп шатла (`Scene/Telescope.tscn`) на місці термінала,
+у тому самому дисплеї. Поки він відкритий, рядок вводу прихований і не має
+фокусу, а клавіші пересилаються в дисплей до телескопа. Сигнал телескопа
+`Closed` повертає термінал із фокусом у рядку вводу. Esc, як і раніше,
+повертає до кімнати й закриває телескоп.
+
+`fullscreen` або дія `terminal_fullscreen` (типово F11, перепризначається
+в налаштуваннях, група «Загальні») розгортає дисплей на весь екран гри:
+термінал, телескоп або відеопотік апарата. Логічна ширина лишається 1280,
+висота підлаштовується під пропорції вікна, тож шрифт не дрібнішає, а рядків
+вміщується більше. Миша перераховується з екрана в координати дисплея
+(`room.display_point()`), тому виділення, прокрутка й клік по виводу працюють
+так само, як на моніторі. Повторне натискання повертає на монітор; у кімнаті
+дія нічого не робить, а повернення до кімнати завжди вимикає повний екран.
+Анімації переходу немає, тож `reduced_motion` не впливає.
 
 `help` формує перелік із живих адаптерів і камер у сцені. `connect` одразу
 передає і камеру, і керування; некоректна адреса не змінює поточний сеанс.
@@ -130,6 +148,10 @@ controller.return_to_room()
 controller.get_active_camera()       # джерело поточного відеопотоку або null
 controller.get_signal_material()     # чинний матеріал симуляції перешкод
 room.get_display_viewport()           # SubViewport для HUD усередині монітора
+room.open_telescope()                 # "" або причина відмови; тільки з термінала
+room.close_telescope() / room.is_telescope_open() / room.get_telescope()
+room.set_fullscreen(true) / room.is_fullscreen()  # тільки термінал або пілотування
+room.display_point(screen_point)      # екран -> координати дисплея, (-1, -1) поза ним
 ```
 
 `connect_target` повертає порожній рядок при успіху, пояснення при відмові.
@@ -283,12 +305,14 @@ dotnet build Jeep..csproj --no-restore
 XDG_DATA_HOME=/tmp/white-cat-command-tests godot --headless --path . --script res://tests/command/test_command_center.gd
 XDG_DATA_HOME=/tmp/white-cat-upstream-resource-tests godot --headless --path . --script res://tests/command/test_upstream_integration.gd
 XDG_DATA_HOME=/tmp/white-cat-physical-monitor-tests godot --headless --path . --script res://tests/command/test_physical_monitor.gd
+XDG_DATA_HOME=/tmp/white-cat-fullscreen-tests godot --headless --path . --script res://tests/command/test_terminal_fullscreen.gd
 XDG_DATA_HOME=/tmp/white-cat-front-tests godot --headless --path . --script res://tests/ui/test_frontend.gd
 XDG_DATA_HOME=/tmp/white-cat-layout-tests godot --headless --path . --script res://tests/ui/test_layout.gd
 XDG_DATA_HOME=/tmp/white-cat-command-captures godot --path . --display-driver x11 --script res://tests/command/capture.gd -- --mode=ingenuity/camcolor --size=1600x900 --output=/tmp/white-cat-ingenuity.png
 ```
 
-Режими capture: `room`, `hover`, `terminal` або адреса апарата/камери.
+Режими capture: `room`, `hover`, `terminal`, `terminal-fullscreen`, `telescope`
+або адреса апарата/камери.
 Для рельєфу capture приймає `--scene=res://Scene/WorldGen.tscn`.
 Наукових показників у терміналі не вигадано. Наявний фільтр залежить від
 світового Y і швидкості; це візуальна симуляція перешкод, не вимір радіозв'язку.

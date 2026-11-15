@@ -30,9 +30,14 @@ func _run() -> void:
 	await create_timer(1.0).timeout
 	var controller: Node = game.get_node("CameraControl")
 	var room: Node = game.get_node("CommandRoom")
-	if mode == "terminal":
+	if mode == "terminal" or mode == "terminal-fullscreen":
 		controller.open_terminal()
 		room.execute_command("help")
+		if mode == "terminal-fullscreen":
+			room.execute_command("fullscreen")
+	elif mode == "telescope":
+		controller.open_terminal()
+		room.execute_command("telescope")
 	elif mode == "hover":
 		room.set_physics_process(false)
 		room._set_hovered(true)

@@ -27,6 +27,7 @@ const ACTIONS := [
 	["DrillPickup", "Розібрати бур (утримувати)", "Техніка", KEY_X],
 	["CameraChange", "Наступна камера", "Загальні", KEY_C],
 	["SpectatorMode", "Вільна камера (розробка)", "Загальні", KEY_F],
+	["terminal_fullscreen", "Термінал на весь екран", "Загальні", KEY_F11],
 	["spectator_forward", "Рух уперед", "Вільна камера", KEY_W],
 	["spectator_backward", "Рух назад", "Вільна камера", KEY_S],
 	["spectator_left", "Ліворуч", "Вільна камера", KEY_A],

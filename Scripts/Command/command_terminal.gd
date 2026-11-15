@@ -9,6 +9,7 @@ var entry: LineEdit
 var output: RichTextLabel
 var _lines: Array[String] = []
 var _accepts_commands := false
+var _hint: Label
 
 func _ready() -> void:
 	theme = WhiteCatTheme.create()
@@ -31,7 +32,8 @@ func _ready() -> void:
 	var title := WhiteCatTheme.label("Командний термінал", 25)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.add_child(title)
-	heading.add_child(WhiteCatTheme.label("Esc — до кімнати", 21, WhiteCatTheme.MUTED))
+	_hint = WhiteCatTheme.label("Esc — до кімнати", 21, WhiteCatTheme.MUTED)
+	heading.add_child(_hint)
 	body.add_child(WhiteCatTheme.rule())
 	output = RichTextLabel.new()
 	output.name = "Output"
@@ -70,6 +72,11 @@ func _restore_focus() -> void:
 	if _accepts_commands and is_visible_in_tree():
 		entry.grab_focus()
 		entry.edit()
+
+func set_hint(text: String) -> void:
+	if _hint != null and _hint.text != text:
+		_hint.text = text
+		content_changed.emit()
 
 func open() -> void:
 	_accepts_commands = true
