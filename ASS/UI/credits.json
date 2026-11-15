@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "note": "Перелік доповнюється під час розробки.",
+  "sections": [
+    {
+      "title": "White Cat",
+      "entries": [
+        {
+          "title": "Space Mission Design Game",
+          "credit": "Проєкт для NASA Space Apps Challenge 2026.",
+          "links": [
+            {"label": "Репозиторій гри", "url": "https://github.com/RevulerDenUA/White-Cat-Git"},
+            {"label": "Дані та матеріали команди", "url": "https://github.com/RevulerDenUA/White-cat"}
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Зображення та моделі",
+      "entries": [
+        {
+          "title": "Земля · Blue Marble",
+          "credit": "NASA Earth Observatory · Reto Stöckli, Robert Simmon та команда Blue Marble.",
+          "detail": "Композитне зображення 2002 року. Масштаб Землі та освітлення в меню — художня композиція.",
+          "assets": ["res://ASS/UI/Textures/earth_nasa.jpg"],
+          "links": [
+            {"label": "NASA Earth Observatory", "url": "https://science.nasa.gov/earth/earth-observatory/the-blue-marble-true-color-global-imagery-at-1km-resolution/"}
+          ]
+        },
+        {
+          "title": "Космічна станція White Cat",
+          "credit": "Геометрію та атлас створено для White Cat за наданим візуальним референсом.",
+          "detail": "Антену адаптовано з моделі Mars Reconnaissance Orbiter: NASA Science / NASA-JPL. Художня модель і масштаб.",
+          "assets": ["res://ASS/Station/Space_Station.glb"],
+          "links": [
+            {"label": "Матеріали White Cat", "url": "https://github.com/RevulerDenUA/White-cat"},
+            {"label": "NASA · модель MRO", "url": "https://science.nasa.gov/3d-resources/mars-reconnaissance-orbiter-mro-c/"}
+          ]
+        },
+        {
+          "title": "Марсіанський гелікоптер White Cat",
+          "credit": "Геометрію та текстури створено для White Cat за наданим зображенням.",
+          "detail": "Палітра узгоджена з марсоходом і станцією проєкту.",
+          "assets": ["res://ASS/Helicopter/Mars_Helicopter.glb"],
+          "links": [
+            {"label": "Матеріали White Cat", "url": "https://github.com/RevulerDenUA/White-cat"}
+          ]
+        },
+        {
+          "title": "1987 Jeep Comanche",
+          "credit": "tonielpro520 · CC BY 4.0.",
+          "detail": "Автор, джерело та ліцензія з метаданих оригінального імпорту scene.gltf.",
+          "assets": ["res://ASS/JEEP/scene.gltf"],
+          "links": [
+            {"label": "Модель на Sketchfab", "url": "https://sketchfab.com/3d-models/1987-jeep-comanche-6380330f485d4798858d9c9027b281d9"},
+            {"label": "CC BY 4.0", "url": "https://creativecommons.org/licenses/by/4.0/"}
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Звук та оформлення",
+      "entries": [
+        {
+          "title": "Музика меню та звуки інтерфейсу",
+          "credit": "Процедурна композиція й тони, створені для White Cat без запозичених семплів.",
+          "assets": ["res://ASS/UI/Audio/orbital_ambient.wav", "res://ASS/UI/Audio/hover.wav", "res://ASS/UI/Audio/focus.wav", "res://ASS/UI/Audio/confirm.wav"]
+        },
+        {
+          "title": "Графіка інтерфейсу",
+          "credit": "Форми кнопок, піктограми та шейдери меню створено для White Cat."
+        }
+      ]
+    },
+    {
+      "title": "Шрифти",
+      "entries": [
+        {
+          "title": "Onest",
+          "credit": "© 2021 The Onest Project Authors · SIL Open Font License 1.1.",
+          "assets": ["res://ASS/UI/Fonts/Onest.ttf"],
+          "license_file": "res://ASS/UI/Fonts/Onest-OFL.txt",
+          "links": [{"label": "Проєкт Onest", "url": "https://github.com/googlefonts/onest"}]
+        },
+        {
+          "title": "Barlow Condensed Semibold",
+          "credit": "© 2017 The Barlow Project Authors · SIL Open Font License 1.1.",
+          "assets": ["res://ASS/UI/Fonts/BarlowCondensed-SemiBold.ttf"],
+          "license_file": "res://ASS/UI/Fonts/BarlowCondensed-OFL.txt",
+          "links": [{"label": "Проєкт Barlow", "url": "https://github.com/jpt/barlow"}]
+        }
+      ]
+    },
+    {
+      "title": "Наукові джерела",
+      "entries": [
+        {
+          "title": "Науковий пакет White Cat",
+          "credit": "Каталог джерел NASA, JPL, PDS, USGS та інших установ зібрано в окремому репозиторії даних.",
+          "detail": "Це довідкові матеріали. Їх наявність у пакеті не означає, що всі набори вже підключені до гри.",
+          "links": [
+            {"label": "Повний каталог джерел", "url": "https://github.com/RevulerDenUA/White-cat/blob/main/data/sources.json"}
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Технології",
+      "entries": [
+        {
+          "title": "Godot Engine",
+          "credit": "Godot Engine contributors · Juan Linietsky та Ariel Manzur. Ліцензія MIT.",
+          "runtime_license": "godot",
+          "links": [{"label": "Godot Engine", "url": "https://godotengine.org/"}]
+        },
+        {
+          "title": "Сторонні компоненти Godot",
+          "credit": "Автори та повні тексти ліцензій компонентів поточної збірки рушія.",
+          "runtime_license": "godot_components"
+        }
+      ]
+    }
+  ]
+}

@@ -24,10 +24,15 @@ public partial class SpectatorMode : Camera3D
 
 	public override void _Input(InputEvent @event)
 	{
+		if (!Current) return;
+
 		if (@event is InputEventMouseMotion mouseMotion)
 		{
-			_yaw -= mouseMotion.Relative.X * MouseSensitivity;
-			_pitch -= mouseMotion.Relative.Y * MouseSensitivity;
+			var settings = GetNodeOrNull<Node>("/root/UserSettings");
+			float sensitivity = settings == null ? 1f : (float)settings.Call("get_value", "mouse_sensitivity").AsDouble();
+			bool invert = settings != null && settings.Call("get_value", "invert_y").AsBool();
+			_yaw -= mouseMotion.Relative.X * MouseSensitivity * sensitivity;
+			_pitch -= mouseMotion.Relative.Y * MouseSensitivity * sensitivity * (invert ? -1f : 1f);
 
 			_pitch = Mathf.Clamp(_pitch, -89.0f, 89.0f);
 		}
@@ -56,28 +61,30 @@ public partial class SpectatorMode : Camera3D
 
 	public override void _Process(double delta)
 	{
+		if (!Current) return;
+
 		Vector3 direction = Vector3.Zero;
 
 		Vector3 forward = -GlobalTransform.Basis.Z;
 		Vector3 right = GlobalTransform.Basis.X;
 		Vector3 up = GlobalTransform.Basis.Y;
 
-		if (Input.IsKeyPressed(Key.W))
+		if (Input.IsActionPressed("spectator_forward"))
 			direction += forward;
 
-		if (Input.IsKeyPressed(Key.S))
+		if (Input.IsActionPressed("spectator_backward"))
 			direction -= forward;
 
-		if (Input.IsKeyPressed(Key.A))
+		if (Input.IsActionPressed("spectator_left"))
 			direction -= right;
 
-		if (Input.IsKeyPressed(Key.D))
+		if (Input.IsActionPressed("spectator_right"))
 			direction += right;
 
-		if (Input.IsKeyPressed(Key.E))
+		if (Input.IsActionPressed("spectator_up"))
 			direction += up;
 
-		if (Input.IsKeyPressed(Key.Q))
+		if (Input.IsActionPressed("spectator_down"))
 			direction -= up;
 
 		Basis yawBasis = new Basis(

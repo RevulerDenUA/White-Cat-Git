@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://cv480r0pwj7vm" path="res://ASS/JEEP/suv_pixelatedredandwhite.png" id="2_prh16"]
 [ext_resource type="Texture2D" uid="uid://bj6cepbp5vuep" path="res://ASS/JEEP/suvinterior_pixelatedredandwhitewindows.png" id="3_2fht4"]
 [ext_resource type="Script" uid="uid://4jvk6f12nmo7" path="res://Scripts/SteeringWheel.cs" id="4_3y52s"]
-[ext_resource type="PackedScene" uid="uid://b86wxsbspqjfb" path="res://ASS/RoverNew/White-Cat-Rover.glb" id="9_rover"]
+[ext_resource type="PackedScene" path="res://ASS/RoverNew/White-Cat-Rover.glb" id="9_rover"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_prh16"]
 radius = 0.8690131

@@ -23,6 +23,9 @@ public partial class CameraControl : Node
 
 	public override void _Ready()
 	{
+		GameData.CameraIndex = 0;
+		GameData.InSpectatorMode = true;
+		GameData.ActiveVehicle = null;
 		_filterMat = Filter?.Material as ShaderMaterial;
 		SpecCamera.MakeCurrent();
 	}
@@ -70,6 +73,9 @@ public partial class CameraControl : Node
 	private void UpdateFilter()
 	{
 		if (_filterMat == null) return;
+
+		var settings = GetNodeOrNull<Node>("/root/UserSettings");
+		Filter.Visible = settings == null || settings.Call("get_value", "signal_effects").AsBool();
 
 		Camera3D current = GetViewport().GetCamera3D();
 		Node3D vehicle = GameData.InSpectatorMode ? null : GameData.ActiveVehicle;
