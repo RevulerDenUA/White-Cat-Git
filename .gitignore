@@ -2,3 +2,13 @@
 .godot/
 /android/
 .idea/
+
+# Білди експорту: теки лишаються (Godot не створює їх сам), вміст — ні
+/build/*
+!/build/.gdignore
+!/build/windows/
+!/build/linux/
+/build/windows/*
+/build/linux/*
+!/build/windows/.gitkeep
+!/build/linux/.gitkeep

@@ -7,17 +7,17 @@
 [ext_resource type="Shader" uid="uid://bdrf3l2s7ry0e" path="res://shader/MahNutsHurt.gdshader" id="6_s8iv6"]
 [ext_resource type="PackedScene" uid="uid://bfblajavp7fl4" path="res://Scene/FLYJEEP.tscn" id="7_fly"]
 [ext_resource type="Script" uid="uid://ghnu06g7kg2s" path="res://Scripts/Command/RemoteVehicle.cs" id="8_remote"]
-[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Rover/01_front.png" id="9_rover_front"]
-[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Rover/02_left.png" id="10_rover_side"]
-[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Ingenuity/01_front.png" id="11_ing_front"]
-[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Ingenuity/05_top.png" id="12_ing_top"]
+[ext_resource type="Texture2D" uid="uid://bofgk26k7ny0x" path="res://ASS/UI/VehicleViews/Rover/01_front.png" id="9_rover_front"]
+[ext_resource type="Texture2D" uid="uid://f177qrlkipg6" path="res://ASS/UI/VehicleViews/Rover/02_left.png" id="10_rover_side"]
+[ext_resource type="Texture2D" uid="uid://bu027ythlrcat" path="res://ASS/UI/VehicleViews/Ingenuity/01_front.png" id="11_ing_front"]
+[ext_resource type="Texture2D" uid="uid://dnrdulvykvnne" path="res://ASS/UI/VehicleViews/Ingenuity/05_top.png" id="12_ing_top"]
 [ext_resource type="Script" uid="uid://dlxdo8fpkeuo6" path="res://Scripts/SpectatorMode/SpectatorMode.cs" id="13_spec"]
-[ext_resource type="Script" path="res://Scripts/Planet/ShuttlePad.cs" id="14_pad"]
-[ext_resource type="Script" path="res://Scripts/Planet/PlanetSession.cs" id="15_session"]
+[ext_resource type="Script" uid="uid://j4605x2y3wp8" path="res://Scripts/Planet/ShuttlePad.cs" id="14_pad"]
+[ext_resource type="Script" uid="uid://ttsycrskvt1l" path="res://Scripts/Planet/PlanetSession.cs" id="15_session"]
 [ext_resource type="Script" uid="uid://bw1h7husr85qn" path="res://Scripts/Planet/OreGenerator.cs" id="16_ores"]
 [ext_resource type="Script" uid="uid://cjhjyt5juikse" path="res://Scripts/Drill/DrillManager.cs" id="17_drill"]
 [ext_resource type="PackedScene" path="res://Scene/Vein.tscn" id="18_vein"]
-[ext_resource type="Script" path="res://Scripts/Planet/GasWeather.cs" id="19_weather"]
+[ext_resource type="Script" uid="uid://bfkc4lpuyxp40" path="res://Scripts/Planet/GasWeather.cs" id="19_weather"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m50oi"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -61,7 +61,7 @@ shader_parameter/reticle_alpha = 0.55
 [node name="WorldGen" type="Node3D" unique_id=1762984832 node_paths=PackedStringArray("Player", "FogEnvironment")]
 script = ExtResource("1_d48c2")
 Seed = 12348
-RenderDistance = 3
+RenderDistance = 10
 Player = NodePath("Rover")
 HeightScale = 10.0
 GasFogDensity = 0.007
@@ -86,27 +86,26 @@ NoiseStartSpeed = 12.0
 NoiseFullSpeed = 45.0
 MaxNoise = 0.45
 
-[node name="SpectatorMode" type="Camera3D" parent="."]
+[node name="SpectatorMode" type="Camera3D" parent="." unique_id=764293369]
 transform = Transform3D(1, 0, 0, 0, 0.9238795, 0.38268343, 0, -0.38268343, 0.9238795, 0, 25, 40)
 script = ExtResource("13_spec")
 
 [node name="Rover" parent="." unique_id=73140632 instance=ExtResource("4_3hs8j")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.963835, 0)
-collision_mask = 3
 
-[node name="RemoteVehicle" type="Node" parent="Rover" node_paths=PackedStringArray("Vehicle", "Cameras")]
+[node name="RemoteVehicle" type="Node" parent="Rover" unique_id=718211018 node_paths=PackedStringArray("Vehicle", "Cameras")]
 script = ExtResource("8_remote")
 TargetId = "rover"
 DisplayName = "Марсохід"
 Vehicle = NodePath("..")
 Cameras = [NodePath("../CarCamera"), NodePath("../CarCamera2")]
-IdentificationImages = [ExtResource("9_rover_front"), ExtResource("10_rover_side")]
+IdentificationImages = Array[Texture2D]([ExtResource("9_rover_front"), ExtResource("10_rover_side")])
 
-[node name="FlyingJeep" parent="." instance=ExtResource("7_fly")]
+[node name="FlyingJeep" parent="." unique_id=1020010275 instance=ExtResource("7_fly")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, 0)
 collision_mask = 3
 
-[node name="RemoteVehicle" type="Node" parent="FlyingJeep" node_paths=PackedStringArray("Vehicle", "Cameras", "ColorCameras")]
+[node name="RemoteVehicle" type="Node" parent="FlyingJeep" unique_id=517466907 node_paths=PackedStringArray("Vehicle", "Cameras", "ColorCameras")]
 script = ExtResource("8_remote")
 TargetId = "ingenuity"
 DisplayName = "Інжінюїті"
@@ -114,26 +113,26 @@ Vehicle = NodePath("..")
 Cameras = [NodePath("../CamColor"), NodePath("../CamBW")]
 ColorCameras = [NodePath("../CamColor")]
 SupportsVerticalControl = true
-IdentificationImages = [ExtResource("11_ing_front"), ExtResource("12_ing_top")]
+IdentificationImages = Array[Texture2D]([ExtResource("11_ing_front"), ExtResource("12_ing_top")])
 
-[node name="ShuttlePad" type="Node3D" parent="."]
+[node name="ShuttlePad" type="Node3D" parent="." unique_id=1766332096]
 script = ExtResource("14_pad")
 
-[node name="OreGenerator" type="Node3D" parent="." node_paths=PackedStringArray("Terrain")]
+[node name="OreGenerator" type="Node3D" parent="." unique_id=366139932 node_paths=PackedStringArray("Terrain")]
 script = ExtResource("16_ores")
 Terrain = NodePath("..")
 VeinScene = ExtResource("18_vein")
 KeepOutRadius = 55.0
 
-[node name="DrillManager" type="Node3D" parent="."]
+[node name="DrillManager" type="Node3D" parent="." unique_id=1094113395]
 script = ExtResource("17_drill")
 
-[node name="GasWeather" type="Node3D" parent="." node_paths=PackedStringArray("Terrain", "Environment")]
+[node name="GasWeather" type="Node3D" parent="." unique_id=285794360 node_paths=PackedStringArray("Terrain", "Environment")]
 script = ExtResource("19_weather")
 Terrain = NodePath("..")
 Environment = NodePath("../WorldEnvironment")
 
-[node name="PlanetSession" type="Node" parent="." node_paths=PackedStringArray("Controller", "Terrain", "Pad", "Rover", "Ingenuity", "Ores")]
+[node name="PlanetSession" type="Node" parent="." unique_id=280764207 node_paths=PackedStringArray("Controller", "Terrain", "Pad", "Rover", "Ingenuity", "Ores")]
 script = ExtResource("15_session")
 Controller = NodePath("../CameraControl")
 Terrain = NodePath("..")
