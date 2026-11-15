@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public struct PlanetData
 {
+	public const float Gvalues = 6.67430f;
 	public string Type;
 	public int Order;
 	public int PlanetSeed;
@@ -20,7 +21,15 @@ public struct PlanetData
 
 	public float Radius;
 	public float Gravity;
+
+	public float Mass;
 	public float Temperature;
+
+	public void CalculateGravity()
+	{
+		float halfRadius = Mathf.Max(this.Radius * 0.5f, 0.001f);
+		this.Gravity = Gvalues * (this.Mass / (halfRadius * halfRadius));
+	}
 }
 
 public partial class SystemValues : Node3D
@@ -37,9 +46,9 @@ public partial class SystemValues : Node3D
 	{
 		
 	RandomNumberGenerator rng = new RandomNumberGenerator();
-    rng.Seed = (ulong)Mathf.Abs(seed);
-    rng.Randi(); 
-    int count = rng.RandiRange(1, 9);
+	rng.Seed = (ulong)Mathf.Abs(seed);
+	rng.Randi(); 
+	int count = rng.RandiRange(1, 9);
 
 	GD.Print(count);
 

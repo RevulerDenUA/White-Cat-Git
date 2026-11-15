@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bts5ryqkwjjed"]
 
 [ext_resource type="Environment" uid="uid://bvk5mrno3ev1d" path="res://Planet Temp/new_environment.tres" id="1_ghylp"]
+[ext_resource type="Script" uid="uid://ykbg07ofwwyu" path="res://Planet Temp/SystemValues.cs" id="1_kk3s5"]
 [ext_resource type="Script" uid="uid://bv3qyb2cam411" path="res://Planet Temp/PlanetOrbit.cs" id="1_mg2au"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mg2au"]
@@ -20,6 +21,9 @@ inner_radius = 1.0
 outer_radius = 1.001
 
 [node name="Node3D" type="Node3D" unique_id=926188908]
+
+[node name="System Values" type="Node3D" parent="." unique_id=37670408]
+script = ExtResource("1_kk3s5")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1261749978]
 environment = ExtResource("1_ghylp")
@@ -49,7 +53,7 @@ script = ExtResource("1_mg2au")
 WorldEnv = NodePath("../WorldEnvironment")
 StarNode = NodePath("../CSGMesh3D")
 OrbitRingMesh = NodePath("Orbit")
-PlanetNode = NodePath(".")
+PlanetNode = NodePath("Local Planet")
 PerihelionPoint = NodePath("Orbit/Marker3D")
 AphelionPoint = NodePath("Orbit/Marker3D2")
 
