@@ -85,7 +85,7 @@ public partial class VehicleCamera : Camera3D
 	{
 		float dt = (float)delta;
 
-		if (EnableLook && Current && GameData.CanDrive(_vehicle) && !GetTree().Paused)
+		if (EnableLook && GameData.ActiveCamera == this && GameData.CanDrive(_vehicle) && !GetTree().Paused)
 		{
 			float input = Input.GetAxis("CameraRight", "CameraLeft");
 			if (input != 0f) _yaw += input * TurnSpeed * dt;

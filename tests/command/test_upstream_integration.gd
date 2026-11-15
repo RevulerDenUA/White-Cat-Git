@@ -68,7 +68,8 @@ func _run() -> void:
 	var manager: Node = game.get_node("DrillManager")
 	var rover: VehicleBody3D = game.get_node("CharacterBody3D")
 	var ingenuity: CharacterBody3D = game.get_node("FlyingJeep")
-	var hud := manager.find_child("ResourceHud", true, false) as Label
+	var hud := room.get_display_viewport().find_child("ResourceHud", true, false) as Label
+	var drill_hints := room.get_display_viewport().find_child("DrillHints", true, false) as Label
 	var ghost := manager.get_node("DrillBlueprint") as Node3D
 	var initial: Dictionary = saved()["Storage"]
 	check(not hud.visible, "Resource HUD obscures the command room")
@@ -77,6 +78,9 @@ func _run() -> void:
 	rover.global_transform = Transform3D(Basis.IDENTITY, Vector3(0, 2, 18))
 	controller.connect_target("rover")
 	await frames()
+	check(not "\n" in hud.text and hud.max_lines_visible == 1, "Inventory is no longer a single compact row")
+	check(hud.get_rect().end.y < 100 and drill_hints.get_rect().position.y > 350, "Resource HUD occupies the centre of the video feed")
+	check(not "ціна" in drill_hints.text.to_lower(), "Idle driving still shows the full drill recipe")
 	key(KEY_W, true)
 	await frames(20)
 	check(rover.engine_force > 0, "Updated delayed/throttled rover did not receive input")
@@ -108,7 +112,8 @@ func _run() -> void:
 	key(KEY_P, false)
 	await frames()
 	check(ghost.visible, "Rebound blueprint action did not open the real drill preview")
-	check("[P]" in hud.text, "Drill HUD still displays a hard-coded B shortcut")
+	check("[P]" in drill_hints.text, "Drill HUD still displays a hard-coded B shortcut")
+	check(drill_hints.get_line_count() <= 2 and "Ціна:" in drill_hints.text, "Build preview does not keep its actual recipe in two footer lines")
 	key(KEY_T, true)
 	key(KEY_T, false)
 	await frames()

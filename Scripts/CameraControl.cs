@@ -25,7 +25,7 @@ public partial class CameraControl : Node
 	private readonly System.Collections.Generic.Dictionary<string, RemoteVehicle> _targets = new(StringComparer.OrdinalIgnoreCase);
 	private readonly System.Collections.Generic.Dictionary<RemoteVehicle, List<(Node Node, Action Callback)>> _watchers = new();
 	private RemoteVehicle _active;
-	private Camera3D _camera;
+	private Camera3D _camera { get => GameData.ActiveCamera; set => GameData.ActiveCamera = value; }
 	private Camera3D _roomCamera;
 	private ShaderMaterial _filterMat;
 	private Node _settings;
@@ -40,6 +40,7 @@ public partial class CameraControl : Node
 	public override void _Ready()
 	{
 		GameData.ActiveVehicle = null;
+		_camera = null;
 		GameData.InputArmed = false;
 		GameData.CameraIndex = -1;
 		GameData.Context = ControlContext.Room;
@@ -56,6 +57,8 @@ public partial class CameraControl : Node
 	}
 
 	public uint get_room_layer() => RoomLayerMask;
+	public Camera3D get_active_camera() => RemoteVehicle.IsLive(_camera) ? _camera : null;
+	public Material get_signal_material() => Filter?.Material;
 	private bool Setting(string key) => _settings != null && _settings.Call("get_value", key).AsBool();
 
 	public bool register_vehicle(RemoteVehicle target)
@@ -192,7 +195,8 @@ public partial class CameraControl : Node
 		GameData.CameraIndex = cameras.IndexOf(chosen);
 		GameData.InputArmed = false;
 		ControlInput.Reset();
-		chosen.MakeCurrent();
+		// The room camera stays current; RoomView renders this source on the monitor.
+		if (RemoteVehicle.IsLive(_roomCamera)) _roomCamera.MakeCurrent();
 		Input.MouseMode = Input.MouseModeEnum.Visible;
 		EmitSignal(SignalName.SessionChanged);
 		return "";
@@ -239,7 +243,6 @@ public partial class CameraControl : Node
 		int next = (cameras.IndexOf(_camera) + 1) % cameras.Count;
 		_camera = cameras[next];
 		GameData.CameraIndex = next;
-		_camera.MakeCurrent();
 		EmitSignal(SignalName.SessionChanged);
 	}
 
@@ -308,7 +311,7 @@ public partial class CameraControl : Node
 	private void UpdateFilter()
 	{
 		if (!GodotObject.IsInstanceValid(Filter)) return;
-		Filter.Visible = GameData.Context == ControlContext.Vehicle && Setting("signal_effects");
+		Filter.Visible = false; // The same effect is composited inside the physical display.
 		if (_filterMat == null || !RemoteVehicle.IsLive(_active)) return;
 		Node3D vehicle = _active.Vehicle;
 		float speed = vehicle switch { RigidBody3D rb => rb.LinearVelocity.Length(), CharacterBody3D cb => cb.Velocity.Length(), _ => 0f };
@@ -326,6 +329,7 @@ public partial class CameraControl : Node
 		_targets.Clear();
 		ControlInput.Reset();
 		GameData.ActiveVehicle = null;
+		_camera = null;
 		GameData.InputArmed = false;
 		GameData.Context = ControlContext.Room;
 		GameData.CameraIndex = -1;

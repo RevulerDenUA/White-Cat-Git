@@ -1,9 +1,9 @@
 class_name CommandRoomView
 extends Node3D
-## Wraps the authored model. Geometry, furniture and camera pose remain in the GLB.
+## One physical screen: the actual terminal or a single shared-world camera feed.
 
 @export var controller_path: NodePath
-@export var display_size := Vector2i(1024, 401)
+@export var display_size := Vector2i(1920, 752)
 @export var imported_light_scale := 0.003
 @export var imported_light_range := 30.0
 var view_camera: Camera3D
@@ -11,22 +11,35 @@ var monitor: MeshInstance3D
 var terminal: CommandTerminal
 var controller: Node
 var hovered := false
+var keyboard: PhysicalCommandKeyboard
 var _display_material: StandardMaterial3D
 var _hint: Label
 var _identity: Label
 var _controls: Label
-var _pointer := Vector2(-1, -1)
 var _hover_animation: Tween
 var _pick_body: StaticBody3D
 var _monitor_viewport: SubViewport
+var _feed_camera: Camera3D
+var _source_camera: Camera3D
+var _signal_filter: ColorRect
 var _surface := -1
-var _last_address := ""
-var _identity_animation: Tween
 var _vehicle_images: HBoxContainer
 var _portraits: Array[TextureRect] = []
 var _context := "room"
+var _housing: MeshInstance3D
+var _keyboard_mesh: MeshInstance3D
+var _hover_shell: MeshInstance3D
+var _overview: Transform3D
+var _overview_fov: float
+var _pose_animation: Tween
+var _close_view := false
+var _screen_vertices: PackedVector3Array
+var _screen_indices: PackedInt32Array
+var _screen_uvs: PackedVector2Array
 
 func _ready() -> void:
+	# Copy after source cameras have applied their movement tilt and player look.
+	process_priority = 100
 	controller = get_node(controller_path)
 	var layer_mask: int = controller.get_room_layer()
 	for node: Node in $Interior.find_children("*", "", true, false):
@@ -35,6 +48,10 @@ func _ready() -> void:
 			node.layers = layer_mask
 			if extras.get("ui_target", "") == "main_control":
 				monitor = node
+			elif node.name == "Terminal | CRT housing":
+				_housing = node
+			elif node.name == "Terminal | Keyboard":
+				_keyboard_mesh = node
 		elif node is Camera3D:
 			node.current = false
 			if extras.get("view_role", "") == "fixed_player_view":
@@ -44,16 +61,17 @@ func _ready() -> void:
 			var color: Array = extras["room_light_color"]
 			light.light_color = Color(float(color[0]), float(color[1]), float(color[2]))
 			light.light_energy = float(extras["room_light_watts"]) * imported_light_scale
-			# Point lights approximate source area lights; suppress their false pin reflections.
 			light.light_specular = 0.0
 			light.omni_range = imported_light_range
 			light.light_cull_mask = layer_mask
 			light.layers = layer_mask
 			light.shadow_enabled = float(extras["room_light_watts"]) >= 1800.0
 			node.add_child(light)
-	if view_camera == null or monitor == null:
-		push_error("Command room: authored camera or main_control screen metadata is missing.")
+	if view_camera == null or monitor == null or _housing == null or _keyboard_mesh == null:
+		push_error("Command room: authored camera, screen, housing or keyboard is missing.")
 		return
+	_overview = view_camera.global_transform
+	_overview_fov = view_camera.fov
 	view_camera.cull_mask = layer_mask
 	var environment := Environment.new()
 	environment.background_mode = Environment.BG_COLOR
@@ -71,50 +89,52 @@ func _ready() -> void:
 		return
 	_build_monitor(layer_mask)
 	_build_ui()
+	keyboard = PhysicalCommandKeyboard.new()
+	_keyboard_mesh.add_child(keyboard)
+	keyboard.build(_keyboard_mesh, layer_mask)
+	_build_hover_shell(layer_mask)
 	controller.SessionChanged.connect(_sync_session)
 	controller.RegistryChanged.connect(_registry_changed)
 	controller.Diagnostic.connect(_diagnostic)
 	UserSettings.changed.connect(_sync_session)
+	get_viewport().size_changed.connect(_resize_work_view)
 	_sync_session.call_deferred()
 
 func get_room_camera() -> Camera3D:
 	return view_camera
 
+func get_display_viewport() -> SubViewport:
+	return _monitor_viewport
+
 func _build_monitor(layer_mask: int) -> void:
 	_monitor_viewport = SubViewport.new()
-	_monitor_viewport.name = "MonitorText"
+	_monitor_viewport.name = "MonitorDisplay"
 	_monitor_viewport.size = display_size
-	_monitor_viewport.transparent_bg = false
+	_monitor_viewport.size_2d_override = Vector2i(1280, 502)
+	_monitor_viewport.size_2d_override_stretch = true
+	_monitor_viewport.world_3d = get_world_3d()
+	_monitor_viewport.handle_input_locally = true
 	_monitor_viewport.disable_3d = true
 	_monitor_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	add_child(_monitor_viewport)
-	var background := ColorRect.new()
-	background.color = Color("101923")
-	_monitor_viewport.add_child(background)
-	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var text := WhiteCatTheme.label("> help", 92, Color("c6dae9"))
-	text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_monitor_viewport.add_child(text)
-	text.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_feed_camera = Camera3D.new()
+	_feed_camera.name = "SelectedVehicleFeed"
+	_feed_camera.cull_mask = 1
+	_monitor_viewport.add_child(_feed_camera)
+	_feed_camera.make_current()
 	_display_material = StandardMaterial3D.new()
 	_display_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_display_material.albedo_texture = _monitor_viewport.get_texture()
-	_display_material.albedo_color = Color("a4b0b9")
 	monitor.set_surface_override_material(_surface, _display_material)
 	var arrays := monitor.mesh.surface_get_arrays(_surface)
-	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	_screen_vertices = arrays[Mesh.ARRAY_VERTEX]
+	_screen_indices = arrays[Mesh.ARRAY_INDEX]
+	_screen_uvs = arrays[Mesh.ARRAY_TEX_UV]
 	var faces := PackedVector3Array()
 	var relative := global_transform.affine_inverse() * monitor.global_transform
-	if indices.is_empty():
-		for vertex: Vector3 in vertices:
-			faces.append(relative * vertex)
-	else:
-		for index: int in indices:
-			faces.append(relative * vertices[index])
+	for index: int in _screen_indices:
+		faces.append(relative * _screen_vertices[index])
 	var shape := ConcavePolygonShape3D.new()
-	shape.backface_collision = false
 	shape.set_faces(faces)
 	_pick_body = StaticBody3D.new()
 	_pick_body.name = "MonitorInteraction"
@@ -127,63 +147,97 @@ func _build_monitor(layer_mask: int) -> void:
 
 func _build_ui() -> void:
 	var layer := CanvasLayer.new()
-	layer.name = "TerminalLayer"
+	layer.name = "DisplayHud"
 	layer.layer = 10
-	add_child(layer)
+	_monitor_viewport.add_child(layer)
 	var ui := Control.new()
 	ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(ui)
 	ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_hint = WhiteCatTheme.label("Наведіть на монітор", 22, WhiteCatTheme.ACCENT)
-	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	ui.add_child(_hint)
-	_hint.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	_hint.offset_top = -76
-	_hint.offset_bottom = -30
-	_identity = WhiteCatTheme.label("", 24)
+	_signal_filter = ColorRect.new()
+	_signal_filter.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_signal_filter.material = controller.get_signal_material()
+	ui.add_child(_signal_filter)
+	_signal_filter.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_identity = WhiteCatTheme.label("", 26)
+	_identity.clip_text = true
+	_identity.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_identity.add_theme_color_override("font_shadow_color", Color.BLACK)
 	_identity.add_theme_constant_override("shadow_outline_size", 6)
 	ui.add_child(_identity)
-	_identity.position = Vector2(36, 24)
+	_identity.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	_identity.offset_left = 24
+	_identity.offset_right = -280
+	_identity.offset_top = 18
+	_identity.offset_bottom = 52
 	_vehicle_images = HBoxContainer.new()
 	_vehicle_images.name = "VehicleImages"
 	_vehicle_images.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_vehicle_images.add_theme_constant_override("separation", 12)
 	ui.add_child(_vehicle_images)
 	_vehicle_images.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	_vehicle_images.offset_left = -376
-	_vehicle_images.offset_right = -36
-	_vehicle_images.offset_top = 24
-	_vehicle_images.offset_bottom = 160
+	_vehicle_images.offset_left = -260
+	_vehicle_images.offset_right = -24
+	_vehicle_images.offset_top = 18
+	_vehicle_images.offset_bottom = 112
 	for index: int in 2:
-		var frame := PanelContainer.new()
-		frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		frame.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		frame.add_theme_stylebox_override("panel", WhiteCatTheme.style(Color(0.04, 0.07, 0.10, 0.8), Color("394b59"), 1, 10))
-		_vehicle_images.add_child(frame)
-		var image := TextureRect.new()
-		image.name = "VehicleView" + str(index + 1)
-		image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		image.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		image.custom_minimum_size = Vector2(144, 112)
-		frame.add_child(image)
-		_portraits.append(image)
-	_controls = WhiteCatTheme.label("", 20)
+		var portrait := TextureRect.new()
+		portrait.name = "VehicleView" + str(index + 1)
+		portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		portrait.custom_minimum_size = Vector2(112, 94)
+		portrait.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_vehicle_images.add_child(portrait)
+		_portraits.append(portrait)
+	_controls = WhiteCatTheme.label("", 24)
 	_controls.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_controls.add_theme_color_override("font_shadow_color", Color.BLACK)
 	_controls.add_theme_constant_override("shadow_outline_size", 6)
 	ui.add_child(_controls)
 	_controls.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	_controls.offset_left = 36
-	_controls.offset_right = -36
-	_controls.offset_top = -100
-	_controls.offset_bottom = -24
+	_controls.offset_left = 24
+	_controls.offset_right = -24
+	_controls.offset_top = -82
+	_controls.offset_bottom = -14
 	terminal = CommandTerminal.new()
 	terminal.name = "Terminal"
 	ui.add_child(terminal)
 	terminal.command_submitted.connect(execute_command)
-	terminal.write_line("White Cat\nТестова сцена керування. Доставка апаратів ще не підключена.\nВведіть help, щоб побачити апарати та камери.")
+	terminal.content_changed.connect(_refresh_standby)
+	terminal.write_line("White Cat
+Доставка апаратів ще не підключена.
+Введіть help, щоб побачити апарати та камери.")
+	var root_layer := CanvasLayer.new()
+	root_layer.name = "RoomHints"
+	add_child(root_layer)
+	_hint = WhiteCatTheme.label("Наведіть на монітор", 24, WhiteCatTheme.ACCENT)
+	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	root_layer.add_child(_hint)
+	_hint.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	_hint.offset_top = -70
+	_hint.offset_bottom = -24
+
+func _refresh_standby() -> void:
+	if _monitor_viewport != null and _context == "room":
+		_monitor_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+
+func _build_hover_shell(layer_mask: int) -> void:
+	_hover_shell = MeshInstance3D.new()
+	_hover_shell.name = "MonitorHoverHalo"
+	_hover_shell.mesh = _housing.mesh
+	_hover_shell.layers = layer_mask
+	_hover_shell.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.cull_mode = BaseMaterial3D.CULL_FRONT
+	material.grow = true
+	material.grow_amount = 0.045
+	material.albedo_color = Color(0.58, 0.82, 1.0, 0.0)
+	_hover_shell.material_override = material
+	_housing.add_child(_hover_shell)
+	_hover_shell.visible = false
 
 func execute_command(command: String) -> void:
 	if controller.snapshot()["context"] != "terminal":
@@ -229,33 +283,33 @@ func _sync_session() -> void:
 	if terminal == null:
 		return
 	var state: Dictionary = controller.snapshot()
-	var context: String = state["context"]
-	_context = context
-	if context == "terminal":
-		if not terminal.visible:
-			terminal.open()
+	_context = state["context"]
+	_source_camera = controller.get_active_camera()
+	var piloting := _context == "vehicle"
+	_monitor_viewport.disable_3d = not piloting
+	_monitor_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE if _context == "room" else SubViewport.UPDATE_ALWAYS
+	_monitor_viewport.msaa_3d = get_viewport().msaa_3d
+	_monitor_viewport.scaling_3d_scale = float(UserSettings.get_value("render_scale"))
+	_signal_filter.visible = piloting and _signal_filter.material != null and UserSettings.get_value("signal_effects")
+	if _context == "terminal":
+		terminal.open()
+	elif _context == "room":
+		terminal.standby()
 	else:
 		terminal.close()
-	_hint.visible = context == "room"
-	_identity.visible = context == "vehicle" or context == "spectator"
-	_controls.visible = _identity.visible
+	_hint.visible = _context in ["room", "spectator"]
+	_identity.visible = piloting
+	_controls.visible = piloting
 	var images: Array = state["identification_images"]
-	_vehicle_images.visible = context == "vehicle" and not images.is_empty()
+	_vehicle_images.visible = piloting and not images.is_empty()
 	for index: int in _portraits.size():
 		_portraits[index].texture = images[index] if index < images.size() else null
-		_portraits[index].get_parent().visible = index < images.size()
-	if context != "room":
+		_portraits[index].visible = index < images.size()
+	if _context != "room":
 		_set_hovered(false)
-	if context == "vehicle":
+	if piloting:
+		_copy_camera_settings()
 		_identity.text = "%s / %s" % [state["target_name"], state["camera_name"]]
-		var address: String = state["target_id"] + "/" + state["camera_id"]
-		if address != _last_address:
-			_last_address = address
-			if _identity_animation != null:
-				_identity_animation.kill()
-			_identity.modulate = WhiteCatTheme.ACCENT
-			_identity_animation = create_tween()
-			_identity_animation.tween_property(_identity, "modulate", Color.WHITE, 0.0 if UserSettings.get_value("reduced_motion") else 0.18)
 		var movement := "%s / %s — рух   %s / %s — поворот" % [UserSettings.binding_text("forwardy"), UserSettings.binding_text("backwardy"), UserSettings.binding_text("lefty"), UserSettings.binding_text("righty")]
 		if state["vertical_control"]:
 			movement += "   %s / %s — підйом / зниження" % [UserSettings.binding_text("spacy"), UserSettings.binding_text("flight_descend")]
@@ -264,27 +318,127 @@ func _sync_session() -> void:
 			_controls.text += "   %s / %s — огляд" % [UserSettings.binding_text("CameraLeft"), UserSettings.binding_text("CameraRight")]
 		if not state["input_armed"]:
 			_controls.text += "   Відпустіть клавіші руху"
-	elif context == "spectator":
-		_identity.text = "Вільна камера / режим розробника"
-		_controls.text = "%s / %s — уперед / назад   %s / %s — ліворуч / праворуч\n%s / %s — угору / вниз   Esc — до кімнати" % [UserSettings.binding_text("spectator_forward"), UserSettings.binding_text("spectator_backward"), UserSettings.binding_text("spectator_left"), UserSettings.binding_text("spectator_right"), UserSettings.binding_text("spectator_up"), UserSettings.binding_text("spectator_down")]
-	elif context == "room":
+	elif _context == "spectator":
+		_hint.text = "Вільна камера / режим розробника · Esc — до кімнати"
+	else:
 		_hint.text = "Натисніть, щоб відкрити термінал" if hovered else "Наведіть на монітор"
+	_set_work_view(_context in ["terminal", "vehicle"], bool(UserSettings.get_value("reduced_motion")))
 
-func monitor_at(point: Vector2) -> bool:
+func _copy_camera_settings() -> void:
+	if not is_instance_valid(_source_camera):
+		return
+	for property: String in ["projection", "keep_aspect", "fov", "size", "near", "far", "frustum_offset", "environment", "attributes"]:
+		_feed_camera.set(property, _source_camera.get(property))
+	_feed_camera.cull_mask = _source_camera.cull_mask & ~int(controller.get_room_layer())
+	_feed_camera.global_transform = _source_camera.get_camera_transform()
+
+func _process(_delta: float) -> void:
+	if _context == "vehicle" and is_instance_valid(_source_camera):
+		_feed_camera.global_transform = _source_camera.get_camera_transform()
+
+func _set_work_view(active: bool, immediate: bool = false) -> void:
+	if _close_view == active and not immediate:
+		return
+	_close_view = active
+	if _pose_animation != null:
+		_pose_animation.kill()
+	var pose := _work_view_pose() if active else _overview
+	var fov := 42.0 if active else _overview_fov
+	if immediate or UserSettings.get_value("reduced_motion"):
+		view_camera.global_transform = pose
+		view_camera.fov = fov
+	else:
+		_pose_animation = create_tween().set_parallel()
+		_pose_animation.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		_pose_animation.tween_property(view_camera, "global_transform", pose, 0.22)
+		_pose_animation.tween_property(view_camera, "fov", fov, 0.22)
+
+func _resize_work_view() -> void:
+	if _close_view:
+		_set_work_view(true, true)
+
+func _work_view_pose() -> Transform3D:
+	var points: Array[Vector3] = []
+	for mesh: MeshInstance3D in [_housing, _keyboard_mesh]:
+		var box := mesh.get_aabb()
+		for index: int in 8:
+			points.append(mesh.global_transform * box.get_endpoint(index))
+	var framing := AABB(points[0], Vector3.ZERO)
+	for point: Vector3 in points:
+		framing = framing.expand(point)
+	var center := framing.get_center()
+	var normal := monitor.global_basis.inverse().transposed() * Vector3.BACK
+	if normal.dot(_overview.origin - center) < 0.0:
+		normal = -normal
+	var direction := (normal.normalized() + Vector3.UP * 0.14).normalized()
+	var basis := Basis.looking_at(-direction, Vector3.UP)
+	var tangent := tan(deg_to_rad(42.0) * 0.5)
+	var size := get_viewport().get_visible_rect().size
+	var aspect := size.x / maxf(size.y, 1.0)
+	var distance := 0.0
+	for point: Vector3 in points:
+		var local := basis.inverse() * (point - center)
+		distance = maxf(distance, local.z + maxf(absf(local.x) / (tangent * aspect), absf(local.y) / tangent))
+	return Transform3D(basis, center + direction * (distance * 1.05 + 0.025))
+
+func _monitor_hit(point: Vector2) -> Dictionary:
 	if view_camera == null or not view_camera.current or _pick_body == null:
-		return false
+		return {}
 	var start := view_camera.project_ray_origin(point)
 	var end := start + view_camera.project_ray_normal(point) * view_camera.far
 	var query := PhysicsRayQueryParameters3D.create(start, end, int(controller.get_room_layer()))
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
-	return not hit.is_empty() and hit["collider"] == _pick_body
+	return hit if not hit.is_empty() and hit["collider"] == _pick_body else {}
+
+func monitor_at(point: Vector2) -> bool:
+	return not _monitor_hit(point).is_empty()
+
+func monitor_uv(point: Vector2) -> Vector2:
+	var hit := _monitor_hit(point)
+	if hit.is_empty():
+		return Vector2(-1, -1)
+	var local: Vector3 = monitor.to_local(hit["position"])
+	for offset: int in range(0, _screen_indices.size(), 3):
+		var ia := _screen_indices[offset]
+		var ib := _screen_indices[offset + 1]
+		var ic := _screen_indices[offset + 2]
+		var edge0 := _screen_vertices[ib] - _screen_vertices[ia]
+		var edge1 := _screen_vertices[ic] - _screen_vertices[ia]
+		var relative := local - _screen_vertices[ia]
+		var aa := edge0.dot(edge0)
+		var ab := edge0.dot(edge1)
+		var bb := edge1.dot(edge1)
+		var denominator := aa * bb - ab * ab
+		if absf(denominator) < 0.0000001:
+			continue
+		var u := (bb * relative.dot(edge0) - ab * relative.dot(edge1)) / denominator
+		var v := (aa * relative.dot(edge1) - ab * relative.dot(edge0)) / denominator
+		if u >= -0.001 and v >= -0.001 and u + v <= 1.001:
+			return _screen_uvs[ia] * (1.0 - u - v) + _screen_uvs[ib] * u + _screen_uvs[ic] * v
+	return Vector2(-1, -1)
 
 func _physics_process(_delta: float) -> void:
-	if terminal == null:
+	if terminal != null and _context == "room":
+		_set_hovered(monitor_at(get_viewport().get_mouse_position()))
+
+func _input(event: InputEvent) -> void:
+	if keyboard != null and event is InputEventKey:
+		keyboard.handle_key(event)
+	if terminal == null or _context != "terminal" or event.is_action("ui_cancel"):
 		return
-	if _context == "room":
-		_pointer = get_viewport().get_mouse_position()
-		_set_hovered(monitor_at(_pointer))
+	if event is InputEventKey:
+		_monitor_viewport.push_input(event, true)
+		get_viewport().set_input_as_handled()
+	elif event is InputEventMouse:
+		var uv := monitor_uv(event.position)
+		if uv.x >= 0.0:
+			var mapped := event.duplicate() as InputEventMouse
+			mapped.position = uv * Vector2(_monitor_viewport.size_2d_override)
+			mapped.global_position = mapped.position
+			_monitor_viewport.notify_mouse_entered()
+			_monitor_viewport.push_input(mapped, true)
+			get_viewport().set_input_as_handled()
+		terminal._restore_focus.call_deferred()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if terminal == null or _context != "room":
@@ -300,9 +454,12 @@ func _set_hovered(value: bool) -> void:
 	hovered = value
 	if _hint != null:
 		_hint.text = "Натисніть, щоб відкрити термінал" if hovered else "Наведіть на монітор"
-	if _display_material == null:
+	if _hover_shell == null:
 		return
 	if _hover_animation != null:
 		_hover_animation.kill()
+	_hover_shell.visible = true
 	_hover_animation = create_tween()
-	_hover_animation.tween_property(_display_material, "albedo_color", Color("eef0ec") if hovered else Color("a4b0b9"), 0.0 if UserSettings.get_value("reduced_motion") else 0.12)
+	_hover_animation.tween_property(_hover_shell.material_override, "albedo_color:a", 0.42 if hovered else 0.0, 0.0 if UserSettings.get_value("reduced_motion") else 0.1)
+	if not hovered:
+		_hover_animation.tween_callback(func() -> void: _hover_shell.visible = false)
