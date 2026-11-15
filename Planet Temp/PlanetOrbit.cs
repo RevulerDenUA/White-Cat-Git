@@ -2,7 +2,7 @@ using Godot;
 
 public partial class PlanetOrbit : Node3D
 {
-	[Export] public string TargetScenePath = "res://planet_tweak.tscn"; // Path to the splanet node
+	[Export] public string TargetScenePath = "res://planet_tweak.tscn";
 	[Export] public WorldEnvironment WorldEnv;
 	[Export] public Node3D StarNode;
 	[Export] public Node3D OrbitRingMesh;
@@ -13,6 +13,8 @@ public partial class PlanetOrbit : Node3D
 	public PlanetData Data;
 	public int OrbitIndex = 0;
 	public bool _isClone = false;
+	public bool _isMoon = false;
+	public PlanetOrbit ParentOrbit = null;
 
 	private float _a;
 	private float _b;
@@ -21,16 +23,15 @@ public partial class PlanetOrbit : Node3D
 	private float _angleE = 0.0f;
 
 	public double timerultra = 0.0f;
-
 	public bool dimed = false;
 
 	// Ставить PlanetSelector: FreezeOrbit — планета стоїть на орбіті, FreezeSpin — не крутиться навколо осі
 	public bool FreezeOrbit = false;
 	public bool FreezeSpin = false;
 
-	public void _on_local_planet_tree_entered ()
+	public void _on_local_planet_tree_entered()
 	{
-	SystemValues.Instance.PlanetCount = SystemValues.Getplanet(SystemValues.Instance.SystemSeed);
+		SystemValues.Instance.PlanetCount = SystemValues.Getplanet(SystemValues.Instance.SystemSeed);
 	}
 
 	public override void _Ready()
@@ -38,10 +39,13 @@ public partial class PlanetOrbit : Node3D
 		donotopen();
 	}
 
-public void donotopen()
+	public void donotopen()
 	{
-		if (!_isClone)
+		if (!_isClone && !_isMoon)
 			SystemValues.Planets.Clear();
+
+		if (StarNode != null)
+				StarNode.Scale = Vector3.One * SystemValues.Instance.StarRadius;
 
 		OrbitRingMesh = GetNodeOrNull<Node3D>("Orbit") ?? OrbitRingMesh;
 		PlanetNode = GetNodeOrNull<Node3D>("Local Planet") ?? PlanetNode;
@@ -51,8 +55,15 @@ public void donotopen()
 		int seed = SystemValues.Instance.SystemSeed;
 		int count = SystemValues.Instance.PlanetCount;
 
-		string type = SpaceGlobals.manageroforder(seed, count, OrbitIndex);
-		Data = SpaceGlobals.GeneratePlanet(seed, OrbitIndex, type);
+		if (_isMoon && ParentOrbit != null)
+		{
+			Data = SpaceGlobals.GenerateMoon(ParentOrbit.Data, OrbitIndex);
+		}
+		else
+		{
+			string type = SpaceGlobals.manageroforder(seed, count, OrbitIndex);
+			Data = SpaceGlobals.GeneratePlanet(seed, OrbitIndex, type);
+		}
 
 		RandomNumberGenerator rng = new RandomNumberGenerator();
 		rng.Seed = (ulong)Mathf.Abs(Data.PlanetSeed);
@@ -60,7 +71,6 @@ public void donotopen()
 
 		SetupOrbit(Data);
 
-		// [1] Connect the Area3D trigger right here after the planet is set up
 		if (PlanetNode != null)
 		{
 			Area3D trigger = PlanetNode.GetNodeOrNull<Area3D>("Area3D");
@@ -71,11 +81,18 @@ public void donotopen()
 			}
 		}
 
-		SystemValues.Planets.Add(this);
+		if (!_isMoon)
+		{
+			SystemValues.Planets.Add(this);
 
-		if (!_isClone && count > 1)
-			SpawnClones(count - 1);
+			if (!_isClone && count > 1)
+				SpawnClones(count - 1);
+
+			if (Data.MoonCount > 0)
+				SystemValues.SpawnMoons(this, Data.MoonCount);
+		}
 	}
+
 	public void SpawnClones(int extraCount)
 	{
 		SystemValues.SpawnClones(this, extraCount);
@@ -103,8 +120,6 @@ public void donotopen()
 
 		if (PlanetNode != null)
 		{
-
-			// [1] Squish based on rotation speed
 			PlanetNode.Scale = new Vector3(d.Radius, d.Radius * d.Squish, d.Radius);
 
 			// Тригер-сфера має лишатись рівномірно масштабованою (Jolt не підтримує сплюснуту сферу)
@@ -114,23 +129,20 @@ public void donotopen()
 			// Tilt the planet's poles
 			PlanetNode.RotationDegrees = new Vector3(0f, 0f, d.AxialTilt);
 
-			PlanetPackets.ApplyTexture(PlanetNode, d); 
+			PlanetPackets.ApplyTexture(PlanetNode, d);
 		}
 		RotationDegrees = new Vector3(d.Inclination, d.OrbitYaw, 0f);
 	}
 
-	// Fires when a PhysicsBody3D or Area3D touches the planet's Area3D
 	private void OnTriggerEntered(Node3D other)
 	{
 		if (!other.IsInGroup("Player") && (other.GetParent() == null || !other.GetParent().IsInGroup("Player")))
 			return;
 
 		CurrentGen.SavePlanetForTransition(this.Data);
-
 		CallDeferred(MethodName.SwitchToPlanetNode);
 	}
 
-	// Unloads the current solar system and switches to the new node/scene
 	private void SwitchToPlanetNode()
 	{
 		GetTree().ChangeSceneToFile(TargetScenePath);
@@ -138,8 +150,7 @@ public void donotopen()
 
 	public override void _Process(double delta)
 	{
-
-	if (!_isClone && WorldEnv?.Environment != null)
+		if (!_isClone && WorldEnv?.Environment != null)
 		{
 			if (timerultra <= 0)
 			{
@@ -152,7 +163,7 @@ public void donotopen()
 				else
 				{
 					WorldEnv.Environment.BackgroundEnergyMultiplier = 0.8f;
-					dimed = true; // <-- THIS WAS MISSING
+					dimed = true;
 					timerultra = 0.1;
 				}
 			}
@@ -164,10 +175,14 @@ public void donotopen()
 
 		if (PlanetNode == null) return;
 
+		if (_isMoon && ParentOrbit?.PlanetNode != null)
+			GlobalPosition = ParentOrbit.PlanetNode.GlobalPosition;
+
 		float dt = (float)(delta * SystemValues.WarpSpeed);
 
+		// Обертання навколо власної (нахиленої) осі планети
 		if (!FreezeSpin)
-			PlanetNode.RotateY(Data.rotationspeed * dt);
+			PlanetNode.RotateObjectLocal(Vector3.Up, Data.rotationspeed * dt);
 		if (FreezeOrbit) return;
 
 		float cosE = Mathf.Cos(_angleE);
