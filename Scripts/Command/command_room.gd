@@ -1,6 +1,13 @@
 class_name CommandRoomView
 extends Node3D
 ## One physical screen: the actual terminal or a single shared-world camera feed.
+## The same display can be expanded over the whole game window (fullscreen)
+## and can host the shuttle telescope instead of the terminal.
+
+const TELESCOPE_SCENE := "res://Scene/Telescope.tscn"
+const FULLSCREEN_ACTION := &"terminal_fullscreen"
+const LOGICAL_WIDTH := 1280
+const MONITOR_LOGICAL := Vector2i(1280, 502)
 
 @export var controller_path: NodePath
 @export var display_size := Vector2i(1920, 752)
@@ -36,6 +43,10 @@ var _close_view := false
 var _screen_vertices: PackedVector3Array
 var _screen_indices: PackedInt32Array
 var _screen_uvs: PackedVector2Array
+var _fullscreen := false
+var _fullscreen_layer: CanvasLayer
+var _fullscreen_view: TextureRect
+var _telescope: Control
 
 func _ready() -> void:
 	# Copy after source cameras have applied their movement tilt and player look.
@@ -110,7 +121,7 @@ func _build_monitor(layer_mask: int) -> void:
 	_monitor_viewport = SubViewport.new()
 	_monitor_viewport.name = "MonitorDisplay"
 	_monitor_viewport.size = display_size
-	_monitor_viewport.size_2d_override = Vector2i(1280, 502)
+	_monitor_viewport.size_2d_override = MONITOR_LOGICAL
 	_monitor_viewport.size_2d_override_stretch = true
 	_monitor_viewport.world_3d = get_world_3d()
 	_monitor_viewport.handle_input_locally = true
@@ -217,6 +228,26 @@ func _build_ui() -> void:
 	_hint.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	_hint.offset_top = -70
 	_hint.offset_bottom = -24
+	# Fullscreen shows the same display texture over the game window; input is
+	# mapped back into the display in _input, so these controls ignore the mouse.
+	_fullscreen_layer = CanvasLayer.new()
+	_fullscreen_layer.name = "DisplayFullscreen"
+	_fullscreen_layer.layer = 50
+	_fullscreen_layer.visible = false
+	add_child(_fullscreen_layer)
+	var backdrop := ColorRect.new()
+	backdrop.color = Color("080e17")
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fullscreen_layer.add_child(backdrop)
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_fullscreen_view = TextureRect.new()
+	_fullscreen_view.name = "DisplayView"
+	_fullscreen_view.texture = _monitor_viewport.get_texture()
+	_fullscreen_view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_fullscreen_view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_fullscreen_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fullscreen_layer.add_child(_fullscreen_view)
+	_fullscreen_view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 func _refresh_standby() -> void:
 	if _monitor_viewport != null and _context == "room":
@@ -253,11 +284,17 @@ func execute_command(command: String) -> void:
 		var error: String = controller.connect_target(parts[1])
 		if not error.is_empty():
 			terminal.write_line(error)
+	elif parts.size() == 1 and parts[0].to_lower() == "telescope":
+		var telescope_error := open_telescope()
+		if not telescope_error.is_empty():
+			terminal.write_line(telescope_error)
+	elif parts.size() == 1 and parts[0].to_lower() == "fullscreen":
+		set_fullscreen(not _fullscreen)
 	else:
 		terminal.write_line("Невідома команда або зайві аргументи. Доступні команди — у help.")
 
 func _show_help() -> void:
-	terminal.write_line("help — апарати та камери\nconnect апарат — камера і керування\nconnect апарат/камера — вибір конкретної камери\nEsc — до кімнати\n")
+	terminal.write_line("help — апарати та камери\nconnect апарат — камера і керування\nconnect апарат/камера — вибір конкретної камери\ntelescope — телескоп: планета й апарат для висадки\nfullscreen — термінал на весь екран (%s)\nEsc — до кімнати\n" % _binding(FULLSCREEN_ACTION))
 	var targets: Array = controller.catalog()
 	if targets.is_empty():
 		terminal.write_line("Підключених апаратів немає.")
@@ -291,8 +328,16 @@ func _sync_session() -> void:
 	_monitor_viewport.msaa_3d = get_viewport().msaa_3d
 	_monitor_viewport.scaling_3d_scale = float(UserSettings.get_value("render_scale"))
 	_signal_filter.visible = piloting and _signal_filter.material != null and UserSettings.get_value("signal_effects")
+	if _context != "terminal":
+		_close_telescope(false)
+	if _context not in ["terminal", "vehicle"]:
+		set_fullscreen(false)
+	terminal.set_hint(_terminal_hint())
 	if _context == "terminal":
-		terminal.open()
+		if is_instance_valid(_telescope):
+			terminal.close()
+		else:
+			terminal.open()
 	elif _context == "room":
 		terminal.standby()
 	else:
@@ -313,7 +358,7 @@ func _sync_session() -> void:
 		var movement := "%s / %s — рух   %s / %s — поворот" % [UserSettings.binding_text("forwardy"), UserSettings.binding_text("backwardy"), UserSettings.binding_text("lefty"), UserSettings.binding_text("righty")]
 		if state["vertical_control"]:
 			movement += "   %s / %s — підйом / зниження" % [UserSettings.binding_text("spacy"), UserSettings.binding_text("flight_descend")]
-		_controls.text = "%s\n%s — камера   Esc — до кімнати" % [movement, UserSettings.binding_text("CameraChange")]
+		_controls.text = "%s\n%s — камера   %s — %s   Esc — до кімнати" % [movement, UserSettings.binding_text("CameraChange"), _binding(FULLSCREEN_ACTION), "на монітор" if _fullscreen else "на весь екран"]
 		if state["look_control"]:
 			_controls.text += "   %s / %s — огляд" % [UserSettings.binding_text("CameraLeft"), UserSettings.binding_text("CameraRight")]
 		if not state["input_armed"]:
@@ -356,6 +401,106 @@ func _set_work_view(active: bool, immediate: bool = false) -> void:
 func _resize_work_view() -> void:
 	if _close_view:
 		_set_work_view(true, true)
+	if _fullscreen:
+		_apply_display_size()
+
+# ---------- Fullscreen ----------
+
+func is_fullscreen() -> bool:
+	return _fullscreen
+
+## Expands the display over the game window. Only the terminal (with the
+## telescope) and the vehicle feed can be fullscreen; the room always resets it.
+func set_fullscreen(active: bool) -> void:
+	active = active and _context in ["terminal", "vehicle"]
+	if _monitor_viewport == null or _fullscreen == active:
+		return
+	_fullscreen = active
+	_fullscreen_layer.visible = active
+	_apply_display_size()
+	if active:
+		_set_hovered(false)
+	if terminal != null:
+		terminal.set_hint(_terminal_hint())
+	if _context == "vehicle":
+		_sync_session()
+
+func _apply_display_size() -> void:
+	if not _fullscreen:
+		_monitor_viewport.size = display_size
+		_monitor_viewport.size_2d_override = MONITOR_LOGICAL
+		return
+	# Re-layout for the window aspect instead of letterboxing the 2.55:1 monitor:
+	# the same logical width keeps the text size, and more lines fit vertically.
+	var screen := get_viewport().get_visible_rect().size
+	var aspect := screen.x / maxf(screen.y, 1.0)
+	# Window or SubViewport (e.g. a capture viewport): both expose their pixel size.
+	var pixels := Vector2(get_viewport().get("size"))
+	if pixels.x < 2.0 or pixels.y < 2.0:
+		pixels = screen
+	_monitor_viewport.size = Vector2i(maxi(int(pixels.x), 2), maxi(int(pixels.y), 2))
+	_monitor_viewport.size_2d_override = Vector2i(LOGICAL_WIDTH, maxi(roundi(LOGICAL_WIDTH / aspect), 2))
+
+## Screen point of the main viewport -> display logical coordinates; (-1, -1) outside.
+func display_point(point: Vector2) -> Vector2:
+	if _fullscreen:
+		var rect := _fullscreen_view.get_global_rect()
+		if rect.size.x <= 0.0 or rect.size.y <= 0.0 or not rect.has_point(point):
+			return Vector2(-1, -1)
+		return (point - rect.position) / rect.size * Vector2(_monitor_viewport.size_2d_override)
+	var uv := monitor_uv(point)
+	return uv * Vector2(_monitor_viewport.size_2d_override) if uv.x >= 0.0 else Vector2(-1, -1)
+
+func _binding(action: StringName) -> String:
+	return UserSettings.binding_text(action) if InputMap.has_action(action) else "—"
+
+func _terminal_hint() -> String:
+	return "%s — %s   Esc — до кімнати" % [_binding(FULLSCREEN_ACTION), "на монітор" if _fullscreen else "на весь екран"]
+
+# ---------- Telescope ----------
+
+func is_telescope_open() -> bool:
+	return is_instance_valid(_telescope)
+
+func get_telescope() -> Control:
+	return _telescope if is_instance_valid(_telescope) else null
+
+## Opens the telescope in place of the terminal. Returns an error message or "".
+func open_telescope() -> String:
+	if _context != "terminal":
+		return "Телескоп доступний тільки з термінала."
+	if is_instance_valid(_telescope):
+		return ""
+	var scene := load(TELESCOPE_SCENE) as PackedScene
+	var view: Control = scene.instantiate() as Control if scene != null else null
+	if view == null:
+		return "Телескоп не відповідає."
+	_telescope = view
+	_telescope.name = "Telescope"
+	terminal.get_parent().add_child(_telescope)
+	if _telescope.has_signal("Closed"):
+		_telescope.connect("Closed", _on_telescope_closed)
+	terminal.close()
+	terminal.content_changed.emit()
+	return ""
+
+func close_telescope() -> void:
+	_close_telescope(true)
+
+func _on_telescope_closed() -> void:
+	# Emitted from inside the telescope's own input handler.
+	_close_telescope.call_deferred(true)
+
+func _close_telescope(reopen_terminal: bool) -> void:
+	if not is_instance_valid(_telescope):
+		_telescope = null
+		return
+	var view := _telescope
+	_telescope = null
+	view.get_parent().remove_child(view)
+	view.queue_free()
+	if reopen_terminal and _context == "terminal":
+		terminal.open()
 
 func _work_view_pose() -> Transform3D:
 	var points: Array[Vector3] = []
@@ -424,16 +569,23 @@ func _physics_process(_delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if keyboard != null and event is InputEventKey:
 		keyboard.handle_key(event)
-	if terminal == null or _context != "terminal" or event.is_action("ui_cancel"):
+	if terminal == null:
+		return
+	if InputMap.has_action(FULLSCREEN_ACTION) and event.is_action_pressed(FULLSCREEN_ACTION) \
+			and not event.is_echo() and _context in ["terminal", "vehicle"]:
+		set_fullscreen(not _fullscreen)
+		get_viewport().set_input_as_handled()
+		return
+	if _context != "terminal" or event.is_action("ui_cancel"):
 		return
 	if event is InputEventKey:
 		_monitor_viewport.push_input(event, true)
 		get_viewport().set_input_as_handled()
 	elif event is InputEventMouse:
-		var uv := monitor_uv(event.position)
-		if uv.x >= 0.0:
+		var point := display_point(event.position)
+		if point.x >= 0.0:
 			var mapped := event.duplicate() as InputEventMouse
-			mapped.position = uv * Vector2(_monitor_viewport.size_2d_override)
+			mapped.position = point
 			mapped.global_position = mapped.position
 			_monitor_viewport.notify_mouse_entered()
 			_monitor_viewport.push_input(mapped, true)
