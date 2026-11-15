@@ -44,8 +44,9 @@ distance_fade_shadow = 998.15
 distance_fade_length = 4096.0
 omni_range = 4096.0
 
-[node name="PlanetOrbit" type="Node3D" parent="." unique_id=1650810182 node_paths=PackedStringArray("StarNode", "OrbitRingMesh", "PlanetNode", "PerihelionPoint", "AphelionPoint")]
+[node name="PlanetOrbit" type="Node3D" parent="." unique_id=1650810182 node_paths=PackedStringArray("WorldEnv", "StarNode", "OrbitRingMesh", "PlanetNode", "PerihelionPoint", "AphelionPoint")]
 script = ExtResource("1_mg2au")
+WorldEnv = NodePath("../WorldEnvironment")
 StarNode = NodePath("../CSGMesh3D")
 OrbitRingMesh = NodePath("Orbit")
 PlanetNode = NodePath(".")
