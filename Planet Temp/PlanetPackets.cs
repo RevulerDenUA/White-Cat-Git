@@ -20,6 +20,17 @@ public static class PlanetPackets
 		d.SkyFog = Color.FromHsv(lightHue, rng.RandfRange(0.1f, 0.35f), rng.RandfRange(0.6f, 0.85f));
 	}
 
+	// Основні кольори поверхні — ті самі, що бере ApplyTexture (той самий сід і порядок викликів RNG).
+	// Потрібно генератору терену, щоб ґрунт на планеті збігався з виглядом з орбіти.
+	public static (Color Dark, Color Light) SurfaceColors(PlanetData d)
+	{
+		RandomNumberGenerator rng = new RandomNumberGenerator();
+		rng.Seed = (ulong)Mathf.Abs(d.NoiseSeed);
+		Color mainDark = Color.FromHsv(rng.Randf(), rng.RandfRange(0.5f, 0.9f), rng.RandfRange(0.2f, 0.5f));
+		Color mainLight = Color.FromHsv(rng.Randf(), rng.RandfRange(0.3f, 0.7f), rng.RandfRange(0.5f, 0.8f));
+		return (mainDark, mainLight);
+	}
+
 	public static void ApplyTexture(Node3D planetNode, PlanetData d)
 	{
 		if (planetNode is not GeometryInstance3D geo) return;
