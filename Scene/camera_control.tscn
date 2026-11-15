@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dfkkp15660yp"]
+
+[ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="1_yikp0"]
+
+[node name="CameraControl" type="Node3D" unique_id=484975143 node_paths=PackedStringArray("JeepCamera1", "JeepCamera2", "JeepCamera3", "SpecCamera")]
+script = ExtResource("1_yikp0")
+JeepCamera1 = NodePath("")
+JeepCamera2 = NodePath("")
+JeepCamera3 = NodePath("")
+SpecCamera = NodePath("")
