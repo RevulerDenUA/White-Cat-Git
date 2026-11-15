@@ -17,6 +17,7 @@ public partial class Jeep : VehicleBody3D
 
     public override void _Ready()
     {
+        CacheWheelMounts();
         BindModelWheels();
     }
 
@@ -73,10 +74,12 @@ public partial class Jeep : VehicleBody3D
 
     public override void _PhysicsProcess(double delta)
     {
+        ApplyStabilizers();
 
         if (GameData.InSpectatorMode || GameData.ActiveVehicle != this)
         {
             EngineForce = 0;
+            Brake = JeepData.IdleBrake; // ніхто не керує — машина стоїть на ручнику
             return;
         }
         steerInput = 0.0f;
@@ -111,19 +114,71 @@ public partial class Jeep : VehicleBody3D
 
         EngineForce = gasInput * JeepData.MaxEngineForce;
 
-        ApplyAntiRoll();
+        // Без газу на малій швидкості — ручник, щоб машина не котилась і не гойдалась
+        Brake = (gasInput == 0f && LinearVelocity.Length() < JeepData.IdleBrakeSpeed) ? JeepData.IdleBrake : 0f;
+
     }
 
-    // Стабілізатор: м'яко тягне корпус до вертикалі, коли він нахиляється вбік/вперед.
-    // Діє тільки на крен і тангаж, рискання (поворот) не чіпає.
-    private void ApplyAntiRoll()
-    {
-        Vector3 up = GlobalTransform.Basis.Y;
-        Vector3 axis = up.Cross(Vector3.Up); // вісь, навколо якої треба повернути корпус
-        Vector3 yawVel = Vector3.Up * AngularVelocity.Dot(Vector3.Up);
-        Vector3 tiltVel = AngularVelocity - yawVel;
+    // ---------- Стабілізатори ----------
 
-        Vector3 torque = axis * JeepData.AntiRollStrength - tiltVel * JeepData.AntiRollDamping;
-        ApplyTorque(torque * Mass);
+    // Точки кріплення коліс у координатах машини (до того, як фізика почне рухати колеса)
+    private readonly Dictionary<VehicleWheel3D, Vector3> _wheelMounts = new();
+
+    private void CacheWheelMounts()
+    {
+        foreach (var c in GetChildren())
+            if (c is VehicleWheel3D w) _wheelMounts[w] = w.Position;
+    }
+
+    // Наскільки стиснута пружина колеса, м (0 — колесо в повітрі / повністю розтиснуте)
+    private float Compression(VehicleWheel3D w)
+    {
+        if (!w.IsInContact()) return 0f;
+        Vector3 mount = ToGlobal(_wheelMounts[w]);
+        float length = (mount - w.GlobalPosition).Dot(-GlobalBasis.Y); // поточна довжина пружини
+        return Mathf.Max(0f, w.WheelRestLength - length);
+    }
+
+    private void ApplyStabilizers()
+    {
+        // 1) Стабілізатор поперечної стійкості — як у справжньої машини.
+        //    Порівнює стиснення лівого й правого колеса однієї осі і підтискає менш стиснуте.
+        //    На рівній дорозі й прямих схилах не робить нічого, діє лише в кренах.
+        ApplyAntiRollBar(true);
+        ApplyAntiRollBar(false);
+
+        // 2) Анти-перекидання: вмикається тільки при великому нахилі
+        Vector3 up = GlobalBasis.Y;
+        float tilt = Mathf.RadToDeg(up.AngleTo(Vector3.Up));
+        if (tilt > JeepData.AntiFlipAngle)
+        {
+            float k = Mathf.Clamp((tilt - JeepData.AntiFlipAngle) / 30f, 0f, 1f);
+            Vector3 axis = up.Cross(Vector3.Up).Normalized();
+            Vector3 tiltVel = AngularVelocity - Vector3.Up * AngularVelocity.Dot(Vector3.Up);
+            ApplyTorque((axis * JeepData.AntiFlipStrength * k - tiltVel * JeepData.AntiFlipDamping * k) * Mass);
+        }
+    }
+
+    private void ApplyAntiRollBar(bool front)
+    {
+        VehicleWheel3D left = null, right = null;
+        foreach (var (w, mount) in _wheelMounts)
+        {
+            if ((mount.Z > 0) != front) continue;       // перед машини = +Z
+            if (mount.X > 0) left = w; else right = w;
+        }
+        if (left == null || right == null) return;
+        // колесо в повітрі — стабілізатор не працює (інакше він би підкидав машину)
+        if (!left.IsInContact() || !right.IsInContact()) return;
+
+        float diff = Compression(left) - Compression(right);
+        if (Mathf.IsZeroApprox(diff)) return;
+
+        // Пара сил: стиснуту сторону піднімаємо, протилежну притискаємо — рівно настільки ж.
+        // Сумарна вертикальна сила = 0, тож машину не підкидає, лише гаситься крен.
+        float force = diff * JeepData.AntiRollBarStiffness * Mass;
+        Vector3 up = GlobalBasis.Y;
+        ApplyForce(up * force, left.GlobalPosition - GlobalPosition);
+        ApplyForce(-up * force, right.GlobalPosition - GlobalPosition);
     }
 }
