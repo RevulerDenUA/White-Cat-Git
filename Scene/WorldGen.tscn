@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://7xye8xkp5v31"]
 
 [ext_resource type="Script" uid="uid://yfaks876t78r" path="res://Scripts/TerrainWorld.cs" id="1_d48c2"]
+[ext_resource type="Script" uid="uid://wx54acoirnn" path="res://Scripts/DirectionalLight3d.cs" id="2_3hs8j"]
 [ext_resource type="PackedScene" uid="uid://cngcee24uhrrv" path="res://Scene/JEEP.tscn" id="2_w222j"]
 [ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="3_m50oi"]
+[ext_resource type="Script" uid="uid://qsy2ajsgyv57" path="res://Scripts/CameraLook.cs" id="4_jugq3"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m50oi"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -15,12 +17,10 @@ sky_material = SubResource("ProceduralSkyMaterial_m50oi")
 background_mode = 2
 sky = SubResource("Sky_jugq3")
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_w222j"]
-
 [node name="WorldGen" type="Node3D" unique_id=1762984832 node_paths=PackedStringArray("Player", "FogEnvironment")]
 script = ExtResource("1_d48c2")
-Planet = 1
-Player = NodePath("CharacterBody3D")
+Seed = 12348
+Player = NodePath("")
 HeightScale = 10.0
 FogEnvironment = NodePath("WorldEnvironment")
 
@@ -30,46 +30,69 @@ environment = SubResource("Environment_3hs8j")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1386947868]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
 shadow_enabled = true
-
-[node name="CharacterBody3D" parent="." unique_id=73140632 node_paths=PackedStringArray("ExitPoint") instance=ExtResource("2_w222j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05016011, 23.79092, 13.729987)
-collision_mask = 3
-mass = 500.0
-engine_force = 1024.0
-ExitPoint = NodePath("DoorTrigger/ExitPoint")
-
-[node name="CollisionShape3D" parent="CharacterBody3D/DoorTrigger" parent_id_path=PackedInt32Array(73140632, 2062596507) index="0" unique_id=2102337142]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.056739748, 0, 0)
-shape = SubResource("BoxShape3D_w222j")
-
-[node name="VehicleWheel3D3" parent="CharacterBody3D" index="9" unique_id=1461640576]
-engine_force = 1024.0
-
-[node name="VehicleWheel3D4" parent="CharacterBody3D" index="10" unique_id=672747028]
-engine_force = 1024.0
-
-[node name="CarCamera" type="Camera3D" parent="CharacterBody3D" unique_id=1428337986]
-transform = Transform3D(-1, -3.813328e-09, -8.733957e-08, 0, 0.99904823, -0.043619387, 8.742278e-08, -0.043619387, -0.99904823, 0.047723338, 0.66052246, 1.2946157)
-current = true
-fov = 75.7
-
-[node name="SpringArm3D" type="SpringArm3D" parent="CharacterBody3D" unique_id=2100274960]
-transform = Transform3D(-1, -3.3173112e-08, 8.088439e-08, 0, 0.9252097, 0.3794561, -8.742278e-08, 0.37945616, -0.9252096, 0, 1.984, 0)
-collision_mask = 3
-spring_length = 2.0
-
-[node name="CarCamera2" type="Camera3D" parent="CharacterBody3D" unique_id=1874320639]
-transform = Transform3D(1, 3.813328e-09, 1.7476235e-07, -3.813328e-09, 1, -6.664262e-16, -1.7476235e-07, 7.7610073e-23, 1, -6.413956e-07, 0.96893287, -2.4762135)
-current = true
-fov = 75.7
-
-[node name="CarCamera3" type="Camera3D" parent="CharacterBody3D" unique_id=1493431340]
-transform = Transform3D(-1, 8.742278e-08, 0, 8.742278e-08, 1, -8.742278e-08, -7.642742e-15, -8.742278e-08, -1, 0.63292354, -0.35838318, 0.24091434)
-current = true
-fov = 114.6
+script = ExtResource("2_3hs8j")
 
 [node name="CameraControl" type="Node3D" parent="." unique_id=329043057 node_paths=PackedStringArray("Cameras")]
 script = ExtResource("3_m50oi")
-Cameras = [NodePath("../CharacterBody3D/CarCamera"), NodePath("../CharacterBody3D/CarCamera2"), NodePath("../CharacterBody3D/CarCamera3")]
+Cameras = [NodePath("../CharacterBody3D/CarCamera"), NodePath("../CharacterBody3D/CarCamera2")]
+
+[node name="CharacterBody3D" parent="." unique_id=73140632 node_paths=PackedStringArray("ExitPoint") instance=ExtResource("2_w222j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05016011, 2.0534465, 13.729987)
+collision_mask = 3
+ExitPoint = NodePath("DoorTrigger/ExitPoint")
+
+[node name="CollisionShape3D2" parent="CharacterBody3D" index="2" unique_id=205312687]
+transform = Transform3D(1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 1.0256777, -1.1330054, 0.65079707)
+
+[node name="CollisionShape3D3" parent="CharacterBody3D" index="3" unique_id=692384796]
+transform = Transform3D(1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, -1.0207697, -1.1375473, 0.65037555)
+
+[node name="CollisionShape3D4" parent="CharacterBody3D" index="4" unique_id=969670280]
+transform = Transform3D(1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 1.0285413, -1.098231, -0.7385142)
+
+[node name="CollisionShape3D5" parent="CharacterBody3D" index="5" unique_id=1197928817]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9099696, -1.1283544, -0.78112537)
+
+[node name="VehicleWheel3D" parent="CharacterBody3D" index="6" unique_id=1509441137]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.9787572, -1.1282598, 0.65676534)
+
+[node name="VehicleWheel3D2" parent="CharacterBody3D" index="7" unique_id=2026923059]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -1.0181854, -1.1215577, 0.65)
+
+[node name="VehicleWheel3D3" parent="CharacterBody3D" index="8" unique_id=1461640576]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.9787572, -1.1282598, -0.7732346)
+
+[node name="VehicleWheel3D4" parent="CharacterBody3D" index="9" unique_id=672747028]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -1.0181854, -1.1215577, -0.78)
+
+[node name="CollisionShape3D" parent="CharacterBody3D" index="10" unique_id=966506361]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.9446043, 0)
+
+[node name="CollisionShape3D6" parent="CharacterBody3D" index="11" unique_id=845427127]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.016357422, 0.13204831, -0.9139099)
+
+[node name="Lights" parent="CharacterBody3D" index="12" unique_id=2089141798]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.70636237, 0)
+
+[node name="OmniLight3D2" parent="CharacterBody3D/Lights/SpotLight3D2" parent_id_path=PackedInt32Array(73140632, 42901079) index="1" unique_id=671121260]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.078360334, -0.048604846, 4.999671)
+
+[node name="CarCamera" type="Camera3D" parent="CharacterBody3D" unique_id=225974233]
+transform = Transform3D(-1, -3.813328e-09, -8.733957e-08, 0, 0.99904823, -0.043619387, 8.742278e-08, -0.043619387, -0.99904823, -0.32808316, -0.6013149, 1.1050764)
+current = true
+fov = 99.9
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CharacterBody3D" unique_id=178037952]
+transform = Transform3D(-1, -3.3173112e-08, 8.088439e-08, 0, 0.9252097, 0.3794561, -8.742278e-08, 0.37945616, -0.9252096, 0, 1.984, 0)
+collision_mask = 2
+spring_length = 2.0
+
+[node name="CarCamera2" type="Camera3D" parent="CharacterBody3D" unique_id=1840339373]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.24954517, -0.08713129, 1.0367651)
+current = true
+fov = 72.4
+near = 0.001
+far = 4106.83
+script = ExtResource("4_jugq3")
 
 [editable path="CharacterBody3D"]
