@@ -133,6 +133,7 @@ public partial class PlanetOrbit : Node3D
 				trigger.Scale = new Vector3(1.0f, 1.0f / d.Squish, 1.0f);
 
 			PlanetPackets.ApplyTexture(PlanetNode, d);
+			PlanetFx.Apply(PlanetNode, d); // газові гіганти: димка й блискавки
 		}
 		RotationDegrees = new Vector3(d.Inclination, d.OrbitYaw, 0f);
 	}

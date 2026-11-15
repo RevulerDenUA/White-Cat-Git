@@ -35,7 +35,7 @@ render_mode blend_add, unshaded, depth_draw_never, cull_back;
 uniform vec4 tint : source_color = vec4(1.0);
 void fragment() {
 	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 2.5);
-	ALBEDO = tint.rgb * (0.12 + rim * 1.6);
+	ALBEDO = tint.rgb * rim * 1.5; // лише край — текстура й грози планети лишаються видні
 }";
 
 	private ShaderMaterial _hoverMat, _selectMat;
@@ -129,7 +129,8 @@ void fragment() {
 		if (!p.Data.IsMoon)
 			foreach (var m in AllOrbits())
 				if (m.Data.IsMoon && m.ParentOrbit == p) moons = Mathf.Max(moons, m.Data.Aphelion);
-		cam.FocusOn(p.PlanetNode, Mathf.Max(Mathf.Max(r * 7f, moons * 1.6f), 4f));
+		// за орбітами місяців, але не далі ~12 радіусів — інакше планета з десятком місяців стає крапкою
+		cam.FocusOn(p.PlanetNode, Mathf.Clamp(Mathf.Max(r * 7f, moons * 1.6f), 4f, r * 8f + 4f));
 	}
 
 	private PlanetOrbit PickPlanet()

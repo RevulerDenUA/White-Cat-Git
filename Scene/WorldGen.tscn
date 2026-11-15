@@ -17,6 +17,7 @@
 [ext_resource type="Script" uid="uid://bw1h7husr85qn" path="res://Scripts/Planet/OreGenerator.cs" id="16_ores"]
 [ext_resource type="Script" uid="uid://cjhjyt5juikse" path="res://Scripts/Drill/DrillManager.cs" id="17_drill"]
 [ext_resource type="PackedScene" path="res://Scene/Vein.tscn" id="18_vein"]
+[ext_resource type="Script" path="res://Scripts/Planet/GasWeather.cs" id="19_weather"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m50oi"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -60,6 +61,7 @@ shader_parameter/reticle_alpha = 0.55
 [node name="WorldGen" type="Node3D" unique_id=1762984832 node_paths=PackedStringArray("Player", "FogEnvironment")]
 script = ExtResource("1_d48c2")
 Seed = 12348
+RenderDistance = 3
 Player = NodePath("Rover")
 HeightScale = 10.0
 GasFogDensity = 0.007
@@ -125,6 +127,11 @@ KeepOutRadius = 55.0
 
 [node name="DrillManager" type="Node3D" parent="."]
 script = ExtResource("17_drill")
+
+[node name="GasWeather" type="Node3D" parent="." node_paths=PackedStringArray("Terrain", "Environment")]
+script = ExtResource("19_weather")
+Terrain = NodePath("..")
+Environment = NodePath("../WorldEnvironment")
 
 [node name="PlanetSession" type="Node" parent="." node_paths=PackedStringArray("Controller", "Terrain", "Pad", "Rover", "Ingenuity", "Ores")]
 script = ExtResource("15_session")

@@ -69,6 +69,8 @@ public partial class TerrainWorld : Node3D
 
 	// Atmosphere
 	[ExportGroup("Atmosphere")]
+	[Export] public bool HideTerrainEdge = true;      // туман за глибиною до межі шматків
+	[Export(PropertyHint.Range, "0,0.9,0.05")] public float FogEdgeStart = 0.3f; // частка відстані до краю, де туман починається
 	[Export] public WorldEnvironment FogEnvironment;
 
 	private FastNoiseLite _noise;
@@ -492,6 +494,19 @@ public partial class TerrainWorld : Node3D
 			Mathf.Clamp(density, 0f, 1f);
 
 		env.FogSkyAffect = 0.85f;
+
+		// Край завантаженого рельєфу (шматки лише навколо апарата) ховаємо туманом за глибиною:
+		// до FogEdgeStart картинка чиста, до межі шматків — повністю в тумані.
+		if (HideTerrainEdge)
+		{
+			// найближчий край шматків — RenderDistance шматків від апарата (коли він на межі свого шматка)
+			float edge = RenderDistance * ChunkSize * CellSize;
+			env.FogMode = Godot.Environment.FogModeEnum.Depth;
+			env.FogDensity = 4f; // у режимі за глибиною це множник: 4 дає повне закриття на FogDepthEnd
+			env.FogDepthBegin = edge * FogEdgeStart;
+			env.FogDepthEnd = edge * 0.9f;
+			env.FogDepthCurve = 1.6f;
+		}
 
 		if (FogEnvironment != null)
 		{

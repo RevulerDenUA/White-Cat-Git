@@ -36,6 +36,7 @@ outer_radius = 1.001
 
 [node name="System Values" type="Node3D" parent="." unique_id=37670408]
 script = ExtResource("1_kk3s5")
+SystemSeed = 676767
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1261749978]
 environment = ExtResource("1_ghylp")
