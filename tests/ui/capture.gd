@@ -43,6 +43,15 @@ func _run() -> void:
 		await process_frame
 		await process_frame
 		menu.settings._scroll.scroll_vertical = scroll
+	elif screen == "sources":
+		menu.open_settings()
+		menu.settings._show_category(6)
+		await create_timer(0.4).timeout
+		for link: Node in menu.settings._content.find_children("*", "LinkButton", true, false):
+			if link.text == "Повний аудит і перелік 50 зображень":
+				link.pressed.emit()
+				break
+		await create_timer(0.2).timeout
 	elif screen == "license":
 		menu.open_settings()
 		menu.settings._show_category(6)

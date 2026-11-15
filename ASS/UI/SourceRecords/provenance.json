@@ -1,0 +1,1353 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-11-15",
+  "scope": "Source records in both local projects, including ignored source archives. Not a claim that all datasets run in Godot.",
+  "catalogue_sha256": "2cab3fa15967f80d1bf6f792523763d413e906b5c749f65e4a4a448662492a9a",
+  "source_index": [
+    {
+      "id": "usgs_jezero_ctx",
+      "organization": "USGS Astrogeology Science Center",
+      "url": "https://astrogeology.usgs.gov/search/map/mars_2020_science_investigation_ctx_dem_mosaic",
+      "notes": "USGS-hosted planetary map products; retain accompanying product metadata.",
+      "local_archive_products": [
+        "mars/jezero/M20_JezeroCrater_CTXDEM_20m.tif",
+        "mars/jezero/M20_JezeroCrater_CTXortho_mosaic_5m.tif",
+        "mars/jezero/*.xml",
+        "mars/jezero/browse_M20_JezeroCrater_CTXDEM_mosaic_5m.jpg"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_pds_places",
+      "organization": "NASA Planetary Data System Geosciences Node",
+      "url": "https://pds-geosciences.wustl.edu/missions/mars2020/places.htm",
+      "notes": "Perseverance localization products, Release 16.",
+      "local_archive_products": [
+        "mars/places/best_interp.csv",
+        "mars/places/best_interp.csv.xml",
+        "mars/places/best_tactical.csv",
+        "mars/places/best_tactical.csv.xml",
+        "mars/places/Mars2020_Rover_PLACES_PDS_SIS.pdf",
+        "mars/places/release_notes.txt"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_pds_meda",
+      "organization": "NASA PDS Atmospheres Node",
+      "url": "https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/PERSEVERANCE/meda.html",
+      "archive_url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/",
+      "notes": "Selected sols only. CSV data are losslessly gzipped; PDS4 labels are paired by product.",
+      "local_archive_products": [
+        "weather/mars_weather.json",
+        "weather/raw/**/*.CSV.gz",
+        "weather/raw/**/*.xml",
+        "weather/MEDA_RDR_SIS.pdf",
+        "weather/MEDA_EDR_SIS.pdf",
+        "weather/MEDA_readme.txt"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "jpl_horizons",
+      "organization": "NASA Jet Propulsion Laboratory Solar System Dynamics",
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api",
+      "notes": "Static ephemeris response snapshot; no live connection is required at runtime.",
+      "local_archive_products": [
+        "ephemeris/mars_heliocentric_vectors_2026-11-14_to_2028-11-15.json"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_images_library",
+      "organization": "NASA Image and Video Library",
+      "url": "https://images.nasa.gov/",
+      "api_docs": "https://images.nasa.gov/docs/images.nasa.gov_api_docs.pdf",
+      "notes": "Keep the item-level credit/description fields supplied by NASA.",
+      "local_archive_products": [
+        "images/nasa-library/perseverance_jezero_search.json",
+        "images/nasa-library/previews/"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_mars_raw_images",
+      "organization": "NASA/JPL Mars 2020",
+      "url": "https://mars.nasa.gov/mars2020/multimedia/raw-images/",
+      "api_url": "https://mars.nasa.gov/rss/api/?feed=raw_images&category=mars2020,ingenuity&feedtype=json&ver=1.2",
+      "notes": "25 selected full-resolution rover images; manifest includes original item metadata and credit.",
+      "local_archive_products": [
+        "rover_images/*.png",
+        "rover_images/images_manifest.json"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_exoplanet_archive",
+      "organization": "NASA Exoplanet Archive, IPAC/Caltech",
+      "url": "https://exoplanetarchive.ipac.caltech.edu/",
+      "tap_query_url": "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+pl_name%2Chostname%2Csy_snum%2Csy_pnum%2Cpl_orbper%2Cpl_orbsmax%2Cpl_rade%2Cpl_bmasse%2Cpl_orbeccen%2Cpl_orbincl%2Cpl_eqt%2Cst_mass%2Cst_rad%2Cst_teff%2Cst_lum%2Cst_met%2Cst_age%2Csy_dist%2Cdisc_year%2Cdiscoverymethod+from+pscomppars&format=csv",
+      "column_definitions": "https://exoplanetarchive.ipac.caltech.edu/docs/API_TD_columns.html",
+      "notes": "PSCompPars is a composite observed-planet table; parameters can be more complete but not necessarily mutually self-consistent.",
+      "local_archive_products": [
+        "solar_systems/nasa_exoplanet_archive_pscomppars.csv",
+        "solar_systems/nasa_exoplanet_archive_pscomppars.json",
+        "solar_systems/nasa_exoplanet_archive_metadata.json"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "soda_orion_alma_cds",
+      "organization": "CDS/VizieR; van Terwisga et al. 2022; ALMA",
+      "url": "https://cdsarc.cds.unistra.fr/viz-bin/cat/J/A%2BA/661/A53",
+      "download_url": "https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/A+A/661/A53/table1",
+      "publication_doi": "10.1051/0004-6361/202141913",
+      "catalog_doi": "10.26093/cds/vizier.36610053",
+      "notes": "873 protoplanetary disk observations; inferred dust masses with upper limits and assumptions. Review VizieR rights terms before redistributing.",
+      "local_archive_products": [
+        "solar_systems/soda_orion_disks_vizier.tsv",
+        "solar_systems/soda_orion_disks.json"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_emac_exovista_dec21",
+      "organization": "NASA Goddard Exoplanet Modeling and Analysis Center (EMAC)",
+      "url": "https://tools.emac.gsfc.nasa.gov/exovista/",
+      "paper": "https://doi.org/10.3847/1538-3881/ac3b54",
+      "direct_download": "https://ckan-files.emac.gsfc.nasa.gov/exovista/DEC21/1/target_database.csv",
+      "notes": "Public NASA-hosted ExoVista synthetic-system realization; 2,258 target-star rows with star, disk and planet parameters. Downloaded without an API key. FITS products and referenced albedo grids are not included.",
+      "local_archive_products": [
+        "solar_systems/exovista_DEC21_universe1/target_database.csv",
+        "solar_systems/exovista_DEC21_universe1/metadata.json",
+        "solar_systems/exovista_DEC21_universe1/systems.json"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "dace_ngpps",
+      "organization": "Data & Analysis Center for Exoplanets, University of Geneva",
+      "url": "https://dace.unige.ch/populationAnalysis/?populationId=NG76",
+      "api_docs": "https://dace-query.readthedocs.io/en/v3.0.0/dace_query.population.html",
+      "notes": "Optional additional source for explicit formation/evolution tracks; DACE API access requires a user-generated key. This is not the only available model source: public NASA EMAC ExoVista data are already downloaded.",
+      "local_archive_products": [],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_perseverance_instruments",
+      "organization": "NASA Science",
+      "url": "https://science.nasa.gov/mission/mars-2020-perseverance/science-instruments/",
+      "notes": "Instrument masses, powers, science return values and limitations.",
+      "local_archive_products": [
+        "catalogs/components.json"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_perseverance_rover_components",
+      "organization": "NASA Science",
+      "url": "https://science.nasa.gov/mission/mars-2020-perseverance/rover-components/",
+      "notes": "Whole-rover mass, MMRTG mass and beginning-of-mission power, battery count/function.",
+      "local_archive_products": [
+        "catalogs/components.json"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "ula_atlas_v",
+      "organization": "United Launch Alliance",
+      "url": "https://www.ulalaunch.com/rockets/atlas-v",
+      "notes": "Atlas V 541 payload figures include LEO; not represented as Mars payload.",
+      "local_archive_products": [
+        "catalogs/launchers.json"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "spacex_falcon_heavy",
+      "organization": "SpaceX",
+      "url": "https://www.spacex.com/vehicles/falcon-heavy/",
+      "notes": "Published Falcon Heavy payload-to-Mars figure; C3 curve is not specified in the cited page.",
+      "local_archive_products": [
+        "catalogs/launchers.json"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "jpl_mars2020_launch",
+      "organization": "NASA Jet Propulsion Laboratory",
+      "url": "https://www.jpl.nasa.gov/news/press_kits/mars_2020/download/mars_2020_launch_press_kit.pdf",
+      "notes": "Actual Mars 2020 launch and C3 example.",
+      "local_archive_products": [
+        "catalogs/launchers.json",
+        "catalogs/orbits.json"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "jpl_mars2020_edl",
+      "organization": "NASA Jet Propulsion Laboratory",
+      "url": "https://www.jpl.nasa.gov/news/press_kits/mars_2020/landing/mission/",
+      "notes": "Entry, parachute, powered descent and TRN facts.",
+      "local_archive_products": [
+        "catalogs/edl.json"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_mars_relay_network",
+      "organization": "NASA Science",
+      "url": "https://science.nasa.gov/mars/mars-relay-network/",
+      "notes": "Current orbiter relay roles, pass counts, published data volumes and MAVEN end-of-mission status.",
+      "local_archive_products": [
+        "catalogs/relay_plans.json",
+        "catalogs/components.json"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_perseverance_3d",
+      "organization": "NASA Science / NASA-JPL",
+      "url": "https://science.nasa.gov/3d-resources/mars-2020-perseverance-rover/",
+      "notes": "Official downloadable GLB model.",
+      "local_archive_products": [
+        "models/Mars_2020_Perseverance_Rover.glb"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_design_develop_science_missions",
+      "organization": "NASA Ames Research Center / Small Spacecraft Systems Virtual Institute",
+      "url": "https://ntrs.nasa.gov/citations/20250002492",
+      "direct_download": "https://ntrs.nasa.gov/api/citations/20250002492/downloads/Design%20and%20Develop%20Science%20Mission_03262025.pdf",
+      "notes": "NASA systems-engineering webinar presentation; public PDF.",
+      "local_archive_products": [
+        "challenge/resources/Design_and_Develop_Science_Missions_NASA_2025.pdf"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_cubesat_101",
+      "organization": "NASA CubeSat Launch Initiative; produced under contract by Cal Poly",
+      "url": "https://www.nasa.gov/kennedy/launch-services-program/cubesat-launch-initiative/cubesat-launch-initiative-resources/",
+      "direct_download": "https://www3.nasa.gov/sites/default/files/atoms/files/nasa_csli_cubesat_101_508.pdf",
+      "notes": "Public introductory mission lifecycle/launch guide, revision dated October 2017; supporting reading, not a current launch-requirements authority.",
+      "local_archive_products": [
+        "challenge/resources/NASA_CubeSat_101_2017.pdf"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "spaceapps_2026_space_mission_design_game",
+      "organization": "NASA Space Apps Challenge",
+      "url": "https://www.spaceappschallenge.org/2026/challenges/",
+      "notes": "User-attached text is a transcript of the challenge and its listed resource descriptions. The live official challenge page could not be archived during this pass (HTTP fetch errors); the transcript is not presented as a downloaded NASA file.",
+      "local_archive_products": [
+        "challenge/2026_space_mission_design_game_resources.txt",
+        "challenge/resources/README.md"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_mars_global_surveyor_3d",
+      "organization": "NASA Science / NASA-JPL / Eyes on the Solar System",
+      "url": "https://science.nasa.gov/3d-resources/mars-global-surveyor/",
+      "direct_download": "https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/model/mars-global-surveyor/Mars%20Global%20Surveyor.glb",
+      "notes": "Official GLB model; orbiter visual reference.",
+      "local_archive_products": [
+        "models/Mars_Global_Surveyor.glb"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_mro_3d",
+      "organization": "NASA Science / NASA-JPL",
+      "url": "https://science.nasa.gov/3d-resources/mars-reconnaissance-orbiter-mro-c/",
+      "direct_download": "https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/model/mars-reconnaissance-orbiter-%28mro%29-%28c%29/Mars%20Reconnaissance%20Orbiter%20%28MRO%29%20%28C%29.glb",
+      "notes": "Official GLB model of a Mars orbiter with relay relevance.",
+      "local_archive_products": [
+        "models/Mars_Reconnaissance_Orbiter.glb"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_insight_3d",
+      "organization": "NASA Science / NASA Visualization Technology Applications and Development",
+      "url": "https://science.nasa.gov/resource/insight-3d-model/",
+      "direct_download": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/i/InSight_deployed.glb",
+      "notes": "Official GLB model of a Mars lander; older mission used as a lander visual reference.",
+      "local_archive_products": [
+        "models/InSight_deployed.glb"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_cml_framework",
+      "organization": "NASA / Jet Propulsion Laboratory",
+      "url": "https://science.nasa.gov/wp-content/uploads/2023/11/03-ziemer-mission-development-101-cmls.pdf",
+      "notes": "NASA/JPL presentation on mission concept maturity levels; used as a process reference, not a data feed.",
+      "local_archive_products": [
+        "challenge/resources/NASA_Mission_Development_101_CMLs.pdf"
+      ],
+      "provenance_scope": "source/archive reference; local_archive_products are audit paths, not runtime dependencies"
+    },
+    {
+      "id": "nasa_mars_facts",
+      "organization": "NASA NSSDCA",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html"
+    },
+    {
+      "id": "jpl_parameters",
+      "organization": "NASA/JPL SSD",
+      "url": "https://ssd.jpl.nasa.gov/astro_par.html"
+    },
+    {
+      "id": "jpl_planet_parameters",
+      "organization": "NASA/JPL SSD",
+      "url": "https://ssd.jpl.nasa.gov/planets/phys_par.html"
+    },
+    {
+      "id": "horizons_api",
+      "organization": "NASA/JPL SSD",
+      "url": "https://ssd-api.jpl.nasa.gov/doc/horizons.html"
+    },
+    {
+      "id": "nasa_lsp_falcon",
+      "organization": "NASA KSC",
+      "url": "https://public.ksc.nasa.gov/lspeducation/spacex/"
+    },
+    {
+      "id": "nasa_archive_definitions",
+      "organization": "NASA Exoplanet Archive",
+      "url": "https://exoplanetarchive.ipac.caltech.edu/docs/API_PS_columns.html"
+    }
+  ],
+  "covered_source_ids": [
+    "dace_ngpps",
+    "horizons_api",
+    "jpl_horizons",
+    "jpl_mars2020_edl",
+    "jpl_mars2020_launch",
+    "jpl_parameters",
+    "jpl_planet_parameters",
+    "nasa_archive_definitions",
+    "nasa_cml_framework",
+    "nasa_cubesat_101",
+    "nasa_design_develop_science_missions",
+    "nasa_emac_exovista_dec21",
+    "nasa_exoplanet_archive",
+    "nasa_images_library",
+    "nasa_insight_3d",
+    "nasa_lsp_falcon",
+    "nasa_mars_facts",
+    "nasa_mars_global_surveyor_3d",
+    "nasa_mars_raw_images",
+    "nasa_mars_relay_network",
+    "nasa_mro_3d",
+    "nasa_pds_meda",
+    "nasa_pds_places",
+    "nasa_perseverance_3d",
+    "nasa_perseverance_instruments",
+    "nasa_perseverance_rover_components",
+    "soda_orion_alma_cds",
+    "spaceapps_2026_space_mission_design_game",
+    "spacex_falcon_heavy",
+    "ula_atlas_v",
+    "usgs_jezero_ctx"
+  ],
+  "evidence": {
+    "White-cat/data/solar_systems/nasa_exoplanet_archive_metadata.json": {
+      "bytes": 1098,
+      "sha256": "eaa13a389f5defd3fd8f715535806afd1aecbadfb0007c903184c7d0d501ce4e"
+    },
+    "White-cat/docs/audit/population_statistics.json": {
+      "bytes": 3211,
+      "sha256": "d65869783c302c2c2b53b96bd2c4601d676952f548ee275f630badb913491b3f"
+    },
+    "White-cat/data/planets/generation_parameters.json": {
+      "bytes": 2430,
+      "sha256": "e16a3110a134aa4f72c4dd2bf84a61bdd8274c29e76a05cf8b34ef8a16e45683"
+    },
+    "White-cat/data/planets/planet_types.json": {
+      "bytes": 2463,
+      "sha256": "afe5b53e3fc1b553afaa07a968ee0706c8e5b0a75ec3da1dbc5cfef2a9caf497"
+    },
+    "White-cat/data/solar_systems/exovista_DEC21_universe1/metadata.json": {
+      "bytes": 1142,
+      "sha256": "0107c9ae29677b882778170144e56a13cbb4f23dad6d7d02f360da0e9b4fbdf1"
+    },
+    "White-cat/data/planets/mass_radius_anchors.json": {
+      "bytes": 12444,
+      "sha256": "2a53e08371f3a25fa1de6e44c00210847ef48a13fbf4e4b3df110cff5fdf1aeb"
+    },
+    "White-cat/data/planets/example_systems.json": {
+      "bytes": 15132,
+      "sha256": "5a86e96965e9f951be2f954950f239dfb53603b3cd30417373aac5eb066d7fad"
+    },
+    "White-cat/data/planets/stars.json": {
+      "bytes": 10087,
+      "sha256": "aadfb2faa1adecfee7bd2c69f674e0685ac02cfddb36e8ad301a8d7146c7bdb9"
+    },
+    "White-cat/data/solar_systems/soda_orion_disks.json": {
+      "bytes": 211631,
+      "sha256": "4e5683b7ab343034bbf2f00a4b64317a177e4c58e13189b72a076456256f855c"
+    },
+    "White-cat/data/physics/physical_constants.json": {
+      "bytes": 4042,
+      "sha256": "ecb205258c0f6cad393293f18e49c092ec4a32bd9149f8c1e4d635ab5c988c06"
+    },
+    "White-cat/data/physics/formulas.json": {
+      "bytes": 31526,
+      "sha256": "749f39fc54ea65a69a94293941082d792a992f2eec8c142adb15f30ab7e6067b"
+    },
+    "White-cat/docs/PHYSICS.md": {
+      "bytes": 22159,
+      "sha256": "c67f0da33159d3424ca3692f1eb428e1766ec040f51f956051011addb171f15d"
+    },
+    "White-cat/data/planets/atmospheres.json": {
+      "bytes": 1505,
+      "sha256": "a948c17b7237eb3f378a4e5d3716947d4e66e7c5513be440e7adb281f2e97be2"
+    },
+    "White-cat/WHITE_CAT_NASA_2026_TEAM_GUIDE.md": {
+      "bytes": 105651,
+      "sha256": "67154d00fbb90ae56512a72a5fcfbfe07e34fa3cea51b2a6fa44f5cb170208a5"
+    },
+    "White-cat/assets/terrain/metadata.json": {
+      "bytes": 3316,
+      "sha256": "aacb6fbac82743d505cb5b97f109a73ab73abba6b3399edb9e47572856807dca"
+    },
+    "White-cat/docs/audit/geospatial.json": {
+      "bytes": 2470,
+      "sha256": "ae14354b996ca987b236085a4c0afef4ff6bfbacc3608bd62cae6997814db3a7"
+    },
+    "White-cat/data/mars/jezero/M20_JezeroCrater_CTXDEM_20m.xml": {
+      "bytes": 8786,
+      "sha256": "ddf03b3de30ffee3d04baea2c8ebdf4558b5490a84989440c7447658c2f62732"
+    },
+    "White-cat/data/mars/jezero/M20_JezeroCrater_CTXortho_mosaic_5m.xml": {
+      "bytes": 8805,
+      "sha256": "617b3d0a0608bbba6016907ca30040e0c1fa6bca89e3c27912cf0ef4c39c6a32"
+    },
+    "White-cat/data/rover/routes.json": {
+      "bytes": 103019,
+      "sha256": "3de79cfe801fb44a35e4aee3a0f538d0a77c4bb18347d56c97f6ec5f5a99aee6"
+    },
+    "White-cat/data/mars/places/release_notes.txt": {
+      "bytes": 15756,
+      "sha256": "71705ca3a8c8045cfb025a0fa023600f11147d67c30955d4e698d6ac559f5eaa"
+    },
+    "White-cat/data/mars/places/Mars2020_Rover_PLACES_PDS_SIS.pdf": {
+      "bytes": 1700553,
+      "sha256": "ca3eb9d2a0d992cedf96860f30537ac508e15fb0e2417fb74c5b80cb31418d1a"
+    },
+    "White-cat/data/rover/weather_samples.json": {
+      "bytes": 12966,
+      "sha256": "9610a38a7fca73f24758d728ce449d60d76a1e40ba41ae5c2192f1490e889625"
+    },
+    "White-cat/docs/audit/meda_products.json": {
+      "bytes": 17234,
+      "sha256": "c7f55db99337781f2a4b2a1c6d1566428f8ca38128d96ef08d9f863c531c205c"
+    },
+    "White-cat/data/weather/MEDA_RDR_SIS.pdf": {
+      "bytes": 1733894,
+      "sha256": "5d1e4d71c33c4fc3888fab21324878e5d192a2058279ea3d034a6b48763d66fb"
+    },
+    "White-cat/data/weather/MEDA_EDR_SIS.pdf": {
+      "bytes": 1688796,
+      "sha256": "363e7a2d2377afbc9c63e8fee6c76cdc59eb5333c7f1db3099847efc03c6b006"
+    },
+    "White-cat/data/missions/earth_mars_ephemeris.json": {
+      "bytes": 272907,
+      "sha256": "348361ceb84f7a7b7c1f2bb612f89cbd9e26e2f6ce03eb09db43b0cbd8b700c8"
+    },
+    "White-cat/data/ephemeris/mars_heliocentric_vectors_2026-11-14_to_2028-11-15.json": {
+      "bytes": 150204,
+      "sha256": "951dec1dc1edb3edc0dc21d56f569bdca4a1e114f0d0ef07238d98001b830d1b"
+    },
+    "White-Cat-Git/ASS/UI/Textures/earth_nasa.jpg": {
+      "bytes": 593729,
+      "sha256": "fb67ac030214c1891994c8f976e7f6c9cd5b0f21586aba8567250781a4fe708e"
+    },
+    "White-cat/data/rover_images/images_manifest.json": {
+      "bytes": 119551,
+      "sha256": "a2d7d159d5c8ac59957f41d3077b2bc45322c65140761bf0c4b81f7e5ee16920"
+    },
+    "White-cat/assets/images/manifest.json": {
+      "bytes": 4479,
+      "sha256": "8be87298ed28dedeed8ccd6c9c372959b7ae8e188728f6db2db8bfbae0bf2459"
+    },
+    "White-cat/data/images/nasa-library/perseverance_jezero_search.json": {
+      "bytes": 77819,
+      "sha256": "8a1fd74221ddd606dc0eb16d22ce97b5c71cd67533e7241db14744d47fdf0594"
+    },
+    "White-cat/assets/models/manifest.json": {
+      "bytes": 3315,
+      "sha256": "aa0217096ef0ebe8eaefff1afd42e53ccb8c9058e1fff733f4f8e9aae624b864"
+    },
+    "White-cat/assets/models/Mars_2020_Perseverance_Rover.glb": {
+      "bytes": 4978600,
+      "sha256": "6ae0f1880b5a3e1644412baf0a0822e2497b84542962f6a3454be7167c107aa4"
+    },
+    "White-cat/assets/models/space_station/README.md": {
+      "bytes": 5062,
+      "sha256": "dfd83e9d12ba1a6746b75a6911c213ab68bfd361bbd2142fc9047842532c93cb"
+    },
+    "White-cat/data/models/Mars_Global_Surveyor.glb": {
+      "bytes": 1921268,
+      "sha256": "8812c97f2c147e409e883d5196377d596df84de87c08c1453e9e3cfaf082052f"
+    },
+    "White-cat/data/models/InSight_deployed.glb": {
+      "bytes": 22357936,
+      "sha256": "1e944bedb23af07962ba9f2b88d195b561665f255573b29ba7d028293a179387"
+    },
+    "White-cat/data/models/Ingenuity_Mars_Helicopter.source.json": {
+      "bytes": 335,
+      "sha256": "b413e7c1fb9b19ffe79ea43f0aa3832f47495719b2827d51b9d4ea29dd568184"
+    },
+    "White-cat/data/models/Ingenuity_Mars_Helicopter.glb": {
+      "bytes": 2019408,
+      "sha256": "9e5a5398ab335eae7d46335085301ce46fb7de052300b645debe8bac6d39f2b5"
+    },
+    "White-cat/data/models/telescopes/sources.json": {
+      "bytes": 3661,
+      "sha256": "6a928d96ca71c22e7513e647c0f6312e9e3e2c289559094db34d65ac56451180"
+    },
+    "White-cat/data/models/telescopes/Hubble Space Telescope (A).glb": {
+      "bytes": 1694988,
+      "sha256": "e5ba4de15c7d359ac8fa1ab7e286aff42dec09c0fadae3db99252587f39fa384"
+    },
+    "White-cat/data/models/telescopes/Spitzer Space Telescope.glb": {
+      "bytes": 251388,
+      "sha256": "fa0b7c89fd2c8632d981d3a0ad471dc70620dda4e663788409b251e0f6e6f558"
+    },
+    "White-cat/data/models/telescopes/Kepler (A).glb": {
+      "bytes": 2003276,
+      "sha256": "382014d90e2cf3e1f23e931d233547e652fe3629fddfb5acb8a99e2ceb72ff19"
+    },
+    "White-cat/data/models/telescopes/Chandra X-ray Observatory.glb": {
+      "bytes": 998500,
+      "sha256": "9383f44fc4c6eba73c40b0c2cfe33c08c90f1fb5230274bfdaa98e0c9f116a34"
+    },
+    "White-cat/data/models/telescopes/James Webb Space Telescope (A).glb": {
+      "bytes": 4710016,
+      "sha256": "ea4a53f71f1e7477d8b90e30d1299b2cb33faea18acdcaf831dc9d3ebf1b7750"
+    },
+    "White-cat/data/missions/components.json": {
+      "bytes": 10515,
+      "sha256": "c8741df1df3d1a5a1ade3899a35e3ff0e9c5125c9d379cbbcd8140d2f37e7215"
+    },
+    "White-cat/data/rover/rover_specs.json": {
+      "bytes": 4079,
+      "sha256": "e8e64672d153f653fa2ab44d0b8b62c7344a8da403183188961bdc02d3022129"
+    },
+    "White-cat/data/missions/launchers.json": {
+      "bytes": 2200,
+      "sha256": "466f7730deecae487a064936d6a29f6a5e1b92e7b200f417117af96ff9a8eefc"
+    },
+    "White-cat/data/missions/orbits.json": {
+      "bytes": 2435,
+      "sha256": "d38e614d69d2677841ef54e342c1d71759387e6d89b1143f1d33cb07d4fb03be"
+    },
+    "White-cat/data/missions/edl.json": {
+      "bytes": 2523,
+      "sha256": "9e14356685d27addb39ec93cb445ead2327957697b89dd6ea83d7ef892f8ad27"
+    },
+    "White-cat/docs/DATA_SELECTION.md": {
+      "bytes": 7127,
+      "sha256": "e9682ac0108dadbf93382d2f95e36b2ae2767bfed45559993bc5abd1d5d83315"
+    },
+    "White-cat/data/missions/relay_plans.json": {
+      "bytes": 3008,
+      "sha256": "3c58fd6d1842328c400da73b7688d232727edfb382d3e91ca9ccf63e61808c87"
+    },
+    "White-cat/data/challenge/resources/Design_and_Develop_Science_Missions_NASA_2025.pdf": {
+      "bytes": 3912778,
+      "sha256": "1b615217530c5281b4580f38b5afedad7679fea3dc76f15e8009cb145b4a0788"
+    },
+    "White-cat/data/challenge/resources/NASA_CubeSat_101_2017.pdf": {
+      "bytes": 4445718,
+      "sha256": "57d2783457cb94b69136476ca341ddf4c7dc23bf61682606e37a048e9e5ae592"
+    },
+    "White-cat/data/challenge/resources/NASA_Mission_Development_101_CMLs.pdf": {
+      "bytes": 7835358,
+      "sha256": "72c1d1817e1d879c942be3cf5c91c48c213b239480a26818ec9612d759b147b8"
+    },
+    "White-Cat-Git/ASS/QweQ/White cat камінці/catalog.json": {
+      "bytes": 32350,
+      "sha256": "864babdf1c574c608bfedc96083e34b980caedb0fae0adf56bc05779600275c8"
+    },
+    "White-cat/assets/models/research_drill/asset_info.json": {
+      "bytes": 1135,
+      "sha256": "5163435cc32427d8021037b6329eb48ad704283e3e144d2cab4947bcf9f7afd9"
+    },
+    "White-cat/assets/models/aquatic_rover/asset_info.json": {
+      "bytes": 3005,
+      "sha256": "2dba90219ba4de56c103f7302e7f8951d4b2b87c4a057118cfb88f3452e8f538"
+    },
+    "White-cat/data/challenge/2026_space_mission_design_game_resources.txt": {
+      "bytes": 8251,
+      "sha256": "774f4e1146af28629bd433903c37f3fe35aacec344d7dada06048174cb6c0441"
+    },
+    "White-cat/data/challenge/resources/README.md": {
+      "bytes": 1878,
+      "sha256": "a6eb374b7a6999c2be95c0b871b418569f99fa676ca4a74c6f1472bd70e8eed8"
+    },
+    "White-cat/data/solar_systems/formation_priors.json": {
+      "bytes": 5078,
+      "sha256": "b8bdb6236e7ecdc6495ea8478094afe9383f5a93f4a5813efd6d83205f161261"
+    }
+  },
+  "original_archive": {
+    "files": 208,
+    "hash_matches": 207,
+    "changed_since_original_inventory": [
+      {
+        "path": "data/sources.json",
+        "previous_sha256": "63d40fea2d7c9d4cf8a95be71024fa9e65c260ce4c71677c946ffa1b7a8e4cc4",
+        "sha256": "29c5b21d4dd9af3246593e61cdcb6b088edc984b5c593b7edfe20fba70add8ab"
+      }
+    ]
+  },
+  "raw_images": [
+    {
+      "image_id": "ZLF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ",
+      "filename": "ZLF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ.png",
+      "camera_id": "MCZ_LEFT",
+      "sol": 1,
+      "title": "Mars Perseverance Sol 1: Left Mastcam-Z Camera",
+      "credit": "NASA/JPL-Caltech/ASU",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZLF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/fdr/browse/zcam/ZLF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ01.png",
+      "sha256": "da1eba121f5dc261b1f1ccc968ca2cd87b75cb6231c479b3bdd6aee41c2d8f65",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "ZL6_0100_0675828555_098ECM_N0040218ZCAM01000_026080J",
+      "filename": "ZL6_0100_0675828555_098ECM_N0040218ZCAM01000_026080J.png",
+      "camera_id": "MCZ_LEFT",
+      "sol": 100,
+      "title": "Mars Perseverance Sol 100: Left Mastcam-Z Camera",
+      "credit": "NASA/JPL-Caltech/ASU",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZL6_0100_0675828555_098ECM_N0040218ZCAM01000_026080J",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00100/ids/edr/browse/zcam/ZL6_0100_0675828555_098ECM_N0040218ZCAM01000_026080J01.png",
+      "sha256": "c71ae9c0c9a4ba20b8cc6e46b128a898e7cdd9b398d59f88d4d039caec73cfe6",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ",
+      "filename": "ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ.png",
+      "camera_id": "MCZ_LEFT",
+      "sol": 800,
+      "title": "Mars Perseverance Sol 800: Left Mastcam-Z Camera",
+      "credit": "NASA/JPL-Caltech/ASU",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00800/ids/edr/browse/zcam/ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ01.png",
+      "sha256": "2faf6fcafcbdd85b5cc9080d8f25300c873e5f1afd017927cb83799ea9ad8658",
+      "prepared_asset": {
+        "image_id": "ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ",
+        "camera_id": "MCZ_LEFT",
+        "sol": 800,
+        "caption": "NASA's Mars Perseverance rover acquired this image using its Left Mastcam-Z camera. Mastcam-Z is a pair of cameras located high on the rover's mast.\n\nThis image was acquired on May 21, 2023 (Sol 800) at the local mean solar time of 08:11:04.",
+        "credit": "NASA/JPL-Caltech/ASU",
+        "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ",
+        "id": "ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ",
+        "path": "assets/images/ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ.webp",
+        "width": 1280,
+        "height": 932,
+        "processing": "resize and lossy WebP only; real Mars photograph, not a generated planet texture"
+      }
+    },
+    {
+      "image_id": "ZL0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ",
+      "filename": "ZL0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ.png",
+      "camera_id": "MCZ_LEFT",
+      "sol": 1000,
+      "title": "Mars Perseverance Sol 1000: Left Mastcam-Z Camera",
+      "credit": "NASA/JPL-Caltech/ASU",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZL0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01000/ids/edr/browse/zcam/ZL0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ01.png",
+      "sha256": "d0daa4eae048922970aa3bae427f8902c51984822b244db717f5eda3d466c62e",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "ZRF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ",
+      "filename": "ZRF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ.png",
+      "camera_id": "MCZ_RIGHT",
+      "sol": 1,
+      "title": "Mars Perseverance Sol 1: Right Mastcam-Z Camera",
+      "credit": "NASA/JPL-Caltech/ASU",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZRF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/fdr/browse/zcam/ZRF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ01.png",
+      "sha256": "842aa83b0952fd50c85fd10c83be9dd566a6b9bb9f343a0da9a8719c440984f0",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "ZR2_0100_0675828555_098ECM_N0040218ZCAM01000_026080J",
+      "filename": "ZR2_0100_0675828555_098ECM_N0040218ZCAM01000_026080J.png",
+      "camera_id": "MCZ_RIGHT",
+      "sol": 100,
+      "title": "Mars Perseverance Sol 100: Right Mastcam-Z Camera",
+      "credit": "NASA/JPL-Caltech/ASU",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZR2_0100_0675828555_098ECM_N0040218ZCAM01000_026080J",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00100/ids/edr/browse/zcam/ZR2_0100_0675828555_098ECM_N0040218ZCAM01000_026080J01.png",
+      "sha256": "36f3d44360112d8d3dc43fdb33781af2ccc70eff9581fa2363c573a2c1c4f29b",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "ZR0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ",
+      "filename": "ZR0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ.png",
+      "camera_id": "MCZ_RIGHT",
+      "sol": 800,
+      "title": "Mars Perseverance Sol 800: Right Mastcam-Z Camera",
+      "credit": "NASA/JPL-Caltech/ASU",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZR0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00800/ids/edr/browse/zcam/ZR0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ01.png",
+      "sha256": "1a1b455e5228f86cbc20d3bd7f88e0f4301dfdc618f694395e866365dae3aed6",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "ZR0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ",
+      "filename": "ZR0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ.png",
+      "camera_id": "MCZ_RIGHT",
+      "sol": 1000,
+      "title": "Mars Perseverance Sol 1000: Right Mastcam-Z Camera",
+      "credit": "NASA/JPL-Caltech/ASU",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZR0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01000/ids/edr/browse/zcam/ZR0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ01.png",
+      "sha256": "35bb26c169cb0274240d813cac60e0f28a4b13c569191b2e3c03281be8efcd71",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "NLB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01",
+      "filename": "NLB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01.png",
+      "camera_id": "NAVCAM_LEFT",
+      "sol": 1,
+      "title": "Mars Perseverance Sol 1: Left Navigation Camera (Navcam)",
+      "credit": "NASA/JPL-Caltech",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/NLB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/edr/browse/ncam/NLB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01.png",
+      "sha256": "942f4a610dadbde3f38b2513a031d169fcf03b7364ef849fb71aee8e9de5cfe1",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "NLF_0100_0675828717_276ECM_N0040218NCAM00503_01_295J",
+      "filename": "NLF_0100_0675828717_276ECM_N0040218NCAM00503_01_295J.png",
+      "camera_id": "NAVCAM_LEFT",
+      "sol": 100,
+      "title": "Mars Perseverance Sol 100: Left Navigation Camera (Navcam)",
+      "credit": "NASA/JPL-Caltech",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/NLF_0100_0675828717_276ECM_N0040218NCAM00503_01_295J",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00100/ids/edr/browse/ncam/NLF_0100_0675828717_276ECM_N0040218NCAM00503_01_295J01.png",
+      "sha256": "0ebbb84288188028bdc9f5001b92fb1fe458410d99109856d3ed7630fd8cade9",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "NRB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01",
+      "filename": "NRB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01.png",
+      "camera_id": "NAVCAM_RIGHT",
+      "sol": 1,
+      "title": "Mars Perseverance Sol 1: Right Navigation Camera (Navcam)",
+      "credit": "NASA/JPL-Caltech",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/NRB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/edr/browse/ncam/NRB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01.png",
+      "sha256": "3d6c0e4223ff14f99e08e10a87a319bf25cd16ad7cf267b6b2b41574149bbb34",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J",
+      "filename": "NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J.png",
+      "camera_id": "NAVCAM_RIGHT",
+      "sol": 800,
+      "title": "Mars Perseverance Sol 800: Right Navigation Camera (Navcam)",
+      "credit": "NASA/JPL-Caltech",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00800/ids/edr/browse/ncam/NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J01.png",
+      "sha256": "f3a3f281f3a32163fb7a52e79f53c5311c1de6c47306f3f3adbb043b9b2e5868",
+      "prepared_asset": {
+        "image_id": "NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J",
+        "camera_id": "NAVCAM_RIGHT",
+        "sol": 800,
+        "caption": "NASA's Mars Perseverance rover acquired this image using its onboard Right Navigation Camera (Navcam). The camera is located high on the rover's mast and aids in driving. \n\nThis image was acquired on May 21, 2023 (Sol 800) at the local mean solar time of 08:36:59.",
+        "credit": "NASA/JPL-Caltech",
+        "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J",
+        "id": "NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J",
+        "path": "assets/images/NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J.webp",
+        "width": 1280,
+        "height": 962,
+        "processing": "resize and lossy WebP only; real Mars photograph, not a generated planet texture"
+      }
+    },
+    {
+      "image_id": "FLB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01",
+      "filename": "FLB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01.png",
+      "camera_id": "FRONT_HAZCAM_LEFT_A",
+      "sol": 1,
+      "title": "Mars Perseverance Sol 1: Front Left Hazard Avoidance Camera (Hazcam)",
+      "credit": "NASA/JPL-Caltech",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/FLB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/edr/browse/fcam/FLB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01.png",
+      "sha256": "0599c482c569b49edab2a0a806113690a7d905afc84f42e3da5b71d3fb5067c2",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J",
+      "filename": "FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J.png",
+      "camera_id": "FRONT_HAZCAM_LEFT_A",
+      "sol": 1000,
+      "title": "Mars Perseverance Sol 1000: Front Left Hazard Avoidance Camera (Hazcam)",
+      "credit": "NASA/JPL-Caltech",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01000/ids/edr/browse/fcam/FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J01.png",
+      "sha256": "21167d0b4fbb491923520efd8e3027203f545bfbd22d7f214b5e3d1733bcce8c",
+      "prepared_asset": {
+        "image_id": "FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J",
+        "camera_id": "FRONT_HAZCAM_LEFT_A",
+        "sol": 1000,
+        "caption": "NASA's Mars Perseverance rover acquired this image of the area in front of it using its onboard Front Left Hazard Avoidance Camera A. \n\nThis image was acquired on Dec. 13, 2023 (Sol 1000) at the local mean solar time of 12:54:40.",
+        "credit": "NASA/JPL-Caltech",
+        "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J",
+        "id": "FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J",
+        "path": "assets/images/FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J.webp",
+        "width": 1280,
+        "height": 960,
+        "processing": "resize and lossy WebP only; real Mars photograph, not a generated planet texture"
+      }
+    },
+    {
+      "image_id": "FRB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01",
+      "filename": "FRB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01.png",
+      "camera_id": "FRONT_HAZCAM_RIGHT_A",
+      "sol": 1,
+      "title": "Mars Perseverance Sol 1: Front Right Hazard Avoidance Camera (Hazcam)",
+      "credit": "NASA/JPL-Caltech",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/FRB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/edr/browse/fcam/FRB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01.png",
+      "sha256": "b6e6d59bf27547a9223f1aa618afce8cf6762a34236119c211e0ae75816e0f74",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "FRF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J",
+      "filename": "FRF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J.png",
+      "camera_id": "FRONT_HAZCAM_RIGHT_A",
+      "sol": 1000,
+      "title": "Mars Perseverance Sol 1000: Front Right Hazard Avoidance Camera (Hazcam)",
+      "credit": "NASA/JPL-Caltech",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/FRF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01000/ids/edr/browse/fcam/FRF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J01.png",
+      "sha256": "e5987dbdd7dcf9efcb80b4bd3aa20827aff83dcaa69838518b04a9154b7d0e7c",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "LRE_0001_0667036326_588ECM_N0010052SCAM15103_0000LUJ",
+      "filename": "LRE_0001_0667036326_588ECM_N0010052SCAM15103_0000LUJ.png",
+      "camera_id": "SUPERCAM_RMI",
+      "sol": 1,
+      "title": "Mars Perseverance Sol 1: SuperCam Camera",
+      "credit": "NASA/JPL-Caltech/LANL/CNES/IRAP",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/LRE_0001_0667036326_588ECM_N0010052SCAM15103_0000LUJ",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/edr/browse/scam/LRE_0001_0667036326_588ECM_N0010052SCAM15103_0000LUJ01.png",
+      "sha256": "eb00645089f49ac7ae196725dfc6a23588a5b56d6ebd393b72c46140a412fdf4",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "LRE_0800_0737955693_303ECM_N0391170SCAM01800_0010I6J",
+      "filename": "LRE_0800_0737955693_303ECM_N0391170SCAM01800_0010I6J.png",
+      "camera_id": "SUPERCAM_RMI",
+      "sol": 800,
+      "title": "Mars Perseverance Sol 800: SuperCam Camera",
+      "credit": "NASA/JPL-Caltech/LANL/CNES/IRAP",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/LRE_0800_0737955693_303ECM_N0391170SCAM01800_0010I6J",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00800/ids/edr/browse/scam/LRE_0800_0737955693_303ECM_N0391170SCAM01800_0010I6J01.png",
+      "sha256": "4ed7ccbadbca0db1ba84e2888a7b2c69ea3323aa81c1018291a8eaffda6c85e3",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "LRE_1000_0755699148_284ECM_N0474374SCAM02000_0010I6J",
+      "filename": "LRE_1000_0755699148_284ECM_N0474374SCAM02000_0010I6J.png",
+      "camera_id": "SUPERCAM_RMI",
+      "sol": 1000,
+      "title": "Mars Perseverance Sol 1000: SuperCam Camera",
+      "credit": "NASA/JPL-Caltech/LANL/CNES/IRAP",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/LRE_1000_0755699148_284ECM_N0474374SCAM02000_0010I6J",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01000/ids/edr/browse/scam/LRE_1000_0755699148_284ECM_N0474374SCAM02000_0010I6J01.png",
+      "sha256": "a465963b1717c6191f94847b3c09032c3cc20e11d7f32fb78bd476e2b569e2b2",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "SI1_1500_0800108664_851ECM_N0730000SRLC07061_0000LMJ",
+      "filename": "SI1_1500_0800108664_851ECM_N0730000SRLC07061_0000LMJ.png",
+      "camera_id": "SHERLOC_WATSON",
+      "sol": 1500,
+      "title": "Mars Perseverance Sol 1500: WATSON Camera ",
+      "credit": "NASA/JPL-Caltech",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/SI1_1500_0800108664_851ECM_N0730000SRLC07061_0000LMJ",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01500/ids/edr/browse/shrlc/SI1_1500_0800108664_851ECM_N0730000SRLC07061_0000LMJ01.png",
+      "sha256": "ee037ebb65477c6f5924ea861f64c653ec06edf7b5541a118446b6a4c4aee5b3",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ",
+      "filename": "SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ.png",
+      "camera_id": "SHERLOC_WATSON",
+      "sol": 1800,
+      "title": "Mars Perseverance Sol 1800: WATSON Camera ",
+      "credit": "NASA/JPL-Caltech",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01800/ids/edr/browse/shrlc/SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ01.png",
+      "sha256": "2ac9f5744f46d7989f1a497dce9ddfcb87a70025baa2fcdda5f697d25e22f801",
+      "prepared_asset": {
+        "image_id": "SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ",
+        "camera_id": "SHERLOC_WATSON",
+        "sol": 1800,
+        "caption": "NASA's Mars Perseverance rover acquired this image using its SHERLOC  WATSON camera, located on the turret at the end of the rover's robotic arm. \n\nThis image was acquired on March 14, 2026 (Sol 1800) at the local mean solar time of 13:02:00.",
+        "credit": "NASA/JPL-Caltech",
+        "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ",
+        "id": "SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ",
+        "path": "assets/images/SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ.webp",
+        "width": 480,
+        "height": 480,
+        "processing": "resize and lossy WebP only; real Mars photograph, not a generated planet texture"
+      }
+    },
+    {
+      "image_id": "SI1_1500_0800108674_394ECM_N0730000SRLC07061_0000LMJ",
+      "filename": "SI1_1500_0800108674_394ECM_N0730000SRLC07061_0000LMJ.png",
+      "camera_id": "SHERLOC_WATSON",
+      "sol": 1500,
+      "title": "Mars Perseverance Sol 1500: WATSON Camera ",
+      "credit": "NASA/JPL-Caltech",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/SI1_1500_0800108674_394ECM_N0730000SRLC07061_0000LMJ",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01500/ids/edr/browse/shrlc/SI1_1500_0800108674_394ECM_N0730000SRLC07061_0000LMJ01.png",
+      "sha256": "63c06bc89a9322460011a0c3e7ccbf5364a0e135f733782b4b48bc252b92e0f6",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "WSM_0001_0667044731_000ECM_N0010052MEDA00200_0000LUJ",
+      "filename": "WSM_0001_0667044731_000ECM_N0010052MEDA00200_0000LUJ.png",
+      "camera_id": "SKYCAM",
+      "sol": 1,
+      "title": "Mars Perseverance Sol 1: SkyCam Camera ",
+      "credit": "NASA/JPL-Caltech/CAB",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/WSM_0001_0667044731_000ECM_N0010052MEDA00200_0000LUJ",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/edr/browse/meda/WSM_0001_0667044731_000ECM_N0010052MEDA00200_0000LUJ01.png",
+      "sha256": "b9886cdb1da28e987bdd57286f4aed262bf7153aba0fbfab325abcda91e94ca2",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "WSM_0100_0675791183_000ECM_N0040218MEDA03245_0000LUJ",
+      "filename": "WSM_0100_0675791183_000ECM_N0040218MEDA03245_0000LUJ.png",
+      "camera_id": "SKYCAM",
+      "sol": 100,
+      "title": "Mars Perseverance Sol 100: SkyCam Camera ",
+      "credit": "NASA/JPL-Caltech/CAB",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/WSM_0100_0675791183_000ECM_N0040218MEDA03245_0000LUJ",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00100/ids/edr/browse/meda/WSM_0100_0675791183_000ECM_N0040218MEDA03245_0000LUJ01.png",
+      "sha256": "76e3d7cee4862089b633eb478fa4ca767dce28388ea976c01c41fd73a26c96d8",
+      "prepared_asset": null
+    },
+    {
+      "image_id": "PCW_2000_0844451597_000ECM_N09109707607424011703075J",
+      "filename": "PCW_2000_0844451597_000ECM_N09109707607424011703075J.png",
+      "camera_id": "PIXL_MCC",
+      "sol": 2000,
+      "title": "Mars Perseverance Sol 2000: PIXL Camera ",
+      "credit": "NASA/JPL-Caltech",
+      "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/PCW_2000_0844451597_000ECM_N09109707607424011703075J",
+      "download_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/02000/ids/edr/browse/pixl/PCW_2000_0844451597_000ECM_N09109707607424011703075J01.png",
+      "sha256": "fb1561f43f524f59b5dbc0dc9eaf8c1ff4ab27f0a031ffb58ca218d6a3a73c99",
+      "prepared_asset": {
+        "image_id": "PCW_2000_0844451597_000ECM_N09109707607424011703075J",
+        "camera_id": "PIXL_MCC",
+        "sol": 2000,
+        "caption": "NASA's Mars Perseverance rover acquired this image using its PIXL Micro Context Camera, located on the turret at the end of the rover's robotic arm. \n\nThis image was acquired on  Oct. 5, 2026 (Sol 2000) at the local mean solar time of 02:15:28.",
+        "credit": "NASA/JPL-Caltech",
+        "source_page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/PCW_2000_0844451597_000ECM_N09109707607424011703075J",
+        "id": "PCW_2000_0844451597_000ECM_N09109707607424011703075J",
+        "path": "assets/images/PCW_2000_0844451597_000ECM_N09109707607424011703075J.webp",
+        "width": 752,
+        "height": 580,
+        "processing": "resize and lossy WebP only; real Mars photograph, not a generated planet texture"
+      }
+    }
+  ],
+  "nasa_library_images": [
+    {
+      "nasa_id": "PIA24744",
+      "title": "The End of One Drive by Perseverance on the Floor of Jezero Crater",
+      "date_created": "2021-07-21T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24744/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24744.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA24331",
+      "title": "Perseverance's Landing Spot in Jezero Crater",
+      "date_created": "2021-02-22T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech/University of Arizona",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24331/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24331.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA26378",
+      "title": "Perseverance's Mid-Climb View of Jezero Crater",
+      "date_created": "2024-10-28T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "    NASA/JPL-Caltech/ASU/MSSS",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA26378/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA26378.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA24926",
+      "title": "2 Abrasion Patches From Perseverance at Jezero Delta",
+      "date_created": "2022-09-15T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech/ASU/MSSS",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24926/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24926.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA26377",
+      "title": "Perseverance Drives Backward Up Jezero Crater's Rim",
+      "date_created": "2024-10-28T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA26377/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA26377.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA25963",
+      "title": "Perseverance Views Jezero Boulder Field",
+      "date_created": "2023-07-19T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech/ASU/MSSS",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA25963/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA25963.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA24924",
+      "title": "2 Perseverance Sampling Locations in Jezero's Delta",
+      "date_created": "2022-09-15T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech/ASU/MSSS",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24924/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24924.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA25027",
+      "title": "Perseverance's Traverse From Séítah to Jezero Delta",
+      "date_created": "2021-12-15T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA25027/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA25027.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA26402",
+      "title": "Perseverance's Location at the Base of Jezero Crater's Rim",
+      "date_created": "2024-08-27T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech/University of Arizona/ESA",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA26402/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA26402.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA26575",
+      "title": "Perseverance Drills a Rock on Jezero Crater Rim",
+      "date_created": "2025-06-25T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA26575/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA26575.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA24350",
+      "title": "Perseverance Rover Landing Ellipse in Jezero Crater",
+      "date_created": "2021-01-08T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "ESA/DLR/FU-Berlin/NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24350/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24350.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA25290",
+      "title": "Perseverance Views Dust Devils Swirling Across Jezero Crater",
+      "date_created": "2022-06-01T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech/SSI",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA25290/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA25290.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA24485",
+      "title": "Perseverance View of the Delta in Jezero Crater",
+      "date_created": "2021-03-05T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech/ASU/MSSS",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24485/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24485.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA24320",
+      "title": "Mars Landing Sites, Including Perseverance (Illustration)",
+      "date_created": "2020-12-16T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24320/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24320.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA24745",
+      "title": "An Expanse for Perseverance to Explore",
+      "date_created": "2021-07-21T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech/ASU/MSSS",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24745/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24745.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA26479",
+      "title": "Perseverance Views Slippery Terrain",
+      "date_created": "2024-12-12T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA26479/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA26479.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA24309",
+      "title": "Exploring Majestic Jezero Crater (Illustration)",
+      "date_created": "2021-01-27T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24309/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24309.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA25684",
+      "title": "Looking Back at Perseverance's Second Science Campaign",
+      "date_created": "2023-02-17T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA25684/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA25684.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA24814",
+      "title": "Jezero Crater's Kodiak and Scarps",
+      "date_created": "2021-10-07T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech/University of Arizona/USGS",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24814/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24814.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA26572",
+      "title": "Dust Devil Whirls by Perseverance Coring Operation",
+      "date_created": "2025-05-14T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA26572/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA26572.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA25243",
+      "title": "Perseverance's View of Possible Future Sample Cache Depot Site",
+      "date_created": "2022-09-15T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA25243/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA25243.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA24096",
+      "title": "Jezero Crater as Seen by ESA's Mars Express Orbiter",
+      "date_created": "2020-09-21T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "ESA/DLR/FU-Berlin",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24096/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24096.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA24927",
+      "title": "Rock Cores From Skinner Ridge",
+      "date_created": "2022-09-15T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech/ASU/MSSS",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24927/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24927.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA26376",
+      "title": "NASA's Perseverance Is Going Up and Up",
+      "date_created": "2024-09-13T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA26376/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA26376.jpg"
+      ]
+    },
+    {
+      "nasa_id": "PIA24482",
+      "title": "Perseverance Hazcam First Drive",
+      "date_created": "2021-03-05T00:00:00Z",
+      "center": "JPL",
+      "secondary_creator": "NASA/JPL-Caltech",
+      "photographer": null,
+      "source_collection": "https://images-assets.nasa.gov/image/PIA24482/collection.json",
+      "previews": [
+        "data/images/nasa-library/previews/PIA24482.jpg"
+      ]
+    }
+  ],
+  "telescope_models": [
+    {
+      "name": "Hubble Space Telescope (A)",
+      "file": "Hubble Space Telescope (A).glb",
+      "bytes": 1694988,
+      "sha256": "e5ba4de15c7d359ac8fa1ab7e286aff42dec09c0fadae3db99252587f39fa384",
+      "source_page": "https://science.nasa.gov/3d-resources/hubble-space-telescope-a/",
+      "download_url": "https://raw.githubusercontent.com/nasa/NASA-3D-Resources/master/3D%20Models/Hubble%20Space%20Telescope%20(A)/Hubble%20Space%20Telescope%20(A).glb",
+      "credit": "DigitalSpace Corporation",
+      "gltf_extensions_required": [
+        "KHR_draco_mesh_compression"
+      ],
+      "external_resources": [],
+      "adaptation_status": "Complete free-flying observatory reference; no station mount supplied."
+    },
+    {
+      "name": "Spitzer Space Telescope",
+      "file": "Spitzer Space Telescope.glb",
+      "bytes": 251388,
+      "sha256": "fa0b7c89fd2c8632d981d3a0ad471dc70620dda4e663788409b251e0f6e6f558",
+      "source_page": "https://science.nasa.gov/3d-resources/spitzer-space-telescope/",
+      "download_url": "https://raw.githubusercontent.com/nasa/NASA-3D-Resources/master/3D%20Models/Spitzer%20Space%20Telescope/Spitzer%20Space%20Telescope.glb",
+      "credit": "NASA/Janice C. Lee; NASA/Robert L. Hurt",
+      "gltf_extensions_required": [
+        "KHR_draco_mesh_compression"
+      ],
+      "external_resources": [],
+      "adaptation_status": "Complete free-flying observatory reference; no station mount supplied."
+    },
+    {
+      "name": "Kepler (A)",
+      "file": "Kepler (A).glb",
+      "bytes": 2003276,
+      "sha256": "382014d90e2cf3e1f23e931d233547e652fe3629fddfb5acb8a99e2ceb72ff19",
+      "source_page": "https://science.nasa.gov/3d-resources/kepler-a/",
+      "download_url": "https://raw.githubusercontent.com/nasa/NASA-3D-Resources/master/3D%20Models/Kepler%20(A)/Kepler%20(A).glb",
+      "credit": "NASA/Brian E. Kumanchik; NASA/Christian A. Lopez",
+      "gltf_extensions_required": [
+        "KHR_draco_mesh_compression"
+      ],
+      "external_resources": [],
+      "adaptation_status": "Complete free-flying observatory reference; no station mount supplied."
+    },
+    {
+      "name": "Chandra X-ray Observatory",
+      "file": "Chandra X-ray Observatory.glb",
+      "bytes": 998500,
+      "sha256": "9383f44fc4c6eba73c40b0c2cfe33c08c90f1fb5230274bfdaa98e0c9f116a34",
+      "source_page": "https://science.nasa.gov/3d-resources/chandra-x-ray-observatory/",
+      "download_url": "https://raw.githubusercontent.com/nasa/NASA-3D-Resources/master/3D%20Models/Chandra%20X-ray%20Observatory/Chandra%20X-ray%20Observatory.glb",
+      "credit": "NASA/Brian E. Kumanchik",
+      "gltf_extensions_required": [
+        "KHR_draco_mesh_compression"
+      ],
+      "external_resources": [],
+      "adaptation_status": "Complete free-flying observatory reference; no station mount supplied."
+    },
+    {
+      "name": "James Webb Space Telescope (A)",
+      "file": "James Webb Space Telescope (A).glb",
+      "bytes": 4710016,
+      "sha256": "ea4a53f71f1e7477d8b90e30d1299b2cb33faea18acdcaf831dc9d3ebf1b7750",
+      "source_page": "https://science.nasa.gov/3d-resources/james-webb-space-telescope-a/",
+      "download_url": "https://raw.githubusercontent.com/nasa/NASA-3D-Resources/master/3D%20Models/James%20Webb%20Space%20Telescope%20(A)/James%20Webb%20Space%20Telescope%20(A).glb",
+      "credit": "NASA/Goddard Space Flight Center",
+      "gltf_extensions_required": [
+        "KHR_draco_mesh_compression"
+      ],
+      "external_resources": [],
+      "adaptation_status": "Complete free-flying observatory reference; no station mount supplied."
+    }
+  ],
+  "official_ingenuity_reference": {
+    "source_url": "https://assets.science.nasa.gov/content/dam/science/cds/3d/resources/model/ingenuity-mars-helicopter/Ingenuity%20Mars%20Helicopter.glb",
+    "page": "https://science.nasa.gov/3d-resources/ingenuity-mars-helicopter/",
+    "bytes": 2019408,
+    "sha256": "9e5a5398ab335eae7d46335085301ce46fb7de052300b645debe8bac6d39f2b5"
+  }
+}

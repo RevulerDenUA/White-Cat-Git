@@ -62,6 +62,25 @@ func _run() -> void:
 	check(credits != null and not panel._is_dirty(), "Credits tab changed settings or did not open")
 	panel.draft["sfx_volume"] = 0.31
 	var pending: Dictionary = panel.draft.duplicate(true)
+	var source_link: LinkButton
+	for link: Node in credits.find_children("*", "LinkButton", true, false):
+		if link.text == "Повний аудит і перелік 50 зображень":
+			source_link = link
+	check(source_link != null, "Complete scientific source inventory has no offline action")
+	if source_link != null:
+		source_link.grab_focus()
+		source_link.pressed.emit()
+		await frames()
+		var document_dialog: CreditsLicenseDialog
+		for child: Node in panel.get_children():
+			if child is CreditsLicenseDialog:
+				document_dialog = child
+		check(document_dialog != null and panel._pending_modal, "Offline source inventory did not open")
+		if document_dialog != null:
+			check(not document_dialog.reader.editable and "25 ОРИГІНАЛЬНИХ ФОТО" in document_dialog.reader.text and "PIA24096" in document_dialog.reader.text and "NASA/JPL-Caltech/LANL/CNES/IRAP" in document_dialog.reader.text, "Original image credits are missing from the offline inventory")
+			document_dialog.finish()
+			await frames()
+			check(root.gui_get_focus_owner() == source_link and not panel._pending_modal and panel.draft == pending, "Closing the source reader lost focus or pending settings")
 	var license_link: LinkButton
 	for link: Node in credits.find_children("*", "LinkButton", true, false):
 		if link.text == "Текст ліцензії":

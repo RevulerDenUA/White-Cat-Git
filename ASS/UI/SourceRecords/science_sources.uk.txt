@@ -1,0 +1,977 @@
+WHITE CAT — NASA ТА ІНШІ ДЖЕРЕЛА
+Перевірено: 2026-11-15
+
+Перевірено обидва локальні репозиторії, включно з файлами поза Git.
+Охоплено всі 31 записи data/sources.json та додаткові локальні джерела.
+Статус кожного матеріалу описано окремо. Архівні дані не є живою телеметрією.
+Посилання всередині PDF та сторонніх вебсторінок не вважаються автоматично використаними даними.
+
+WHITE CAT
+
+Space Mission Design Game
+
+Проєкт для NASA Space Apps Challenge 2026.
+
+Репозиторій гри: https://github.com/RevulerDenUA/White-Cat-Git
+Дані та матеріали команди: https://github.com/RevulerDenUA/White-cat
+
+ПРО ДАНІ ТА ЇХ ВИКОРИСТАННЯ
+
+NASA та інші наукові установи
+Повний перелік джерел
+Аудит матеріалів White Cat · 15 листопада 2026 року.
+Нижче наведено конкретні набори, авторів і застосування. Позначки відрізняють матеріали гри, підготовлений пакет, локальний архів і довідники. Архівні спостереження не є поточними показниками ігрового апарата.
+
+ПЛАНЕТИ, ЗОРІ ТА ФІЗИКА
+
+NASA Exoplanet Archive · PSCompPars
+У пакеті даних
+NASA Exoplanet Archive · IPAC / Caltech.
+Знімок від 14.11.2026: 6 470 записів про екзопланети, зорі, маси, радіуси та орбіти. Використано для статистики й перевірок генератора. Пропуски збережено; це спостереження, а не історія формування систем.
+Архів екзопланет: https://exoplanetarchive.ipac.caltech.edu/
+Поля PSCompPars: https://exoplanetarchive.ipac.caltech.edu/docs/API_TD_columns.html
+Визначення полів PS: https://exoplanetarchive.ipac.caltech.edu/docs/API_PS_columns.html
+Підтвердження — White-cat/data/solar_systems/nasa_exoplanet_archive_metadata.json
+Підтвердження — White-cat/docs/audit/population_statistics.json
+Підтвердження — White-cat/data/planets/generation_parameters.json
+Підтвердження — White-cat/data/planets/planet_types.json
+
+ExoVista · DEC21, universe 1
+У пакеті даних · синтетична модель
+NASA Goddard · Exoplanet Modeling and Analysis Center; Stark et al.
+2 258 синтетичних систем; після вилучення порожніх слотів — 24 744 модельні планети. Підготовлено парні опорні маси й радіуси, три приклади систем і 64 цільові зорі. FITS та сітки альбедо не завантажені. Це модель, не вимірювання реальних планет.
+NASA EMAC · ExoVista: https://tools.emac.gsfc.nasa.gov/exovista/
+Публікація ExoVista: https://doi.org/10.3847/1538-3881/ac3b54
+Підтвердження — White-cat/data/solar_systems/exovista_DEC21_universe1/metadata.json
+Підтвердження — White-cat/data/planets/mass_radius_anchors.json
+Підтвердження — White-cat/data/planets/example_systems.json
+Підтвердження — White-cat/data/planets/stars.json
+
+Протопланетні диски Оріона · SODA
+У пакеті даних
+ALMA · van Terwisga et al. (2022) · CDS / VizieR.
+873 диски: потік на 225 GHz, оцінки маси пилу, відстані та верхні межі. Використано агрегати для аналізу популяції. 370 значень є верхніми межами; маса пилу не дорівнює повній масі диска. Це окреме джерело ALMA/CDS, не набір NASA.
+Каталог VizieR: https://cdsarc.cds.unistra.fr/viz-bin/cat/J/A%2BA/661/A53
+Наукова публікація: https://doi.org/10.1051/0004-6361/202141913
+Підтвердження — White-cat/data/solar_systems/soda_orion_disks.json
+Підтвердження — White-cat/docs/audit/population_statistics.json
+
+Астрономічні константи та параметри тіл
+У пакеті даних
+NASA / JPL Solar System Dynamics.
+G, швидкість світла, астрономічна одиниця, сонячний GM, параметри Землі й Марса. Одиниці SI, точні й округлені значення розрізняються. Власні розрахунки гравітації, орбіт, енергії та затримок спираються на ці величини.
+JPL · астрономічні параметри: https://ssd.jpl.nasa.gov/astro_par.html
+JPL · параметри планет: https://ssd.jpl.nasa.gov/planets/phys_par.html
+JPL Horizons: https://ssd.jpl.nasa.gov/horizons/
+Підтвердження — White-cat/data/physics/physical_constants.json
+Підтвердження — White-cat/data/physics/formulas.json
+Підтвердження — White-cat/docs/PHYSICS.md
+
+Константи SI · NIST / CODATA
+У пакеті даних
+National Institute of Standards and Technology.
+Стала Стефана—Больцмана, молярна газова стала та стандартне прискорення вільного падіння для розрахунків пакета. Стандартне g₀ не підміняє місцеву гравітацію планети.
+Стала Стефана—Больцмана: https://physics.nist.gov/cgi-bin/cuu/Value?sigma
+Молярна газова стала: https://physics.nist.gov/cgi-bin/cuu/Value?r
+Стандартне прискорення g₀: https://physics.nist.gov/cgi-bin/cuu/Value?gn
+Підтвердження — White-cat/data/physics/physical_constants.json
+
+Номінальні сонячні величини
+У пакеті даних
+International Astronomical Union · резолюції 2015 року.
+Номінальний радіус і світність Сонця для обчислень пакета. Це прийняті опорні величини, а не телеметрія станції.
+Резолюції IAU 2015: https://www.iau.org/static/resolutions/IAU2015_English.pdf
+Підтвердження — White-cat/data/physics/physical_constants.json
+
+Марс · фізичні дані й атмосфера
+У пакеті даних
+NASA NSSDCA · Planetary Fact Sheets.
+Довідкові характеристики Марса та склад CO₂-атмосфери для пресета. Правила наявності й утримання атмосфери на згенерованих планетах позначено як модельні припущення.
+NASA · Mars Fact Sheet: https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html
+Підтвердження — White-cat/data/planets/atmospheres.json
+Підтвердження — White-cat/data/physics/physical_constants.json
+
+Місяць, Венера й Меркурій · довідкові приклади
+Довідка в командному гайді
+NASA NSSDCA.
+Фізичні характеристики цитуються в командному гайді для порівняння середовищ. Окремих наборів поверхні цих тіл у грі не знайдено.
+Місяць: https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html
+Венера: https://nssdc.gsfc.nasa.gov/planetary/factsheet/venusfact.html
+Меркурій: https://nssdc.gsfc.nasa.gov/planetary/factsheet/mercuryfact.html
+Підтвердження — White-cat/WHITE_CAT_NASA_2026_TEAM_GUIDE.md
+
+МАРС · РЕЛЬЄФ, КООРДИНАТИ ТА ПОГОДА
+
+Єзеро · CTX DEM та ортофотокарта
+У пакеті даних
+USGS Astrogeology · продукти Mars 2020 / MRO CTX.
+Оригінали: DEM 20 м/піксель та ортофотокарта близько 5 м/піксель. Підготовлено ділянку 10,24 × 10,24 км: висоти 512 × 512, текстуру 2048 × 2048, LOD, похили й ігровий показник прохідності. Прохідність є розрахунком за похилом, а не підтвердженим безпечним маршрутом. Поточний полігон Godot ці растри ще не використовує.
+USGS · CTX Jezero: https://astrogeology.usgs.gov/search/map/mars_2020_science_investigation_ctx_dem_mosaic
+Підтвердження — White-cat/assets/terrain/metadata.json
+Підтвердження — White-cat/docs/audit/geospatial.json
+Підтвердження — White-cat/data/mars/jezero/M20_JezeroCrater_CTXDEM_20m.xml
+Підтвердження — White-cat/data/mars/jezero/M20_JezeroCrater_CTXortho_mosaic_5m.xml
+
+PLACES · реальні координати Perseverance
+У пакеті даних
+NASA PDS Geosciences Node · Washington University in St. Louis.
+Release 16: таблиці best_interp та best_tactical, їхні XML і SIS. У підготовленій ділянці залишено 211 тактичних локалізацій. Це зафіксовані положення реального ровера; ігровий апарат не видається за їхнє джерело.
+NASA PDS · PLACES: https://pds-geosciences.wustl.edu/missions/mars2020/places.htm
+Документація PLACES: https://pds-geosciences.wustl.edu/m2020/urn-nasa-pds-mars2020_rover_places/document/Mars2020_Rover_PLACES_PDS_SIS.pdf
+Підтвердження — White-cat/data/rover/routes.json
+Підтвердження — White-cat/data/mars/places/release_notes.txt
+Підтвердження — White-cat/data/mars/places/Mars2020_Rover_PLACES_PDS_SIS.pdf
+
+MEDA · вибірка погоди Марса
+У пакеті даних
+NASA PDS Atmospheres Node · команда MEDA.
+Калібровані таблиці та PDS4 XML за 10 вибраних солів: температура, тиск, вологість і вітер. Підготовлено відфільтровані вибірки й процентилі; прочитано 57 локальних табличних продуктів та документацію RDR/EDR. Це архівні спостереження з нерівномірним покриттям, не прогноз і не кліматологія.
+NASA PDS · MEDA: https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/PERSEVERANCE/meda.html
+Архів каліброваних продуктів: https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/
+Підтвердження — White-cat/data/rover/weather_samples.json
+Підтвердження — White-cat/docs/audit/meda_products.json
+Підтвердження — White-cat/data/weather/MEDA_RDR_SIS.pdf
+Підтвердження — White-cat/data/weather/MEDA_EDR_SIS.pdf
+
+Земля—Марс · ефемериди та затримка
+У пакеті даних
+NASA / JPL Solar System Dynamics · Horizons.
+Зафіксовані вектори Землі й Марса на 14.11.2026–15.11.2028 з кроком одна доба. На їхній основі розраховані відстань і геометрична світлова затримка. Це офлайн-таблиця; візуальні перешкоди та затримка керування в Godot є окремими ігровими ефектами.
+Документація Horizons API: https://ssd-api.jpl.nasa.gov/doc/horizons.html
+API Horizons: https://ssd.jpl.nasa.gov/api/horizons.api
+Підтвердження — White-cat/data/missions/earth_mars_ephemeris.json
+Підтвердження — White-cat/data/ephemeris/mars_heliocentric_vectors_2026-11-14_to_2028-11-15.json
+
+ЗОБРАЖЕННЯ NASA ТА ПАРТНЕРІВ
+
+Земля · Blue Marble
+У грі · текстура Землі
+NASA Goddard / Earth Observatory · Reto Stöckli, Robert Simmon та команда Blue Marble.
+Історичний композит 2002 року, 2048 × 1024, з матеріалів MODIS, USGS та NOAA. Використаний варіант містить сушу, океан, лід і хмари; шару нічних вогнів у цій текстурі немає. Масштаб і освітлення в меню — художні.
+NASA Earth Observatory: https://science.nasa.gov/earth/earth-observatory/the-blue-marble-true-color-global-imagery-at-1km-resolution/
+Підтвердження — White-Cat-Git/ASS/UI/Textures/earth_nasa.jpg
+Асет у грі — res://ASS/UI/Textures/earth_nasa.jpg
+
+Perseverance · 25 оригінальних фото
+У пакеті даних
+NASA/JPL-Caltech; ASU; LANL/CNES/IRAP; CAB — відповідно до кредиту кожного зображення.
+Завантажено 25 PNG з Mastcam-Z, Navcam, Hazcam, SuperCam, WATSON та PIXL. До пакета відібрано п’ять WebP зі збереженими ID, солом, камерою й авторством. Фото не є текстурами згенерованих планет і не підміняють живу камеру гри. Поіменний перелік усіх 25 та позначки п’яти похідних — у повному аудиті.
+NASA / JPL · Raw Images: https://mars.nasa.gov/mars2020/multimedia/raw-images/
+Підтвердження — White-cat/data/rover_images/images_manifest.json
+Підтвердження — White-cat/assets/images/manifest.json
+
+NASA Image and Video Library · 25 матеріалів
+Завантажено · локальний архів
+NASA/JPL-Caltech; ESA/DLR/FU Berlin; University of Arizona; ASU/MSSS; SSI; USGS — за метаданими кожного матеріалу.
+Збережено результати пошуку Perseverance/Jezero та 25 прев’ю. Серед них фото, карти й ілюстрації; повні кредити secondary_creator не скорочені до NASA. Ці прев’ю лишилися в локальному архіві, до поточної сцени Godot не підключені.
+NASA Image and Video Library: https://images.nasa.gov/
+Документація API: https://images.nasa.gov/docs/images.nasa.gov_api_docs.pdf
+Підтвердження — White-cat/data/images/nasa-library/perseverance_jezero_search.json
+
+МОДЕЛІ NASA ТА АВТОРСЬКІ АДАПТАЦІЇ
+
+Mars 2020 Perseverance · офіційна 3D-модель
+У пакеті даних
+NASA Science / NASA-JPL.
+Оригінал GLB збережено; для пакета декодовано Draco, зменшено геометрію та вбудовано матеріали й текстури. Це окремий довідковий асет, не авторська модель керованого ровера White Cat.
+NASA · Perseverance 3D: https://science.nasa.gov/3d-resources/mars-2020-perseverance-rover/
+Підтвердження — White-cat/assets/models/manifest.json
+Підтвердження — White-cat/assets/models/Mars_2020_Perseverance_Rover.glb
+
+Mars Reconnaissance Orbiter · MRO
+У пакеті даних · антена адаптована у грі
+NASA Science / NASA-JPL.
+Декодована модель орбітера входить до пакета даних. З її антени зроблено адаптацію для станції White Cat, яку видно в головному меню. Станція є авторською художньою моделлю, а не офіційною конструкцією NASA.
+NASA · MRO 3D: https://science.nasa.gov/3d-resources/mars-reconnaissance-orbiter-mro-c/
+Підтвердження — White-cat/assets/models/manifest.json
+Підтвердження — White-cat/assets/models/space_station/README.md
+
+Mars Global Surveyor
+Завантажено · візуальний референс
+NASA Science / NASA-JPL / Eyes on the Solar System.
+Оригінальний GLB завантажено як візуальний референс. Зберігається локально; до поточної ігрової сцени не підключений.
+NASA · 3D-модель: https://science.nasa.gov/3d-resources/mars-global-surveyor/
+Підтвердження — White-cat/data/models/Mars_Global_Surveyor.glb
+
+InSight · посадковий апарат
+Завантажено · візуальний референс
+NASA Science / NASA Visualization Technology Applications and Development.
+Оригінальний GLB завантажено як візуальний референс. Зберігається локально; до поточної ігрової сцени не підключений.
+NASA · 3D-модель: https://science.nasa.gov/resource/insight-3d-model/
+Підтвердження — White-cat/data/models/InSight_deployed.glb
+
+Інжінюїті · офіційний NASA GLB
+Завантажено · візуальний референс
+NASA Science / NASA-JPL.
+Окремий офіційний референс збережено локально. Керована Інжінюїті в грі використовує авторську модель White Cat; її не перепозначено як модель NASA.
+NASA · Ingenuity 3D: https://science.nasa.gov/3d-resources/ingenuity-mars-helicopter/
+Підтвердження — White-cat/data/models/Ingenuity_Mars_Helicopter.source.json
+Підтвердження — White-cat/data/models/Ingenuity_Mars_Helicopter.glb
+
+Hubble Space Telescope (A)
+Завантажено · візуальний референс
+DigitalSpace Corporation. Джерело: NASA 3D Resources.
+NASA-референс використано для авторської адаптації Hubble White Cat: геометрію й атлас перебудовано заново. Оригінал та новий асет збережені в репозиторії матеріалів локально; у поточній сцені Godot телескопа немає.
+NASA · сторінка моделі: https://science.nasa.gov/3d-resources/hubble-space-telescope-a/
+Підтвердження — White-cat/data/models/telescopes/sources.json
+Підтвердження — White-cat/data/models/telescopes/Hubble Space Telescope (A).glb
+
+Spitzer Space Telescope
+Завантажено · візуальний референс
+NASA/Janice C. Lee; NASA/Robert L. Hurt. Джерело: NASA 3D Resources.
+Оригінальний GLB завантажено для порівняння й вибору візуального референсу. До поточної сцени Godot не підключений.
+NASA · сторінка моделі: https://science.nasa.gov/3d-resources/spitzer-space-telescope/
+Підтвердження — White-cat/data/models/telescopes/sources.json
+Підтвердження — White-cat/data/models/telescopes/Spitzer Space Telescope.glb
+
+Kepler (A)
+Завантажено · візуальний референс
+NASA/Brian E. Kumanchik; NASA/Christian A. Lopez. Джерело: NASA 3D Resources.
+Оригінальний GLB завантажено для порівняння й вибору візуального референсу. До поточної сцени Godot не підключений.
+NASA · сторінка моделі: https://science.nasa.gov/3d-resources/kepler-a/
+Підтвердження — White-cat/data/models/telescopes/sources.json
+Підтвердження — White-cat/data/models/telescopes/Kepler (A).glb
+
+Chandra X-ray Observatory
+Завантажено · візуальний референс
+NASA/Brian E. Kumanchik. Джерело: NASA 3D Resources.
+Оригінальний GLB завантажено для порівняння й вибору візуального референсу. До поточної сцени Godot не підключений.
+NASA · сторінка моделі: https://science.nasa.gov/3d-resources/chandra-x-ray-observatory/
+Підтвердження — White-cat/data/models/telescopes/sources.json
+Підтвердження — White-cat/data/models/telescopes/Chandra X-ray Observatory.glb
+
+James Webb Space Telescope (A)
+Завантажено · візуальний референс
+NASA/Goddard Space Flight Center. Джерело: NASA 3D Resources.
+Оригінальний GLB завантажено для порівняння й вибору візуального референсу. До поточної сцени Godot не підключений.
+NASA · сторінка моделі: https://science.nasa.gov/3d-resources/james-webb-space-telescope-a/
+Підтвердження — White-cat/data/models/telescopes/sources.json
+Підтвердження — White-cat/data/models/telescopes/James Webb Space Telescope (A).glb
+
+ІНЖЕНЕРНІ ДОВІДНИКИ МІСІЇ
+
+Perseverance · апарат, живлення та зв’язок
+У пакеті даних
+NASA Science / JPL.
+Довідкові характеристики апарата, MMRTG, батарей, обігріву та антен у каталозі компонентів. Непідтверджені ємності й окремі маси залишено невідомими; ігрові профілі не видаються за специфікацію NASA.
+NASA · компоненти ровера: https://science.nasa.gov/mission/mars-2020-perseverance/rover-components/
+Підтвердження — White-cat/data/missions/components.json
+Підтвердження — White-cat/data/rover/rover_specs.json
+
+Perseverance · наукові прилади
+У пакеті даних
+NASA Science · команди приладів Mars 2020.
+Mastcam-Z, SuperCam, PIXL, SHERLOC/WATSON, RIMFAX і MEDA: довідкові маси, потужність, дані та обмеження в каталозі. Наявність запису не означає, що сканування цим приладом уже реалізовано в грі.
+NASA · прилади Mars 2020: https://science.nasa.gov/mission/mars-2020-perseverance/science-instruments/
+Підтвердження — White-cat/data/missions/components.json
+
+Atlas V · параметри запуску
+У пакеті даних
+United Launch Alliance.
+Опубліковані характеристики використані для довідкового каталогу ракет. Вантажопідйомність LEO не підставляється як вантаж на Марс; непідтверджені значення й криві C3 не вигадані.
+ULA · Atlas V: https://www.ulalaunch.com/rockets/atlas-v
+ULA · буклет Mars 2020: https://www.ulalaunch.com/docs/default-source/launch-booklets/mars2020_mobrochure_200717.pdf
+Підтвердження — White-cat/data/missions/launchers.json
+Підтвердження — White-cat/WHITE_CAT_NASA_2026_TEAM_GUIDE.md
+
+Falcon Heavy · опубліковані характеристики
+У пакеті даних
+SpaceX · NASA Kennedy Launch Services Program.
+Довідкові вантажопідйомності збережені окремо для LEO та Марса. Це опубліковані рекламні характеристики; для довільної місії без кривої C3 сумісність не підтверджується.
+SpaceX · Falcon Heavy: https://www.spacex.com/vehicles/falcon-heavy/
+NASA KSC · SpaceX: https://public.ksc.nasa.gov/lspeducation/spacex/
+Підтвердження — White-cat/data/missions/launchers.json
+
+Mars 2020 · запуск та переліт
+У пакеті даних
+NASA / JPL · Mars 2020 Launch Press Kit.
+Довідник реального запуску, номінального C3, апарата й батарей. Ідеальний переліт Гомана в пакеті є власним розрахунком; він відокремлений від опису реальної місії.
+JPL · Launch Press Kit: https://www.jpl.nasa.gov/news/press_kits/mars_2020/download/mars_2020_launch_press_kit.pdf
+Підтвердження — White-cat/data/missions/orbits.json
+Підтвердження — White-cat/data/missions/launchers.json
+Підтвердження — White-cat/data/missions/components.json
+
+Perseverance · вхід, зниження й посадка
+У пакеті даних
+NASA / JPL · Mars 2020 Landing Press Kit.
+Профіль EDL, парашут, кероване зниження, TRN і еліпс посадки. При підготовці виправлено 306 км/год на 85 м/с. Це довідка про Perseverance, не готовий автопілот ігрового шатла.
+JPL · опис посадки: https://www.jpl.nasa.gov/news/press_kits/mars_2020/landing/mission/
+JPL · Landing Press Kit: https://www.jpl.nasa.gov/news/press_kits/mars_2020/download/mars_2020_landing_press_kit.pdf
+JPL · еліпс посадки: https://science.nasa.gov/photojournal/zeroing-in-on-the-target/
+Підтвердження — White-cat/data/missions/edl.json
+Підтвердження — White-cat/docs/DATA_SELECTION.md
+
+Mars Relay Network
+У пакеті даних
+NASA Science · мережа орбітерів NASA та ESA.
+Ролі орбітерів і датовані середні обсяги передавання використано в довідковому каталозі. Пропускна здатність мережі не є гарантованою квотою одного ігрового апарата.
+NASA · Mars Relay Network: https://science.nasa.gov/mars/mars-relay-network/
+Підтвердження — White-cat/data/missions/relay_plans.json
+Підтвердження — White-cat/data/missions/components.json
+
+Spirit та Opportunity · сонячне живлення
+У пакеті даних
+NASA Science / JPL.
+Довідкове джерело для узагальненої опції сонячного живлення в каталозі компонентів; модель пилу та ефективності лишається ігровою.
+NASA · апарати Spirit / Opportunity: https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/spacecraft/
+Підтвердження — White-cat/data/missions/components.json
+
+МЕТОДИКА ПРОЄКТУВАННЯ МІСІЙ
+
+Design and Develop Science Missions
+Завантажено · використано як довідник
+NASA Ames Research Center / Small Spacecraft Systems Virtual Institute.
+Завантажена презентація NASA Ames / Small Spacecraft Systems Virtual Institute 2025 року. Використано як довідник вимог, сегментів місії, ресурсів та перевірки задуму.
+Першоджерело: https://ntrs.nasa.gov/citations/20250002492
+Підтвердження — White-cat/data/challenge/resources/Design_and_Develop_Science_Missions_NASA_2025.pdf
+Підтвердження — White-cat/docs/PHYSICS.md
+
+CubeSat 101
+Завантажено · використано як довідник
+NASA CubeSat Launch Initiative; produced under contract by Cal Poly.
+Завантажений посібник NASA CubeSat Launch Initiative / Cal Poly, редакція жовтня 2017 року. Використано для життєвого циклу місії; не подається як чинний регламент запуску.
+Першоджерело: https://www.nasa.gov/kennedy/launch-services-program/cubesat-launch-initiative/cubesat-launch-initiative-resources/
+Підтвердження — White-cat/data/challenge/resources/NASA_CubeSat_101_2017.pdf
+Підтвердження — White-cat/docs/PHYSICS.md
+
+Mission Development 101 · CML
+Завантажено · використано як довідник
+NASA / Jet Propulsion Laboratory.
+Завантажена презентація NASA / JPL про рівні зрілості концепції. Використано для структури підготовки місії та trade studies, а не як потік даних апарата.
+Першоджерело: https://science.nasa.gov/wp-content/uploads/2023/11/03-ziemer-mission-development-101-cmls.pdf
+Підтвердження — White-cat/data/challenge/resources/NASA_Mission_Development_101_CMLs.pdf
+Підтвердження — White-cat/docs/PHYSICS.md
+
+РЕФЕРЕНСИ КАМІННЯ, ЛЬОДУ ТА КОНСТРУКЦІЙ
+
+Каміння · уламки й обкатані форми
+Референс моделей у репозиторії гри
+Відкритий підручник на Temple University Manifold.
+Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.
+Джерело референсу: https://temple.manifoldapp.org/read/sediments-and-sedimentary-rocks/section/943ee9dc-db36-4399-8198-f308e0f5e522
+Підтвердження — White-Cat-Git/ASS/QweQ/White cat камінці/catalog.json
+
+Пісковик · Checkerboard Mesa
+Референс моделей у репозиторії гри
+National Park Service.
+Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.
+Джерело референсу: https://www.nps.gov/media/photo/gallery-item.htm?pg=2122026&id=BC785694-155D-451F-67AFAEA2FABA3A41&gid=BCAE0D0A-155D-451F-67B35D5AE59F10C8
+Підтвердження — White-Cat-Git/ASS/QweQ/White cat камінці/catalog.json
+
+Базальтові колони · Latourell Falls
+Референс моделей у репозиторії гри
+U.S. Geological Survey.
+Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.
+Джерело референсу: https://www.usgs.gov/media/images/columnar-jointing-basalt-cliffs-latourell-falls-or
+Підтвердження — White-Cat-Git/ASS/QweQ/White cat камінці/catalog.json
+
+Лава · пори, складки та клінкер
+Референс моделей у репозиторії гри
+National Park Service.
+Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.
+Джерело референсу: https://home.nps.gov/articles/000/lava-flow-surface-features.htm
+Підтвердження — White-Cat-Git/ASS/QweQ/White cat камінці/catalog.json
+
+Льодовикові форми · сераки
+Референс моделей у репозиторії гри
+National Park Service.
+Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.
+Джерело референсу: https://www.nps.gov/articles/seracsandicebergs.htm
+Підтвердження — White-Cat-Git/ASS/QweQ/White cat камінці/catalog.json
+
+Лід · IceBridge Blues
+Референс моделей у репозиторії гри
+NASA Earth Observatory / Operation IceBridge. Фото: Chris Larsen; текст: Kathryn Hansen.
+Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.
+Джерело референсу: https://science.nasa.gov/earth/earth-observatory/icebridge-blues-91396/
+Підтвердження — White-Cat-Git/ASS/QweQ/White cat камінці/catalog.json
+
+Кристали · кварц
+Референс моделей у репозиторії гри
+Smithsonian National Museum of Natural History.
+Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.
+Джерело референсу: https://naturalhistory.si.edu/explore/collections/geogallery/10026017
+Підтвердження — White-Cat-Git/ASS/QweQ/White cat камінці/catalog.json
+
+Дослідницький бур · PRIME-1 / TRIDENT
+Референс авторської моделі у грі
+NASA Science · PRIME-1.
+Конструктивний референс авторської моделі бура White Cat. Модель, атлас, рецепт і видобуток у грі не є інженерними даними PRIME-1. У документації також зафіксовано художній референс Factorio.
+NASA · PRIME-1: https://science.nasa.gov/lunar-science/clps-deliveries/prime-1-im/
+Factorio · художній референс: https://www.factorio.com/blog/post/fff-350
+Підтвердження — White-cat/assets/models/research_drill/asset_info.json
+
+Підводний апарат · BlueROV2
+Референс у матеріалах команди
+Blue Robotics · наданий візуальний референс BlueROV2.
+У репозиторії матеріалів створено авторський Aquatic Rover. Це окремий конструктивний референс, не дані NASA й не підключений ігровий апарат.
+Blue Robotics · BlueROV2: https://bluerobotics.com/store/rov/bluerov2/
+Підтвердження — White-cat/assets/models/aquatic_rover/asset_info.json
+
+ДОДАТКОВІ ПЕРШОДЖЕРЕЛА КОМАНДНОГО ГАЙДА
+
+HiRISE TRN та картографічні проєкції
+Довідка · растр HiRISE не завантажений
+USGS Astrogeology.
+HiRISE DTM 1 м згаданий у гайді як альтернатива; такий растр у локальному пакеті не завантажено. Фактично підготовлений рельєф — CTX 20 м. Довідник проєкцій використано для правил координат.
+USGS · HiRISE TRN DTM: https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic
+USGS · картографічні проєкції: https://astrogeology.usgs.gov/docs/concepts/camera-geometry-and-projections/learning-about-map-projections/
+Підтвердження — White-cat/WHITE_CAT_NASA_2026_TEAM_GUIDE.md
+
+MOXIE · дослід із отримання кисню
+Довідковий матеріал
+NASA / JPL.
+Науковий контекст у командному гайді. У Godot не реалізовано виробництво кисню чи симуляцію MOXIE.
+JPL · завершення експерименту MOXIE: https://www.jpl.nasa.gov/news/nasas-oxygen-generating-experiment-moxie-completes-mars-mission/
+Підтвердження — White-cat/WHITE_CAT_NASA_2026_TEAM_GUIDE.md
+
+Sapphire Canyon / Cheyava Falls
+Довідковий матеріал
+NASA / JPL.
+Джерело наукового контексту про потенційну біосигнатуру. У гайді окремо зазначено: це не підтвердження життя та не результат дослідження ігрової планети.
+JPL · потенційна біосигнатура: https://www.jpl.nasa.gov/news/nasa-says-mars-rover-discovered-potential-biosignature-last-year/
+Підтвердження — White-cat/WHITE_CAT_NASA_2026_TEAM_GUIDE.md
+
+Послуги запуску · додаткова довідка
+Довідкові посилання
+NASA Kennedy / JPL · AIAA.
+Посилання командного гайда для перевірки продуктивності ракет і прикладу контракту Mars 2020. Нові криві вантажопідйомності з цих сторінок до гри не імпортовані.
+NASA · Launch Vehicle Performance: https://elvperf.ksc.nasa.gov/
+JPL · контракт запуску Mars 2020: https://www.jpl.nasa.gov/news/nasa-awards-launch-services-contract-for-mars-2020-rover-mission/
+AIAA · Falcon vehicle guide: https://www.aiaa.org/vehicle-guide/vehicles/falcon
+Підтвердження — White-cat/WHITE_CAT_NASA_2026_TEAM_GUIDE.md
+
+ОПИС ЧЕЛЕНДЖУ ТА РОЗГЛЯНУТІ РЕСУРСИ
+
+NASA Space Apps · Space Mission Design Game
+Локальний текст користувача · контекст завдання
+NASA Space Apps Challenge.
+Збережено текст опису й ресурсів, наданий користувачем. Це локальний транскрипт, а не завантажена офіційна HTML-сторінка. Правила участі в командному гайді є довідкою; поточний статус подання тут не визначається.
+Опис челенджу: https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/
+Каталог челенджів: https://www.spaceappschallenge.org/2026/challenges/
+Матеріали для учасників: https://www.spaceappschallenge.org/resources/
+Підтвердження — White-cat/data/challenge/2026_space_mission_design_game_resources.txt
+Підтвердження — White-cat/data/challenge/resources/README.md
+Підтвердження — White-cat/WHITE_CAT_NASA_2026_TEAM_GUIDE.md
+
+GMAT, Mission Viz та Mission Design Lab
+Згадані в челенджі · не підключені
+NASA Goddard · NASA / JPL.
+Зазначені в ресурсах челенджу й розглянуті як довідкові інструменти. Не встановлені як рушій гри, не використовуються у поточному ігровому циклі й не позначені як завантажені набори даних.
+NASA · GMAT: https://software.nasa.gov/software/GSC-19468-1
+NASA · Mission Viz: https://nasa.github.io/mission-viz/
+NASA · Mission Design Lab: https://etd.gsfc.nasa.gov/capabilities/integrated-design-center/mission-design-lab/
+JPL · CML: https://dataverse.jpl.nasa.gov/dataset.xhtml?persistentId=hdl:2014/44299
+Підтвердження — White-cat/data/challenge/resources/README.md
+Підтвердження — White-cat/WHITE_CAT_NASA_2026_TEAM_GUIDE.md
+
+Освітні приклади NASA та CSA
+Освітні посилання · ресурси не запозичені
+NASA · Canadian Space Agency.
+Гра про телескопи, VR-челендж 2023 року й цифрові ігри CSA наведені в описі завдання як освітні референси. Дані, код чи графічні ресурси цих ігор до White Cat не перенесені.
+NASA · гра про телескопи: https://science.nasa.gov/mission/webb/game-build-it-yourself/
+Space Apps · VR-челендж 2023: https://www.spaceappschallenge.org/2023/challenges/visualize-a-space-mission-using-virtual-reality/
+CSA · цифрові ігри й заняття: https://www.asc-csa.gc.ca/eng/youth-educators/digital-games-and-activities.asp
+Підтвердження — White-cat/data/challenge/resources/README.md
+Підтвердження — White-cat/WHITE_CAT_NASA_2026_TEAM_GUIDE.md
+
+NGPPS / Bern · DACE NG76
+Не завантажено · не використано
+University of Geneva · Data & Analysis Center for Exoplanets.
+Розглянуто як можливе джерело еволюційних треків, але дані не завантажені: API потребував персонального ключа. Не входить до переліку фактично використаних наборів; наявні синтетичні системи походять з ExoVista.
+DACE · NG76: https://dace.unige.ch/populationAnalysis/?populationId=NG76
+Документація DACE API: https://dace-query.readthedocs.io/en/v3.0.0/dace_query.population.html
+Підтвердження — White-cat/data/solar_systems/formation_priors.json
+
+ЗОБРАЖЕННЯ ТА МОДЕЛІ
+
+Космічна станція White Cat
+
+Геометрію та атлас створено для White Cat за наданим візуальним референсом.
+Антену адаптовано з моделі Mars Reconnaissance Orbiter: NASA Science / NASA-JPL. Художня модель і масштаб.
+Матеріали White Cat: https://github.com/RevulerDenUA/White-cat
+NASA · модель MRO: https://science.nasa.gov/3d-resources/mars-reconnaissance-orbiter-mro-c/
+Асет у грі — res://ASS/Station/Space_Station.glb
+
+Інжінюїті White Cat
+
+Геометрію та текстури створено для White Cat за наданим зображенням.
+Палітра узгоджена з марсоходом і станцією проєкту.
+Матеріали White Cat: https://github.com/RevulerDenUA/White-cat
+Асет у грі — res://ASS/Helicopter/Mars_Helicopter.glb
+
+1987 Jeep Comanche
+Попередній імпорт · збережена атрибуція
+tonielpro520 · CC BY 4.0.
+Кредит з метаданих первинного scene.gltf. Після оновлення сцени цей файл у робочому дереві відсутній; запис не приписує його авторство новому роверу White Cat.
+Модель на Sketchfab: https://sketchfab.com/3d-models/1987-jeep-comanche-6380330f485d4798858d9c9027b281d9
+CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+
+ЗВУК ТА ОФОРМЛЕННЯ
+
+Музика меню та звуки інтерфейсу
+
+Процедурна композиція й тони, створені для White Cat без запозичених семплів.
+
+Асет у грі — res://ASS/UI/Audio/orbital_ambient.wav
+Асет у грі — res://ASS/UI/Audio/hover.wav
+Асет у грі — res://ASS/UI/Audio/focus.wav
+Асет у грі — res://ASS/UI/Audio/confirm.wav
+
+Графіка інтерфейсу
+
+Форми кнопок, піктограми та шейдери меню створено для White Cat.
+
+
+ШРИФТИ
+
+Onest
+
+© 2021 The Onest Project Authors · SIL Open Font License 1.1.
+
+Проєкт Onest: https://github.com/googlefonts/onest
+Асет у грі — res://ASS/UI/Fonts/Onest.ttf
+
+Barlow Condensed Semibold
+
+© 2017 The Barlow Project Authors · SIL Open Font License 1.1.
+
+Проєкт Barlow: https://github.com/jpt/barlow
+Асет у грі — res://ASS/UI/Fonts/BarlowCondensed-SemiBold.ttf
+
+ТЕХНОЛОГІЇ
+
+Godot Engine
+
+Godot Engine contributors · Juan Linietsky та Ariel Manzur. Ліцензія MIT.
+
+Godot Engine: https://godotengine.org/
+
+Сторонні компоненти Godot
+
+Автори та повні тексти ліцензій компонентів поточної збірки рушія.
+
+
+25 ОРИГІНАЛЬНИХ ФОТО PERSEVERANCE
+Кредит кожного фото збережено з оригінального manifest. П’ять фото також підготовлено як WebP.
+
+1. ZLF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ
+Mars Perseverance Sol 1: Left Mastcam-Z Camera
+Камера: MCZ_LEFT; sol: 1
+Кредит: NASA/JPL-Caltech/ASU
+https://mars.nasa.gov/mars2020/multimedia/raw-images/ZLF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/fdr/browse/zcam/ZLF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ01.png
+Локальний оригінал: White-cat/data/rover_images/ZLF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ.png
+SHA-256: da1eba121f5dc261b1f1ccc968ca2cd87b75cb6231c479b3bdd6aee41c2d8f65
+
+2. ZL6_0100_0675828555_098ECM_N0040218ZCAM01000_026080J
+Mars Perseverance Sol 100: Left Mastcam-Z Camera
+Камера: MCZ_LEFT; sol: 100
+Кредит: NASA/JPL-Caltech/ASU
+https://mars.nasa.gov/mars2020/multimedia/raw-images/ZL6_0100_0675828555_098ECM_N0040218ZCAM01000_026080J
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00100/ids/edr/browse/zcam/ZL6_0100_0675828555_098ECM_N0040218ZCAM01000_026080J01.png
+Локальний оригінал: White-cat/data/rover_images/ZL6_0100_0675828555_098ECM_N0040218ZCAM01000_026080J.png
+SHA-256: c71ae9c0c9a4ba20b8cc6e46b128a898e7cdd9b398d59f88d4d039caec73cfe6
+
+3. ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ
+Mars Perseverance Sol 800: Left Mastcam-Z Camera
+Камера: MCZ_LEFT; sol: 800
+Кредит: NASA/JPL-Caltech/ASU
+https://mars.nasa.gov/mars2020/multimedia/raw-images/ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00800/ids/edr/browse/zcam/ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ01.png
+Локальний оригінал: White-cat/data/rover_images/ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ.png
+SHA-256: 2faf6fcafcbdd85b5cc9080d8f25300c873e5f1afd017927cb83799ea9ad8658
+Підготовлений файл: White-cat/assets/images/ZL0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ.webp
+Оброблення: змінено розмір і закодовано WebP; реальне фото Марса.
+
+4. ZL0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ
+Mars Perseverance Sol 1000: Left Mastcam-Z Camera
+Камера: MCZ_LEFT; sol: 1000
+Кредит: NASA/JPL-Caltech/ASU
+https://mars.nasa.gov/mars2020/multimedia/raw-images/ZL0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01000/ids/edr/browse/zcam/ZL0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ01.png
+Локальний оригінал: White-cat/data/rover_images/ZL0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ.png
+SHA-256: d0daa4eae048922970aa3bae427f8902c51984822b244db717f5eda3d466c62e
+
+5. ZRF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ
+Mars Perseverance Sol 1: Right Mastcam-Z Camera
+Камера: MCZ_RIGHT; sol: 1
+Кредит: NASA/JPL-Caltech/ASU
+https://mars.nasa.gov/mars2020/multimedia/raw-images/ZRF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/fdr/browse/zcam/ZRF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ01.png
+Локальний оригінал: White-cat/data/rover_images/ZRF_0001_0667035659_000FDR_N0010052AUT_04096_0260LMJ.png
+SHA-256: 842aa83b0952fd50c85fd10c83be9dd566a6b9bb9f343a0da9a8719c440984f0
+
+6. ZR2_0100_0675828555_098ECM_N0040218ZCAM01000_026080J
+Mars Perseverance Sol 100: Right Mastcam-Z Camera
+Камера: MCZ_RIGHT; sol: 100
+Кредит: NASA/JPL-Caltech/ASU
+https://mars.nasa.gov/mars2020/multimedia/raw-images/ZR2_0100_0675828555_098ECM_N0040218ZCAM01000_026080J
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00100/ids/edr/browse/zcam/ZR2_0100_0675828555_098ECM_N0040218ZCAM01000_026080J01.png
+Локальний оригінал: White-cat/data/rover_images/ZR2_0100_0675828555_098ECM_N0040218ZCAM01000_026080J.png
+SHA-256: 36f3d44360112d8d3dc43fdb33781af2ccc70eff9581fa2363c573a2c1c4f29b
+
+7. ZR0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ
+Mars Perseverance Sol 800: Right Mastcam-Z Camera
+Камера: MCZ_RIGHT; sol: 800
+Кредит: NASA/JPL-Caltech/ASU
+https://mars.nasa.gov/mars2020/multimedia/raw-images/ZR0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00800/ids/edr/browse/zcam/ZR0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ01.png
+Локальний оригінал: White-cat/data/rover_images/ZR0_0800_0737944022_785EBY_N0391170ZCAM08821_1100LMJ.png
+SHA-256: 1a1b455e5228f86cbc20d3bd7f88e0f4301dfdc618f694395e866365dae3aed6
+
+8. ZR0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ
+Mars Perseverance Sol 1000: Right Mastcam-Z Camera
+Камера: MCZ_RIGHT; sol: 1000
+Кредит: NASA/JPL-Caltech/ASU
+https://mars.nasa.gov/mars2020/multimedia/raw-images/ZR0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01000/ids/edr/browse/zcam/ZR0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ01.png
+Локальний оригінал: White-cat/data/rover_images/ZR0_1000_0755710960_331EBY_N0474374ZCAM09012_1100LMJ.png
+SHA-256: 35bb26c169cb0274240d813cac60e0f28a4b13c569191b2e3c03281be8efcd71
+
+9. NLB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01
+Mars Perseverance Sol 1: Left Navigation Camera (Navcam)
+Камера: NAVCAM_LEFT; sol: 1
+Кредит: NASA/JPL-Caltech
+https://mars.nasa.gov/mars2020/multimedia/raw-images/NLB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/edr/browse/ncam/NLB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01.png
+Локальний оригінал: White-cat/data/rover_images/NLB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01.png
+SHA-256: 942f4a610dadbde3f38b2513a031d169fcf03b7364ef849fb71aee8e9de5cfe1
+
+10. NLF_0100_0675828717_276ECM_N0040218NCAM00503_01_295J
+Mars Perseverance Sol 100: Left Navigation Camera (Navcam)
+Камера: NAVCAM_LEFT; sol: 100
+Кредит: NASA/JPL-Caltech
+https://mars.nasa.gov/mars2020/multimedia/raw-images/NLF_0100_0675828717_276ECM_N0040218NCAM00503_01_295J
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00100/ids/edr/browse/ncam/NLF_0100_0675828717_276ECM_N0040218NCAM00503_01_295J01.png
+Локальний оригінал: White-cat/data/rover_images/NLF_0100_0675828717_276ECM_N0040218NCAM00503_01_295J.png
+SHA-256: 0ebbb84288188028bdc9f5001b92fb1fe458410d99109856d3ed7630fd8cade9
+
+11. NRB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01
+Mars Perseverance Sol 1: Right Navigation Camera (Navcam)
+Камера: NAVCAM_RIGHT; sol: 1
+Кредит: NASA/JPL-Caltech
+https://mars.nasa.gov/mars2020/multimedia/raw-images/NRB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/edr/browse/ncam/NRB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01.png
+Локальний оригінал: White-cat/data/rover_images/NRB_0001_0667035586_056ECM_N0010052AUT_04096_00_2I3J01.png
+SHA-256: 3d6c0e4223ff14f99e08e10a87a319bf25cd16ad7cf267b6b2b41574149bbb34
+
+12. NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J
+Mars Perseverance Sol 800: Right Navigation Camera (Navcam)
+Камера: NAVCAM_RIGHT; sol: 800
+Кредит: NASA/JPL-Caltech
+https://mars.nasa.gov/mars2020/multimedia/raw-images/NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00800/ids/edr/browse/ncam/NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J01.png
+Локальний оригінал: White-cat/data/rover_images/NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J.png
+SHA-256: f3a3f281f3a32163fb7a52e79f53c5311c1de6c47306f3f3adbb043b9b2e5868
+Підготовлений файл: White-cat/assets/images/NRF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J.webp
+Оброблення: змінено розмір і закодовано WebP; реальне фото Марса.
+
+13. FLB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01
+Mars Perseverance Sol 1: Front Left Hazard Avoidance Camera (Hazcam)
+Камера: FRONT_HAZCAM_LEFT_A; sol: 1
+Кредит: NASA/JPL-Caltech
+https://mars.nasa.gov/mars2020/multimedia/raw-images/FLB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/edr/browse/fcam/FLB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01.png
+Локальний оригінал: White-cat/data/rover_images/FLB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01.png
+SHA-256: 0599c482c569b49edab2a0a806113690a7d905afc84f42e3da5b71d3fb5067c2
+
+14. FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J
+Mars Perseverance Sol 1000: Front Left Hazard Avoidance Camera (Hazcam)
+Камера: FRONT_HAZCAM_LEFT_A; sol: 1000
+Кредит: NASA/JPL-Caltech
+https://mars.nasa.gov/mars2020/multimedia/raw-images/FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01000/ids/edr/browse/fcam/FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J01.png
+Локальний оригінал: White-cat/data/rover_images/FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J.png
+SHA-256: 21167d0b4fbb491923520efd8e3027203f545bfbd22d7f214b5e3d1733bcce8c
+Підготовлений файл: White-cat/assets/images/FLF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J.webp
+Оброблення: змінено розмір і закодовано WebP; реальне фото Марса.
+
+15. FRB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01
+Mars Perseverance Sol 1: Front Right Hazard Avoidance Camera (Hazcam)
+Камера: FRONT_HAZCAM_RIGHT_A; sol: 1
+Кредит: NASA/JPL-Caltech
+https://mars.nasa.gov/mars2020/multimedia/raw-images/FRB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/edr/browse/fcam/FRB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01.png
+Локальний оригінал: White-cat/data/rover_images/FRB_0001_0667035480_071ECM_N0010052AUT_04096_00_2I3J01.png
+SHA-256: b6e6d59bf27547a9223f1aa618afce8cf6762a34236119c211e0ae75816e0f74
+
+16. FRF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J
+Mars Perseverance Sol 1000: Front Right Hazard Avoidance Camera (Hazcam)
+Камера: FRONT_HAZCAM_RIGHT_A; sol: 1000
+Кредит: NASA/JPL-Caltech
+https://mars.nasa.gov/mars2020/multimedia/raw-images/FRF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01000/ids/edr/browse/fcam/FRF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J01.png
+Локальний оригінал: White-cat/data/rover_images/FRF_1000_0755716468_020ECM_N0474404FHAZ02418_01_295J.png
+SHA-256: e5987dbdd7dcf9efcb80b4bd3aa20827aff83dcaa69838518b04a9154b7d0e7c
+
+17. LRE_0001_0667036326_588ECM_N0010052SCAM15103_0000LUJ
+Mars Perseverance Sol 1: SuperCam Camera
+Камера: SUPERCAM_RMI; sol: 1
+Кредит: NASA/JPL-Caltech/LANL/CNES/IRAP
+https://mars.nasa.gov/mars2020/multimedia/raw-images/LRE_0001_0667036326_588ECM_N0010052SCAM15103_0000LUJ
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/edr/browse/scam/LRE_0001_0667036326_588ECM_N0010052SCAM15103_0000LUJ01.png
+Локальний оригінал: White-cat/data/rover_images/LRE_0001_0667036326_588ECM_N0010052SCAM15103_0000LUJ.png
+SHA-256: eb00645089f49ac7ae196725dfc6a23588a5b56d6ebd393b72c46140a412fdf4
+
+18. LRE_0800_0737955693_303ECM_N0391170SCAM01800_0010I6J
+Mars Perseverance Sol 800: SuperCam Camera
+Камера: SUPERCAM_RMI; sol: 800
+Кредит: NASA/JPL-Caltech/LANL/CNES/IRAP
+https://mars.nasa.gov/mars2020/multimedia/raw-images/LRE_0800_0737955693_303ECM_N0391170SCAM01800_0010I6J
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00800/ids/edr/browse/scam/LRE_0800_0737955693_303ECM_N0391170SCAM01800_0010I6J01.png
+Локальний оригінал: White-cat/data/rover_images/LRE_0800_0737955693_303ECM_N0391170SCAM01800_0010I6J.png
+SHA-256: 4ed7ccbadbca0db1ba84e2888a7b2c69ea3323aa81c1018291a8eaffda6c85e3
+
+19. LRE_1000_0755699148_284ECM_N0474374SCAM02000_0010I6J
+Mars Perseverance Sol 1000: SuperCam Camera
+Камера: SUPERCAM_RMI; sol: 1000
+Кредит: NASA/JPL-Caltech/LANL/CNES/IRAP
+https://mars.nasa.gov/mars2020/multimedia/raw-images/LRE_1000_0755699148_284ECM_N0474374SCAM02000_0010I6J
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01000/ids/edr/browse/scam/LRE_1000_0755699148_284ECM_N0474374SCAM02000_0010I6J01.png
+Локальний оригінал: White-cat/data/rover_images/LRE_1000_0755699148_284ECM_N0474374SCAM02000_0010I6J.png
+SHA-256: a465963b1717c6191f94847b3c09032c3cc20e11d7f32fb78bd476e2b569e2b2
+
+20. SI1_1500_0800108664_851ECM_N0730000SRLC07061_0000LMJ
+Mars Perseverance Sol 1500: WATSON Camera 
+Камера: SHERLOC_WATSON; sol: 1500
+Кредит: NASA/JPL-Caltech
+https://mars.nasa.gov/mars2020/multimedia/raw-images/SI1_1500_0800108664_851ECM_N0730000SRLC07061_0000LMJ
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01500/ids/edr/browse/shrlc/SI1_1500_0800108664_851ECM_N0730000SRLC07061_0000LMJ01.png
+Локальний оригінал: White-cat/data/rover_images/SI1_1500_0800108664_851ECM_N0730000SRLC07061_0000LMJ.png
+SHA-256: ee037ebb65477c6f5924ea861f64c653ec06edf7b5541a118446b6a4c4aee5b3
+
+21. SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ
+Mars Perseverance Sol 1800: WATSON Camera 
+Камера: SHERLOC_WATSON; sol: 1800
+Кредит: NASA/JPL-Caltech
+https://mars.nasa.gov/mars2020/multimedia/raw-images/SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01800/ids/edr/browse/shrlc/SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ01.png
+Локальний оригінал: White-cat/data/rover_images/SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ.png
+SHA-256: 2ac9f5744f46d7989f1a497dce9ddfcb87a70025baa2fcdda5f697d25e22f801
+Підготовлений файл: White-cat/assets/images/SI1_1800_0826736547_707ECM_N0870000SRLC00636_0000LMJ.webp
+Оброблення: змінено розмір і закодовано WebP; реальне фото Марса.
+
+22. SI1_1500_0800108674_394ECM_N0730000SRLC07061_0000LMJ
+Mars Perseverance Sol 1500: WATSON Camera 
+Камера: SHERLOC_WATSON; sol: 1500
+Кредит: NASA/JPL-Caltech
+https://mars.nasa.gov/mars2020/multimedia/raw-images/SI1_1500_0800108674_394ECM_N0730000SRLC07061_0000LMJ
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01500/ids/edr/browse/shrlc/SI1_1500_0800108674_394ECM_N0730000SRLC07061_0000LMJ01.png
+Локальний оригінал: White-cat/data/rover_images/SI1_1500_0800108674_394ECM_N0730000SRLC07061_0000LMJ.png
+SHA-256: 63c06bc89a9322460011a0c3e7ccbf5364a0e135f733782b4b48bc252b92e0f6
+
+23. WSM_0001_0667044731_000ECM_N0010052MEDA00200_0000LUJ
+Mars Perseverance Sol 1: SkyCam Camera 
+Камера: SKYCAM; sol: 1
+Кредит: NASA/JPL-Caltech/CAB
+https://mars.nasa.gov/mars2020/multimedia/raw-images/WSM_0001_0667044731_000ECM_N0010052MEDA00200_0000LUJ
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00001/ids/edr/browse/meda/WSM_0001_0667044731_000ECM_N0010052MEDA00200_0000LUJ01.png
+Локальний оригінал: White-cat/data/rover_images/WSM_0001_0667044731_000ECM_N0010052MEDA00200_0000LUJ.png
+SHA-256: b9886cdb1da28e987bdd57286f4aed262bf7153aba0fbfab325abcda91e94ca2
+
+24. WSM_0100_0675791183_000ECM_N0040218MEDA03245_0000LUJ
+Mars Perseverance Sol 100: SkyCam Camera 
+Камера: SKYCAM; sol: 100
+Кредит: NASA/JPL-Caltech/CAB
+https://mars.nasa.gov/mars2020/multimedia/raw-images/WSM_0100_0675791183_000ECM_N0040218MEDA03245_0000LUJ
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00100/ids/edr/browse/meda/WSM_0100_0675791183_000ECM_N0040218MEDA03245_0000LUJ01.png
+Локальний оригінал: White-cat/data/rover_images/WSM_0100_0675791183_000ECM_N0040218MEDA03245_0000LUJ.png
+SHA-256: 76e3d7cee4862089b633eb478fa4ca767dce28388ea976c01c41fd73a26c96d8
+
+25. PCW_2000_0844451597_000ECM_N09109707607424011703075J
+Mars Perseverance Sol 2000: PIXL Camera 
+Камера: PIXL_MCC; sol: 2000
+Кредит: NASA/JPL-Caltech
+https://mars.nasa.gov/mars2020/multimedia/raw-images/PCW_2000_0844451597_000ECM_N09109707607424011703075J
+Оригінал: https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/02000/ids/edr/browse/pixl/PCW_2000_0844451597_000ECM_N09109707607424011703075J01.png
+Локальний оригінал: White-cat/data/rover_images/PCW_2000_0844451597_000ECM_N09109707607424011703075J.png
+SHA-256: fb1561f43f524f59b5dbc0dc9eaf8c1ff4ab27f0a031ffb58ca218d6a3a73c99
+Підготовлений файл: White-cat/assets/images/PCW_2000_0844451597_000ECM_N09109707607424011703075J.webp
+Оброблення: змінено розмір і закодовано WebP; реальне фото Марса.
+
+25 МАТЕРІАЛІВ NASA IMAGE AND VIDEO LIBRARY
+Локальний архів прев’ю. У ньому є фото, карти та ілюстрації. Не підключені до поточної сцени гри.
+
+1. PIA24744 — The End of One Drive by Perseverance on the Floor of Jezero Crater
+Кредит secondary_creator: NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2021-07-21T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24744/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24744.jpg
+
+2. PIA24331 — Perseverance's Landing Spot in Jezero Crater
+Кредит secondary_creator: NASA/JPL-Caltech/University of Arizona
+Центр публікації: JPL
+Дата матеріалу: 2021-02-22T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24331/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24331.jpg
+
+3. PIA26378 — Perseverance's Mid-Climb View of Jezero Crater
+Кредит secondary_creator:     NASA/JPL-Caltech/ASU/MSSS
+Центр публікації: JPL
+Дата матеріалу: 2024-10-28T00:00:00Z
+https://images-assets.nasa.gov/image/PIA26378/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA26378.jpg
+
+4. PIA24926 — 2 Abrasion Patches From Perseverance at Jezero Delta
+Кредит secondary_creator: NASA/JPL-Caltech/ASU/MSSS
+Центр публікації: JPL
+Дата матеріалу: 2022-09-15T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24926/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24926.jpg
+
+5. PIA26377 — Perseverance Drives Backward Up Jezero Crater's Rim
+Кредит secondary_creator: NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2024-10-28T00:00:00Z
+https://images-assets.nasa.gov/image/PIA26377/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA26377.jpg
+
+6. PIA25963 — Perseverance Views Jezero Boulder Field
+Кредит secondary_creator: NASA/JPL-Caltech/ASU/MSSS
+Центр публікації: JPL
+Дата матеріалу: 2023-07-19T00:00:00Z
+https://images-assets.nasa.gov/image/PIA25963/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA25963.jpg
+
+7. PIA24924 — 2 Perseverance Sampling Locations in Jezero's Delta
+Кредит secondary_creator: NASA/JPL-Caltech/ASU/MSSS
+Центр публікації: JPL
+Дата матеріалу: 2022-09-15T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24924/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24924.jpg
+
+8. PIA25027 — Perseverance's Traverse From Séítah to Jezero Delta
+Кредит secondary_creator: NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2021-12-15T00:00:00Z
+https://images-assets.nasa.gov/image/PIA25027/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA25027.jpg
+
+9. PIA26402 — Perseverance's Location at the Base of Jezero Crater's Rim
+Кредит secondary_creator: NASA/JPL-Caltech/University of Arizona/ESA
+Центр публікації: JPL
+Дата матеріалу: 2024-08-27T00:00:00Z
+https://images-assets.nasa.gov/image/PIA26402/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA26402.jpg
+
+10. PIA26575 — Perseverance Drills a Rock on Jezero Crater Rim
+Кредит secondary_creator: NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2025-06-25T00:00:00Z
+https://images-assets.nasa.gov/image/PIA26575/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA26575.jpg
+
+11. PIA24350 — Perseverance Rover Landing Ellipse in Jezero Crater
+Кредит secondary_creator: ESA/DLR/FU-Berlin/NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2021-01-08T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24350/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24350.jpg
+
+12. PIA25290 — Perseverance Views Dust Devils Swirling Across Jezero Crater
+Кредит secondary_creator: NASA/JPL-Caltech/SSI
+Центр публікації: JPL
+Дата матеріалу: 2022-06-01T00:00:00Z
+https://images-assets.nasa.gov/image/PIA25290/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA25290.jpg
+
+13. PIA24485 — Perseverance View of the Delta in Jezero Crater
+Кредит secondary_creator: NASA/JPL-Caltech/ASU/MSSS
+Центр публікації: JPL
+Дата матеріалу: 2021-03-05T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24485/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24485.jpg
+
+14. PIA24320 — Mars Landing Sites, Including Perseverance (Illustration)
+Кредит secondary_creator: NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2020-12-16T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24320/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24320.jpg
+
+15. PIA24745 — An Expanse for Perseverance to Explore
+Кредит secondary_creator: NASA/JPL-Caltech/ASU/MSSS
+Центр публікації: JPL
+Дата матеріалу: 2021-07-21T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24745/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24745.jpg
+
+16. PIA26479 — Perseverance Views Slippery Terrain
+Кредит secondary_creator: NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2024-12-12T00:00:00Z
+https://images-assets.nasa.gov/image/PIA26479/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA26479.jpg
+
+17. PIA24309 — Exploring Majestic Jezero Crater (Illustration)
+Кредит secondary_creator: NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2021-01-27T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24309/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24309.jpg
+
+18. PIA25684 — Looking Back at Perseverance's Second Science Campaign
+Кредит secondary_creator: NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2023-02-17T00:00:00Z
+https://images-assets.nasa.gov/image/PIA25684/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA25684.jpg
+
+19. PIA24814 — Jezero Crater's Kodiak and Scarps
+Кредит secondary_creator: NASA/JPL-Caltech/University of Arizona/USGS
+Центр публікації: JPL
+Дата матеріалу: 2021-10-07T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24814/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24814.jpg
+
+20. PIA26572 — Dust Devil Whirls by Perseverance Coring Operation
+Кредит secondary_creator: NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2025-05-14T00:00:00Z
+https://images-assets.nasa.gov/image/PIA26572/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA26572.jpg
+
+21. PIA25243 — Perseverance's View of Possible Future Sample Cache Depot Site
+Кредит secondary_creator: NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2022-09-15T00:00:00Z
+https://images-assets.nasa.gov/image/PIA25243/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA25243.jpg
+
+22. PIA24096 — Jezero Crater as Seen by ESA's Mars Express Orbiter
+Кредит secondary_creator: ESA/DLR/FU-Berlin
+Центр публікації: JPL
+Дата матеріалу: 2020-09-21T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24096/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24096.jpg
+
+23. PIA24927 — Rock Cores From Skinner Ridge
+Кредит secondary_creator: NASA/JPL-Caltech/ASU/MSSS
+Центр публікації: JPL
+Дата матеріалу: 2022-09-15T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24927/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24927.jpg
+
+24. PIA26376 — NASA's Perseverance Is Going Up and Up
+Кредит secondary_creator: NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2024-09-13T00:00:00Z
+https://images-assets.nasa.gov/image/PIA26376/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA26376.jpg
+
+25. PIA24482 — Perseverance Hazcam First Drive
+Кредит secondary_creator: NASA/JPL-Caltech
+Центр публікації: JPL
+Дата матеріалу: 2021-03-05T00:00:00Z
+https://images-assets.nasa.gov/image/PIA24482/collection.json
+Прев’ю: White-cat/data/images/nasa-library/previews/PIA24482.jpg
+
+КОНТРОЛЬ ПОХОДЖЕННЯ
+Початковий архів: 208 файлів; відсутніх немає.
+Збіг із початковими SHA-256: 207.
+Змінено після початкового аудиту: data/sources.json; поточний SHA-256: 29c5b21d4dd9af3246593e61cdcb6b088edc984b5c593b7edfe20fba70add8ab
+
+Зіркові фони, частина старих моделей і звуків не мають підтвердженого авторства в проєкті. Їх не приписано NASA.
+Ресурси з позначками «не завантажено» або «згадані в челенджі» не заявляються як фактично використані набори.

@@ -2,6 +2,7 @@ class_name CreditsView
 extends VBoxContainer
 
 signal license_requested(title: String, text: String)
+signal document_requested(title: String, text: String)
 
 const CATALOGUE := "res://ASS/UI/credits.json"
 var _notice: Label
@@ -32,6 +33,8 @@ func _paragraph(text: String, font_size: int = 21, color: Color = WhiteCatTheme.
 func _entry(entry: Dictionary) -> void:
 	_paragraph(entry["title"], 23, WhiteCatTheme.WHITE)
 	add_child(WhiteCatTheme.spacer(6))
+	if entry.has("usage"):
+		_paragraph(entry["usage"], 18, WhiteCatTheme.ACCENT)
 	_paragraph(entry["credit"])
 	if entry.has("detail"):
 		add_child(WhiteCatTheme.spacer(5))
@@ -42,6 +45,9 @@ func _entry(entry: Dictionary) -> void:
 		var button := _link(link["label"])
 		button.tooltip_text = url
 		button.pressed.connect(_open_source.bind(url))
+	if entry.has("document_file"):
+		var button := _link(entry.get("document_label", "Повний перелік матеріалів"))
+		button.pressed.connect(_request_document.bind(entry))
 	if entry.has("license_file") or entry.has("runtime_license"):
 		var button := _link("Текст ліцензії" if entry.get("runtime_license") != "godot_components" else "Автори та ліцензії")
 		button.pressed.connect(_request_license.bind(entry))
@@ -83,6 +89,16 @@ func _request_license(entry: Dictionary) -> void:
 		_notice.text = "Не вдалося прочитати текст ліцензії."
 		return
 	license_requested.emit(entry["title"], text)
+
+func _request_document(entry: Dictionary) -> void:
+	var path: String = entry.get("document_file", "")
+	if not path.begins_with("res://ASS/UI/SourceRecords/"):
+		return
+	var text := FileAccess.get_file_as_string(path)
+	if text.is_empty():
+		_notice.text = "Не вдалося прочитати перелік джерел."
+		return
+	document_requested.emit(entry["title"], text)
 
 static func component_licenses() -> String:
 	var paragraphs := PackedStringArray()

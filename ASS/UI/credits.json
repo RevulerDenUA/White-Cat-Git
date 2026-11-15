@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "note": "Перелік доповнюється під час розробки.",
+  "note": "Матеріали зібрано для White Cat. Наявність джерела в архіві або пакеті не означає його підключення до гри. Ігрові припущення не є вимірюваннями NASA; авторство сторонніх матеріалів зберігається.",
   "sections": [
     {
       "title": "White Cat",
@@ -9,8 +9,1534 @@
           "title": "Space Mission Design Game",
           "credit": "Проєкт для NASA Space Apps Challenge 2026.",
           "links": [
-            {"label": "Репозиторій гри", "url": "https://github.com/RevulerDenUA/White-Cat-Git"},
-            {"label": "Дані та матеріали команди", "url": "https://github.com/RevulerDenUA/White-cat"}
+            {
+              "label": "Репозиторій гри",
+              "url": "https://github.com/RevulerDenUA/White-Cat-Git"
+            },
+            {
+              "label": "Дані та матеріали команди",
+              "url": "https://github.com/RevulerDenUA/White-cat"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Про дані та їх використання",
+      "entries": [
+        {
+          "id": "science_audit",
+          "title": "NASA та інші наукові установи",
+          "credit": "Аудит матеріалів White Cat · 15 листопада 2026 року.",
+          "usage": "Повний перелік джерел",
+          "scope": "audit",
+          "detail": "Нижче наведено конкретні набори, авторів і застосування. Позначки відрізняють матеріали гри, підготовлений пакет, локальний архів і довідники. Архівні спостереження не є поточними показниками ігрового апарата.",
+          "source_ids": [],
+          "evidence": [],
+          "links": [],
+          "document_file": "res://ASS/UI/SourceRecords/science_sources.uk.txt",
+          "document_label": "Повний аудит і перелік 50 зображень"
+        }
+      ]
+    },
+    {
+      "title": "Планети, зорі та фізика",
+      "entries": [
+        {
+          "id": "exoplanets",
+          "title": "NASA Exoplanet Archive · PSCompPars",
+          "credit": "NASA Exoplanet Archive · IPAC / Caltech.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Знімок від 14.11.2026: 6 470 записів про екзопланети, зорі, маси, радіуси та орбіти. Використано для статистики й перевірок генератора. Пропуски збережено; це спостереження, а не історія формування систем.",
+          "source_ids": [
+            "nasa_exoplanet_archive",
+            "nasa_archive_definitions"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/solar_systems/nasa_exoplanet_archive_metadata.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "docs/audit/population_statistics.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/planets/generation_parameters.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/planets/planet_types.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Архів екзопланет",
+              "url": "https://exoplanetarchive.ipac.caltech.edu/"
+            },
+            {
+              "label": "Поля PSCompPars",
+              "url": "https://exoplanetarchive.ipac.caltech.edu/docs/API_TD_columns.html"
+            },
+            {
+              "label": "Визначення полів PS",
+              "url": "https://exoplanetarchive.ipac.caltech.edu/docs/API_PS_columns.html"
+            }
+          ]
+        },
+        {
+          "id": "exovista",
+          "title": "ExoVista · DEC21, universe 1",
+          "credit": "NASA Goddard · Exoplanet Modeling and Analysis Center; Stark et al.",
+          "usage": "У пакеті даних · синтетична модель",
+          "scope": "data_package",
+          "detail": "2 258 синтетичних систем; після вилучення порожніх слотів — 24 744 модельні планети. Підготовлено парні опорні маси й радіуси, три приклади систем і 64 цільові зорі. FITS та сітки альбедо не завантажені. Це модель, не вимірювання реальних планет.",
+          "source_ids": [
+            "nasa_emac_exovista_dec21"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/solar_systems/exovista_DEC21_universe1/metadata.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/planets/mass_radius_anchors.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/planets/example_systems.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/planets/stars.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA EMAC · ExoVista",
+              "url": "https://tools.emac.gsfc.nasa.gov/exovista/"
+            },
+            {
+              "label": "Публікація ExoVista",
+              "url": "https://doi.org/10.3847/1538-3881/ac3b54"
+            }
+          ]
+        },
+        {
+          "id": "soda",
+          "title": "Протопланетні диски Оріона · SODA",
+          "credit": "ALMA · van Terwisga et al. (2022) · CDS / VizieR.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "873 диски: потік на 225 GHz, оцінки маси пилу, відстані та верхні межі. Використано агрегати для аналізу популяції. 370 значень є верхніми межами; маса пилу не дорівнює повній масі диска. Це окреме джерело ALMA/CDS, не набір NASA.",
+          "source_ids": [
+            "soda_orion_alma_cds"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/solar_systems/soda_orion_disks.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "docs/audit/population_statistics.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Каталог VizieR",
+              "url": "https://cdsarc.cds.unistra.fr/viz-bin/cat/J/A%2BA/661/A53"
+            },
+            {
+              "label": "Наукова публікація",
+              "url": "https://doi.org/10.1051/0004-6361/202141913"
+            }
+          ]
+        },
+        {
+          "id": "jpl_constants",
+          "title": "Астрономічні константи та параметри тіл",
+          "credit": "NASA / JPL Solar System Dynamics.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "G, швидкість світла, астрономічна одиниця, сонячний GM, параметри Землі й Марса. Одиниці SI, точні й округлені значення розрізняються. Власні розрахунки гравітації, орбіт, енергії та затримок спираються на ці величини.",
+          "source_ids": [
+            "jpl_parameters",
+            "jpl_planet_parameters"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/physics/physical_constants.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/physics/formulas.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "docs/PHYSICS.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "JPL · астрономічні параметри",
+              "url": "https://ssd.jpl.nasa.gov/astro_par.html"
+            },
+            {
+              "label": "JPL · параметри планет",
+              "url": "https://ssd.jpl.nasa.gov/planets/phys_par.html"
+            },
+            {
+              "label": "JPL Horizons",
+              "url": "https://ssd.jpl.nasa.gov/horizons/"
+            }
+          ]
+        },
+        {
+          "id": "nist_constants",
+          "title": "Константи SI · NIST / CODATA",
+          "credit": "National Institute of Standards and Technology.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Стала Стефана—Больцмана, молярна газова стала та стандартне прискорення вільного падіння для розрахунків пакета. Стандартне g₀ не підміняє місцеву гравітацію планети.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/physics/physical_constants.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Стала Стефана—Больцмана",
+              "url": "https://physics.nist.gov/cgi-bin/cuu/Value?sigma"
+            },
+            {
+              "label": "Молярна газова стала",
+              "url": "https://physics.nist.gov/cgi-bin/cuu/Value?r"
+            },
+            {
+              "label": "Стандартне прискорення g₀",
+              "url": "https://physics.nist.gov/cgi-bin/cuu/Value?gn"
+            }
+          ]
+        },
+        {
+          "id": "iau_solar",
+          "title": "Номінальні сонячні величини",
+          "credit": "International Astronomical Union · резолюції 2015 року.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Номінальний радіус і світність Сонця для обчислень пакета. Це прийняті опорні величини, а не телеметрія станції.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/physics/physical_constants.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Резолюції IAU 2015",
+              "url": "https://www.iau.org/static/resolutions/IAU2015_English.pdf"
+            }
+          ]
+        },
+        {
+          "id": "mars_facts",
+          "title": "Марс · фізичні дані й атмосфера",
+          "credit": "NASA NSSDCA · Planetary Fact Sheets.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Довідкові характеристики Марса та склад CO₂-атмосфери для пресета. Правила наявності й утримання атмосфери на згенерованих планетах позначено як модельні припущення.",
+          "source_ids": [
+            "nasa_mars_facts"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/planets/atmospheres.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/physics/physical_constants.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · Mars Fact Sheet",
+              "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html"
+            }
+          ]
+        },
+        {
+          "id": "other_fact_sheets",
+          "title": "Місяць, Венера й Меркурій · довідкові приклади",
+          "credit": "NASA NSSDCA.",
+          "usage": "Довідка в командному гайді",
+          "scope": "reference",
+          "detail": "Фізичні характеристики цитуються в командному гайді для порівняння середовищ. Окремих наборів поверхні цих тіл у грі не знайдено.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "WHITE_CAT_NASA_2026_TEAM_GUIDE.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "Місяць",
+              "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html"
+            },
+            {
+              "label": "Венера",
+              "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/venusfact.html"
+            },
+            {
+              "label": "Меркурій",
+              "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/mercuryfact.html"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Марс · рельєф, координати та погода",
+      "entries": [
+        {
+          "id": "jezero_ctx",
+          "title": "Єзеро · CTX DEM та ортофотокарта",
+          "credit": "USGS Astrogeology · продукти Mars 2020 / MRO CTX.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Оригінали: DEM 20 м/піксель та ортофотокарта близько 5 м/піксель. Підготовлено ділянку 10,24 × 10,24 км: висоти 512 × 512, текстуру 2048 × 2048, LOD, похили й ігровий показник прохідності. Прохідність є розрахунком за похилом, а не підтвердженим безпечним маршрутом. Поточний полігон Godot ці растри ще не використовує.",
+          "source_ids": [
+            "usgs_jezero_ctx"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "assets/terrain/metadata.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "docs/audit/geospatial.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/mars/jezero/M20_JezeroCrater_CTXDEM_20m.xml"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/mars/jezero/M20_JezeroCrater_CTXortho_mosaic_5m.xml"
+            }
+          ],
+          "links": [
+            {
+              "label": "USGS · CTX Jezero",
+              "url": "https://astrogeology.usgs.gov/search/map/mars_2020_science_investigation_ctx_dem_mosaic"
+            }
+          ]
+        },
+        {
+          "id": "places",
+          "title": "PLACES · реальні координати Perseverance",
+          "credit": "NASA PDS Geosciences Node · Washington University in St. Louis.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Release 16: таблиці best_interp та best_tactical, їхні XML і SIS. У підготовленій ділянці залишено 211 тактичних локалізацій. Це зафіксовані положення реального ровера; ігровий апарат не видається за їхнє джерело.",
+          "source_ids": [
+            "nasa_pds_places"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/rover/routes.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/mars/places/release_notes.txt"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/mars/places/Mars2020_Rover_PLACES_PDS_SIS.pdf"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA PDS · PLACES",
+              "url": "https://pds-geosciences.wustl.edu/missions/mars2020/places.htm"
+            },
+            {
+              "label": "Документація PLACES",
+              "url": "https://pds-geosciences.wustl.edu/m2020/urn-nasa-pds-mars2020_rover_places/document/Mars2020_Rover_PLACES_PDS_SIS.pdf"
+            }
+          ]
+        },
+        {
+          "id": "meda",
+          "title": "MEDA · вибірка погоди Марса",
+          "credit": "NASA PDS Atmospheres Node · команда MEDA.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Калібровані таблиці та PDS4 XML за 10 вибраних солів: температура, тиск, вологість і вітер. Підготовлено відфільтровані вибірки й процентилі; прочитано 57 локальних табличних продуктів та документацію RDR/EDR. Це архівні спостереження з нерівномірним покриттям, не прогноз і не кліматологія.",
+          "source_ids": [
+            "nasa_pds_meda"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/rover/weather_samples.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "docs/audit/meda_products.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/weather/MEDA_RDR_SIS.pdf"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/weather/MEDA_EDR_SIS.pdf"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA PDS · MEDA",
+              "url": "https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/PERSEVERANCE/meda.html"
+            },
+            {
+              "label": "Архів каліброваних продуктів",
+              "url": "https://atmos.nmsu.edu/PDS/data/PDS4/Mars2020/mars2020_meda/"
+            }
+          ]
+        },
+        {
+          "id": "horizons",
+          "title": "Земля—Марс · ефемериди та затримка",
+          "credit": "NASA / JPL Solar System Dynamics · Horizons.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Зафіксовані вектори Землі й Марса на 14.11.2026–15.11.2028 з кроком одна доба. На їхній основі розраховані відстань і геометрична світлова затримка. Це офлайн-таблиця; візуальні перешкоди та затримка керування в Godot є окремими ігровими ефектами.",
+          "source_ids": [
+            "jpl_horizons",
+            "horizons_api"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/missions/earth_mars_ephemeris.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/ephemeris/mars_heliocentric_vectors_2026-11-14_to_2028-11-15.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Документація Horizons API",
+              "url": "https://ssd-api.jpl.nasa.gov/doc/horizons.html"
+            },
+            {
+              "label": "API Horizons",
+              "url": "https://ssd.jpl.nasa.gov/api/horizons.api"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Зображення NASA та партнерів",
+      "entries": [
+        {
+          "title": "Земля · Blue Marble",
+          "credit": "NASA Goddard / Earth Observatory · Reto Stöckli, Robert Simmon та команда Blue Marble.",
+          "detail": "Історичний композит 2002 року, 2048 × 1024, з матеріалів MODIS, USGS та NOAA. Використаний варіант містить сушу, океан, лід і хмари; шару нічних вогнів у цій текстурі немає. Масштаб і освітлення в меню — художні.",
+          "assets": [
+            "res://ASS/UI/Textures/earth_nasa.jpg"
+          ],
+          "links": [
+            {
+              "label": "NASA Earth Observatory",
+              "url": "https://science.nasa.gov/earth/earth-observatory/the-blue-marble-true-color-global-imagery-at-1km-resolution/"
+            }
+          ],
+          "id": "earth_blue_marble",
+          "scope": "runtime_asset",
+          "usage": "У грі · текстура Землі",
+          "evidence": [
+            {
+              "repository": "White-Cat-Git",
+              "path": "ASS/UI/Textures/earth_nasa.jpg"
+            }
+          ]
+        },
+        {
+          "id": "mars_raw_images",
+          "title": "Perseverance · 25 оригінальних фото",
+          "credit": "NASA/JPL-Caltech; ASU; LANL/CNES/IRAP; CAB — відповідно до кредиту кожного зображення.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Завантажено 25 PNG з Mastcam-Z, Navcam, Hazcam, SuperCam, WATSON та PIXL. До пакета відібрано п’ять WebP зі збереженими ID, солом, камерою й авторством. Фото не є текстурами згенерованих планет і не підміняють живу камеру гри. Поіменний перелік усіх 25 та позначки п’яти похідних — у повному аудиті.",
+          "source_ids": [
+            "nasa_mars_raw_images"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/rover_images/images_manifest.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "assets/images/manifest.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA / JPL · Raw Images",
+              "url": "https://mars.nasa.gov/mars2020/multimedia/raw-images/"
+            }
+          ]
+        },
+        {
+          "id": "nasa_image_library",
+          "title": "NASA Image and Video Library · 25 матеріалів",
+          "credit": "NASA/JPL-Caltech; ESA/DLR/FU Berlin; University of Arizona; ASU/MSSS; SSI; USGS — за метаданими кожного матеріалу.",
+          "usage": "Завантажено · локальний архів",
+          "scope": "archive",
+          "detail": "Збережено результати пошуку Perseverance/Jezero та 25 прев’ю. Серед них фото, карти й ілюстрації; повні кредити secondary_creator не скорочені до NASA. Ці прев’ю лишилися в локальному архіві, до поточної сцени Godot не підключені.",
+          "source_ids": [
+            "nasa_images_library"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/images/nasa-library/perseverance_jezero_search.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA Image and Video Library",
+              "url": "https://images.nasa.gov/"
+            },
+            {
+              "label": "Документація API",
+              "url": "https://images.nasa.gov/docs/images.nasa.gov_api_docs.pdf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Моделі NASA та авторські адаптації",
+      "entries": [
+        {
+          "id": "perseverance_model",
+          "title": "Mars 2020 Perseverance · офіційна 3D-модель",
+          "credit": "NASA Science / NASA-JPL.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Оригінал GLB збережено; для пакета декодовано Draco, зменшено геометрію та вбудовано матеріали й текстури. Це окремий довідковий асет, не авторська модель керованого ровера White Cat.",
+          "source_ids": [
+            "nasa_perseverance_3d"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "assets/models/manifest.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "assets/models/Mars_2020_Perseverance_Rover.glb"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · Perseverance 3D",
+              "url": "https://science.nasa.gov/3d-resources/mars-2020-perseverance-rover/"
+            }
+          ]
+        },
+        {
+          "id": "mro_model",
+          "title": "Mars Reconnaissance Orbiter · MRO",
+          "credit": "NASA Science / NASA-JPL.",
+          "usage": "У пакеті даних · антена адаптована у грі",
+          "scope": "runtime_derivative",
+          "detail": "Декодована модель орбітера входить до пакета даних. З її антени зроблено адаптацію для станції White Cat, яку видно в головному меню. Станція є авторською художньою моделлю, а не офіційною конструкцією NASA.",
+          "source_ids": [
+            "nasa_mro_3d"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "assets/models/manifest.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "assets/models/space_station/README.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · MRO 3D",
+              "url": "https://science.nasa.gov/3d-resources/mars-reconnaissance-orbiter-mro-c/"
+            }
+          ]
+        },
+        {
+          "id": "nasa_mars_global_surveyor_3d",
+          "title": "Mars Global Surveyor",
+          "credit": "NASA Science / NASA-JPL / Eyes on the Solar System.",
+          "usage": "Завантажено · візуальний референс",
+          "scope": "archive",
+          "detail": "Оригінальний GLB завантажено як візуальний референс. Зберігається локально; до поточної ігрової сцени не підключений.",
+          "source_ids": [
+            "nasa_mars_global_surveyor_3d"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/models/Mars_Global_Surveyor.glb"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · 3D-модель",
+              "url": "https://science.nasa.gov/3d-resources/mars-global-surveyor/"
+            }
+          ]
+        },
+        {
+          "id": "nasa_insight_3d",
+          "title": "InSight · посадковий апарат",
+          "credit": "NASA Science / NASA Visualization Technology Applications and Development.",
+          "usage": "Завантажено · візуальний референс",
+          "scope": "archive",
+          "detail": "Оригінальний GLB завантажено як візуальний референс. Зберігається локально; до поточної ігрової сцени не підключений.",
+          "source_ids": [
+            "nasa_insight_3d"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/models/InSight_deployed.glb"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · 3D-модель",
+              "url": "https://science.nasa.gov/resource/insight-3d-model/"
+            }
+          ]
+        },
+        {
+          "id": "ingenuity_nasa_model",
+          "title": "Інжінюїті · офіційний NASA GLB",
+          "credit": "NASA Science / NASA-JPL.",
+          "usage": "Завантажено · візуальний референс",
+          "scope": "archive",
+          "detail": "Окремий офіційний референс збережено локально. Керована Інжінюїті в грі використовує авторську модель White Cat; її не перепозначено як модель NASA.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/models/Ingenuity_Mars_Helicopter.source.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/models/Ingenuity_Mars_Helicopter.glb"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · Ingenuity 3D",
+              "url": "https://science.nasa.gov/3d-resources/ingenuity-mars-helicopter/"
+            }
+          ]
+        },
+        {
+          "id": "hubble_3d",
+          "title": "Hubble Space Telescope (A)",
+          "credit": "DigitalSpace Corporation. Джерело: NASA 3D Resources.",
+          "usage": "Завантажено · візуальний референс",
+          "scope": "archive",
+          "detail": "NASA-референс використано для авторської адаптації Hubble White Cat: геометрію й атлас перебудовано заново. Оригінал та новий асет збережені в репозиторії матеріалів локально; у поточній сцені Godot телескопа немає.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/models/telescopes/sources.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/models/telescopes/Hubble Space Telescope (A).glb"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · сторінка моделі",
+              "url": "https://science.nasa.gov/3d-resources/hubble-space-telescope-a/"
+            }
+          ]
+        },
+        {
+          "id": "spitzer_3d",
+          "title": "Spitzer Space Telescope",
+          "credit": "NASA/Janice C. Lee; NASA/Robert L. Hurt. Джерело: NASA 3D Resources.",
+          "usage": "Завантажено · візуальний референс",
+          "scope": "archive",
+          "detail": "Оригінальний GLB завантажено для порівняння й вибору візуального референсу. До поточної сцени Godot не підключений.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/models/telescopes/sources.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/models/telescopes/Spitzer Space Telescope.glb"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · сторінка моделі",
+              "url": "https://science.nasa.gov/3d-resources/spitzer-space-telescope/"
+            }
+          ]
+        },
+        {
+          "id": "kepler_3d",
+          "title": "Kepler (A)",
+          "credit": "NASA/Brian E. Kumanchik; NASA/Christian A. Lopez. Джерело: NASA 3D Resources.",
+          "usage": "Завантажено · візуальний референс",
+          "scope": "archive",
+          "detail": "Оригінальний GLB завантажено для порівняння й вибору візуального референсу. До поточної сцени Godot не підключений.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/models/telescopes/sources.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/models/telescopes/Kepler (A).glb"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · сторінка моделі",
+              "url": "https://science.nasa.gov/3d-resources/kepler-a/"
+            }
+          ]
+        },
+        {
+          "id": "chandra_3d",
+          "title": "Chandra X-ray Observatory",
+          "credit": "NASA/Brian E. Kumanchik. Джерело: NASA 3D Resources.",
+          "usage": "Завантажено · візуальний референс",
+          "scope": "archive",
+          "detail": "Оригінальний GLB завантажено для порівняння й вибору візуального референсу. До поточної сцени Godot не підключений.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/models/telescopes/sources.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/models/telescopes/Chandra X-ray Observatory.glb"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · сторінка моделі",
+              "url": "https://science.nasa.gov/3d-resources/chandra-x-ray-observatory/"
+            }
+          ]
+        },
+        {
+          "id": "webb_3d",
+          "title": "James Webb Space Telescope (A)",
+          "credit": "NASA/Goddard Space Flight Center. Джерело: NASA 3D Resources.",
+          "usage": "Завантажено · візуальний референс",
+          "scope": "archive",
+          "detail": "Оригінальний GLB завантажено для порівняння й вибору візуального референсу. До поточної сцени Godot не підключений.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/models/telescopes/sources.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/models/telescopes/James Webb Space Telescope (A).glb"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · сторінка моделі",
+              "url": "https://science.nasa.gov/3d-resources/james-webb-space-telescope-a/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Інженерні довідники місії",
+      "entries": [
+        {
+          "id": "rover_hardware",
+          "title": "Perseverance · апарат, живлення та зв’язок",
+          "credit": "NASA Science / JPL.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Довідкові характеристики апарата, MMRTG, батарей, обігріву та антен у каталозі компонентів. Непідтверджені ємності й окремі маси залишено невідомими; ігрові профілі не видаються за специфікацію NASA.",
+          "source_ids": [
+            "nasa_perseverance_rover_components"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/missions/components.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/rover/rover_specs.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · компоненти ровера",
+              "url": "https://science.nasa.gov/mission/mars-2020-perseverance/rover-components/"
+            }
+          ]
+        },
+        {
+          "id": "science_instruments",
+          "title": "Perseverance · наукові прилади",
+          "credit": "NASA Science · команди приладів Mars 2020.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Mastcam-Z, SuperCam, PIXL, SHERLOC/WATSON, RIMFAX і MEDA: довідкові маси, потужність, дані та обмеження в каталозі. Наявність запису не означає, що сканування цим приладом уже реалізовано в грі.",
+          "source_ids": [
+            "nasa_perseverance_instruments"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/missions/components.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · прилади Mars 2020",
+              "url": "https://science.nasa.gov/mission/mars-2020-perseverance/science-instruments/"
+            }
+          ]
+        },
+        {
+          "id": "atlas_v",
+          "title": "Atlas V · параметри запуску",
+          "credit": "United Launch Alliance.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Опубліковані характеристики використані для довідкового каталогу ракет. Вантажопідйомність LEO не підставляється як вантаж на Марс; непідтверджені значення й криві C3 не вигадані.",
+          "source_ids": [
+            "ula_atlas_v"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/missions/launchers.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "WHITE_CAT_NASA_2026_TEAM_GUIDE.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "ULA · Atlas V",
+              "url": "https://www.ulalaunch.com/rockets/atlas-v"
+            },
+            {
+              "label": "ULA · буклет Mars 2020",
+              "url": "https://www.ulalaunch.com/docs/default-source/launch-booklets/mars2020_mobrochure_200717.pdf"
+            }
+          ]
+        },
+        {
+          "id": "falcon_heavy",
+          "title": "Falcon Heavy · опубліковані характеристики",
+          "credit": "SpaceX · NASA Kennedy Launch Services Program.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Довідкові вантажопідйомності збережені окремо для LEO та Марса. Це опубліковані рекламні характеристики; для довільної місії без кривої C3 сумісність не підтверджується.",
+          "source_ids": [
+            "spacex_falcon_heavy",
+            "nasa_lsp_falcon"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/missions/launchers.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "SpaceX · Falcon Heavy",
+              "url": "https://www.spacex.com/vehicles/falcon-heavy/"
+            },
+            {
+              "label": "NASA KSC · SpaceX",
+              "url": "https://public.ksc.nasa.gov/lspeducation/spacex/"
+            }
+          ]
+        },
+        {
+          "id": "mars2020_launch",
+          "title": "Mars 2020 · запуск та переліт",
+          "credit": "NASA / JPL · Mars 2020 Launch Press Kit.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Довідник реального запуску, номінального C3, апарата й батарей. Ідеальний переліт Гомана в пакеті є власним розрахунком; він відокремлений від опису реальної місії.",
+          "source_ids": [
+            "jpl_mars2020_launch"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/missions/orbits.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/missions/launchers.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/missions/components.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "JPL · Launch Press Kit",
+              "url": "https://www.jpl.nasa.gov/news/press_kits/mars_2020/download/mars_2020_launch_press_kit.pdf"
+            }
+          ]
+        },
+        {
+          "id": "mars2020_edl",
+          "title": "Perseverance · вхід, зниження й посадка",
+          "credit": "NASA / JPL · Mars 2020 Landing Press Kit.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Профіль EDL, парашут, кероване зниження, TRN і еліпс посадки. При підготовці виправлено 306 км/год на 85 м/с. Це довідка про Perseverance, не готовий автопілот ігрового шатла.",
+          "source_ids": [
+            "jpl_mars2020_edl"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/missions/edl.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "docs/DATA_SELECTION.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "JPL · опис посадки",
+              "url": "https://www.jpl.nasa.gov/news/press_kits/mars_2020/landing/mission/"
+            },
+            {
+              "label": "JPL · Landing Press Kit",
+              "url": "https://www.jpl.nasa.gov/news/press_kits/mars_2020/download/mars_2020_landing_press_kit.pdf"
+            },
+            {
+              "label": "JPL · еліпс посадки",
+              "url": "https://science.nasa.gov/photojournal/zeroing-in-on-the-target/"
+            }
+          ]
+        },
+        {
+          "id": "mars_relay",
+          "title": "Mars Relay Network",
+          "credit": "NASA Science · мережа орбітерів NASA та ESA.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Ролі орбітерів і датовані середні обсяги передавання використано в довідковому каталозі. Пропускна здатність мережі не є гарантованою квотою одного ігрового апарата.",
+          "source_ids": [
+            "nasa_mars_relay_network"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/missions/relay_plans.json"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/missions/components.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · Mars Relay Network",
+              "url": "https://science.nasa.gov/mars/mars-relay-network/"
+            }
+          ]
+        },
+        {
+          "id": "mer_solar",
+          "title": "Spirit та Opportunity · сонячне живлення",
+          "credit": "NASA Science / JPL.",
+          "usage": "У пакеті даних",
+          "scope": "data_package",
+          "detail": "Довідкове джерело для узагальненої опції сонячного живлення в каталозі компонентів; модель пилу та ефективності лишається ігровою.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/missions/components.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · апарати Spirit / Opportunity",
+              "url": "https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/spacecraft/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Методика проєктування місій",
+      "entries": [
+        {
+          "id": "nasa_design_develop_science_missions",
+          "title": "Design and Develop Science Missions",
+          "credit": "NASA Ames Research Center / Small Spacecraft Systems Virtual Institute.",
+          "usage": "Завантажено · використано як довідник",
+          "scope": "reference",
+          "detail": "Завантажена презентація NASA Ames / Small Spacecraft Systems Virtual Institute 2025 року. Використано як довідник вимог, сегментів місії, ресурсів та перевірки задуму.",
+          "source_ids": [
+            "nasa_design_develop_science_missions"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/challenge/resources/Design_and_Develop_Science_Missions_NASA_2025.pdf"
+            },
+            {
+              "repository": "White-cat",
+              "path": "docs/PHYSICS.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "Першоджерело",
+              "url": "https://ntrs.nasa.gov/citations/20250002492"
+            }
+          ]
+        },
+        {
+          "id": "nasa_cubesat_101",
+          "title": "CubeSat 101",
+          "credit": "NASA CubeSat Launch Initiative; produced under contract by Cal Poly.",
+          "usage": "Завантажено · використано як довідник",
+          "scope": "reference",
+          "detail": "Завантажений посібник NASA CubeSat Launch Initiative / Cal Poly, редакція жовтня 2017 року. Використано для життєвого циклу місії; не подається як чинний регламент запуску.",
+          "source_ids": [
+            "nasa_cubesat_101"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/challenge/resources/NASA_CubeSat_101_2017.pdf"
+            },
+            {
+              "repository": "White-cat",
+              "path": "docs/PHYSICS.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "Першоджерело",
+              "url": "https://www.nasa.gov/kennedy/launch-services-program/cubesat-launch-initiative/cubesat-launch-initiative-resources/"
+            }
+          ]
+        },
+        {
+          "id": "nasa_cml_framework",
+          "title": "Mission Development 101 · CML",
+          "credit": "NASA / Jet Propulsion Laboratory.",
+          "usage": "Завантажено · використано як довідник",
+          "scope": "reference",
+          "detail": "Завантажена презентація NASA / JPL про рівні зрілості концепції. Використано для структури підготовки місії та trade studies, а не як потік даних апарата.",
+          "source_ids": [
+            "nasa_cml_framework"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/challenge/resources/NASA_Mission_Development_101_CMLs.pdf"
+            },
+            {
+              "repository": "White-cat",
+              "path": "docs/PHYSICS.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "Першоджерело",
+              "url": "https://science.nasa.gov/wp-content/uploads/2023/11/03-ziemer-mission-development-101-cmls.pdf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Референси каміння, льоду та конструкцій",
+      "entries": [
+        {
+          "id": "terrain_reference_0",
+          "title": "Каміння · уламки й обкатані форми",
+          "credit": "Відкритий підручник на Temple University Manifold.",
+          "usage": "Референс моделей у репозиторії гри",
+          "scope": "visual_reference",
+          "detail": "Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-Cat-Git",
+              "path": "ASS/QweQ/White cat камінці/catalog.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Джерело референсу",
+              "url": "https://temple.manifoldapp.org/read/sediments-and-sedimentary-rocks/section/943ee9dc-db36-4399-8198-f308e0f5e522"
+            }
+          ]
+        },
+        {
+          "id": "terrain_reference_1",
+          "title": "Пісковик · Checkerboard Mesa",
+          "credit": "National Park Service.",
+          "usage": "Референс моделей у репозиторії гри",
+          "scope": "visual_reference",
+          "detail": "Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-Cat-Git",
+              "path": "ASS/QweQ/White cat камінці/catalog.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Джерело референсу",
+              "url": "https://www.nps.gov/media/photo/gallery-item.htm?pg=2122026&id=BC785694-155D-451F-67AFAEA2FABA3A41&gid=BCAE0D0A-155D-451F-67B35D5AE59F10C8"
+            }
+          ]
+        },
+        {
+          "id": "terrain_reference_2",
+          "title": "Базальтові колони · Latourell Falls",
+          "credit": "U.S. Geological Survey.",
+          "usage": "Референс моделей у репозиторії гри",
+          "scope": "visual_reference",
+          "detail": "Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-Cat-Git",
+              "path": "ASS/QweQ/White cat камінці/catalog.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Джерело референсу",
+              "url": "https://www.usgs.gov/media/images/columnar-jointing-basalt-cliffs-latourell-falls-or"
+            }
+          ]
+        },
+        {
+          "id": "terrain_reference_3",
+          "title": "Лава · пори, складки та клінкер",
+          "credit": "National Park Service.",
+          "usage": "Референс моделей у репозиторії гри",
+          "scope": "visual_reference",
+          "detail": "Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-Cat-Git",
+              "path": "ASS/QweQ/White cat камінці/catalog.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Джерело референсу",
+              "url": "https://home.nps.gov/articles/000/lava-flow-surface-features.htm"
+            }
+          ]
+        },
+        {
+          "id": "terrain_reference_4",
+          "title": "Льодовикові форми · сераки",
+          "credit": "National Park Service.",
+          "usage": "Референс моделей у репозиторії гри",
+          "scope": "visual_reference",
+          "detail": "Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-Cat-Git",
+              "path": "ASS/QweQ/White cat камінці/catalog.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Джерело референсу",
+              "url": "https://www.nps.gov/articles/seracsandicebergs.htm"
+            }
+          ]
+        },
+        {
+          "id": "terrain_reference_5",
+          "title": "Лід · IceBridge Blues",
+          "credit": "NASA Earth Observatory / Operation IceBridge. Фото: Chris Larsen; текст: Kathryn Hansen.",
+          "usage": "Референс моделей у репозиторії гри",
+          "scope": "visual_reference",
+          "detail": "Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-Cat-Git",
+              "path": "ASS/QweQ/White cat камінці/catalog.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Джерело референсу",
+              "url": "https://science.nasa.gov/earth/earth-observatory/icebridge-blues-91396/"
+            }
+          ]
+        },
+        {
+          "id": "terrain_reference_6",
+          "title": "Кристали · кварц",
+          "credit": "Smithsonian National Museum of Natural History.",
+          "usage": "Референс моделей у репозиторії гри",
+          "scope": "visual_reference",
+          "detail": "Візуальний / геологічний референс авторських моделей набору White Cat Terrain Scatter. Геометрія та атлас ігрові; це не NASA-фотограмметрія й не скопійована планетна текстура.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-Cat-Git",
+              "path": "ASS/QweQ/White cat камінці/catalog.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Джерело референсу",
+              "url": "https://naturalhistory.si.edu/explore/collections/geogallery/10026017"
+            }
+          ]
+        },
+        {
+          "id": "drill_reference",
+          "title": "Дослідницький бур · PRIME-1 / TRIDENT",
+          "credit": "NASA Science · PRIME-1.",
+          "usage": "Референс авторської моделі у грі",
+          "scope": "visual_reference",
+          "detail": "Конструктивний референс авторської моделі бура White Cat. Модель, атлас, рецепт і видобуток у грі не є інженерними даними PRIME-1. У документації також зафіксовано художній референс Factorio.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "assets/models/research_drill/asset_info.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · PRIME-1",
+              "url": "https://science.nasa.gov/lunar-science/clps-deliveries/prime-1-im/"
+            },
+            {
+              "label": "Factorio · художній референс",
+              "url": "https://www.factorio.com/blog/post/fff-350"
+            }
+          ]
+        },
+        {
+          "id": "aquatic_reference",
+          "title": "Підводний апарат · BlueROV2",
+          "credit": "Blue Robotics · наданий візуальний референс BlueROV2.",
+          "usage": "Референс у матеріалах команди",
+          "scope": "visual_reference",
+          "detail": "У репозиторії матеріалів створено авторський Aquatic Rover. Це окремий конструктивний референс, не дані NASA й не підключений ігровий апарат.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "assets/models/aquatic_rover/asset_info.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "Blue Robotics · BlueROV2",
+              "url": "https://bluerobotics.com/store/rov/bluerov2/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Додаткові першоджерела командного гайда",
+      "entries": [
+        {
+          "id": "hirise_reference",
+          "title": "HiRISE TRN та картографічні проєкції",
+          "credit": "USGS Astrogeology.",
+          "usage": "Довідка · растр HiRISE не завантажений",
+          "scope": "reference",
+          "detail": "HiRISE DTM 1 м згаданий у гайді як альтернатива; такий растр у локальному пакеті не завантажено. Фактично підготовлений рельєф — CTX 20 м. Довідник проєкцій використано для правил координат.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "WHITE_CAT_NASA_2026_TEAM_GUIDE.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "USGS · HiRISE TRN DTM",
+              "url": "https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic"
+            },
+            {
+              "label": "USGS · картографічні проєкції",
+              "url": "https://astrogeology.usgs.gov/docs/concepts/camera-geometry-and-projections/learning-about-map-projections/"
+            }
+          ]
+        },
+        {
+          "id": "moxie_reference",
+          "title": "MOXIE · дослід із отримання кисню",
+          "credit": "NASA / JPL.",
+          "usage": "Довідковий матеріал",
+          "scope": "reference",
+          "detail": "Науковий контекст у командному гайді. У Godot не реалізовано виробництво кисню чи симуляцію MOXIE.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "WHITE_CAT_NASA_2026_TEAM_GUIDE.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "JPL · завершення експерименту MOXIE",
+              "url": "https://www.jpl.nasa.gov/news/nasas-oxygen-generating-experiment-moxie-completes-mars-mission/"
+            }
+          ]
+        },
+        {
+          "id": "biosignature_reference",
+          "title": "Sapphire Canyon / Cheyava Falls",
+          "credit": "NASA / JPL.",
+          "usage": "Довідковий матеріал",
+          "scope": "reference",
+          "detail": "Джерело наукового контексту про потенційну біосигнатуру. У гайді окремо зазначено: це не підтвердження життя та не результат дослідження ігрової планети.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "WHITE_CAT_NASA_2026_TEAM_GUIDE.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "JPL · потенційна біосигнатура",
+              "url": "https://www.jpl.nasa.gov/news/nasa-says-mars-rover-discovered-potential-biosignature-last-year/"
+            }
+          ]
+        },
+        {
+          "id": "launch_references",
+          "title": "Послуги запуску · додаткова довідка",
+          "credit": "NASA Kennedy / JPL · AIAA.",
+          "usage": "Довідкові посилання",
+          "scope": "reference",
+          "detail": "Посилання командного гайда для перевірки продуктивності ракет і прикладу контракту Mars 2020. Нові криві вантажопідйомності з цих сторінок до гри не імпортовані.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "WHITE_CAT_NASA_2026_TEAM_GUIDE.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · Launch Vehicle Performance",
+              "url": "https://elvperf.ksc.nasa.gov/"
+            },
+            {
+              "label": "JPL · контракт запуску Mars 2020",
+              "url": "https://www.jpl.nasa.gov/news/nasa-awards-launch-services-contract-for-mars-2020-rover-mission/"
+            },
+            {
+              "label": "AIAA · Falcon vehicle guide",
+              "url": "https://www.aiaa.org/vehicle-guide/vehicles/falcon"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Опис челенджу та розглянуті ресурси",
+      "entries": [
+        {
+          "id": "spaceapps_challenge",
+          "title": "NASA Space Apps · Space Mission Design Game",
+          "credit": "NASA Space Apps Challenge.",
+          "usage": "Локальний текст користувача · контекст завдання",
+          "scope": "reference",
+          "detail": "Збережено текст опису й ресурсів, наданий користувачем. Це локальний транскрипт, а не завантажена офіційна HTML-сторінка. Правила участі в командному гайді є довідкою; поточний статус подання тут не визначається.",
+          "source_ids": [
+            "spaceapps_2026_space_mission_design_game"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/challenge/2026_space_mission_design_game_resources.txt"
+            },
+            {
+              "repository": "White-cat",
+              "path": "data/challenge/resources/README.md"
+            },
+            {
+              "repository": "White-cat",
+              "path": "WHITE_CAT_NASA_2026_TEAM_GUIDE.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "Опис челенджу",
+              "url": "https://www.spaceappschallenge.org/2026/challenges/space-mission-design-game/"
+            },
+            {
+              "label": "Каталог челенджів",
+              "url": "https://www.spaceappschallenge.org/2026/challenges/"
+            },
+            {
+              "label": "Матеріали для учасників",
+              "url": "https://www.spaceappschallenge.org/resources/"
+            }
+          ]
+        },
+        {
+          "id": "listed_tools",
+          "title": "GMAT, Mission Viz та Mission Design Lab",
+          "credit": "NASA Goddard · NASA / JPL.",
+          "usage": "Згадані в челенджі · не підключені",
+          "scope": "listed_only",
+          "detail": "Зазначені в ресурсах челенджу й розглянуті як довідкові інструменти. Не встановлені як рушій гри, не використовуються у поточному ігровому циклі й не позначені як завантажені набори даних.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/challenge/resources/README.md"
+            },
+            {
+              "repository": "White-cat",
+              "path": "WHITE_CAT_NASA_2026_TEAM_GUIDE.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · GMAT",
+              "url": "https://software.nasa.gov/software/GSC-19468-1"
+            },
+            {
+              "label": "NASA · Mission Viz",
+              "url": "https://nasa.github.io/mission-viz/"
+            },
+            {
+              "label": "NASA · Mission Design Lab",
+              "url": "https://etd.gsfc.nasa.gov/capabilities/integrated-design-center/mission-design-lab/"
+            },
+            {
+              "label": "JPL · CML",
+              "url": "https://dataverse.jpl.nasa.gov/dataset.xhtml?persistentId=hdl:2014/44299"
+            }
+          ]
+        },
+        {
+          "id": "educational_examples",
+          "title": "Освітні приклади NASA та CSA",
+          "credit": "NASA · Canadian Space Agency.",
+          "usage": "Освітні посилання · ресурси не запозичені",
+          "scope": "listed_only",
+          "detail": "Гра про телескопи, VR-челендж 2023 року й цифрові ігри CSA наведені в описі завдання як освітні референси. Дані, код чи графічні ресурси цих ігор до White Cat не перенесені.",
+          "source_ids": [],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/challenge/resources/README.md"
+            },
+            {
+              "repository": "White-cat",
+              "path": "WHITE_CAT_NASA_2026_TEAM_GUIDE.md"
+            }
+          ],
+          "links": [
+            {
+              "label": "NASA · гра про телескопи",
+              "url": "https://science.nasa.gov/mission/webb/game-build-it-yourself/"
+            },
+            {
+              "label": "Space Apps · VR-челендж 2023",
+              "url": "https://www.spaceappschallenge.org/2023/challenges/visualize-a-space-mission-using-virtual-reality/"
+            },
+            {
+              "label": "CSA · цифрові ігри й заняття",
+              "url": "https://www.asc-csa.gc.ca/eng/youth-educators/digital-games-and-activities.asp"
+            }
+          ]
+        },
+        {
+          "id": "dace_not_downloaded",
+          "title": "NGPPS / Bern · DACE NG76",
+          "credit": "University of Geneva · Data & Analysis Center for Exoplanets.",
+          "usage": "Не завантажено · не використано",
+          "scope": "not_downloaded",
+          "detail": "Розглянуто як можливе джерело еволюційних треків, але дані не завантажені: API потребував персонального ключа. Не входить до переліку фактично використаних наборів; наявні синтетичні системи походять з ExoVista.",
+          "source_ids": [
+            "dace_ngpps"
+          ],
+          "evidence": [
+            {
+              "repository": "White-cat",
+              "path": "data/solar_systems/formation_priors.json"
+            }
+          ],
+          "links": [
+            {
+              "label": "DACE · NG76",
+              "url": "https://dace.unige.ch/populationAnalysis/?populationId=NG76"
+            },
+            {
+              "label": "Документація DACE API",
+              "url": "https://dace-query.readthedocs.io/en/v3.0.0/dace_query.population.html"
+            }
           ]
         }
       ]
@@ -19,42 +1545,53 @@
       "title": "Зображення та моделі",
       "entries": [
         {
-          "title": "Земля · Blue Marble",
-          "credit": "NASA Earth Observatory · Reto Stöckli, Robert Simmon та команда Blue Marble.",
-          "detail": "Композитне зображення 2002 року. Масштаб Землі та освітлення в меню — художня композиція.",
-          "assets": ["res://ASS/UI/Textures/earth_nasa.jpg"],
-          "links": [
-            {"label": "NASA Earth Observatory", "url": "https://science.nasa.gov/earth/earth-observatory/the-blue-marble-true-color-global-imagery-at-1km-resolution/"}
-          ]
-        },
-        {
           "title": "Космічна станція White Cat",
           "credit": "Геометрію та атлас створено для White Cat за наданим візуальним референсом.",
           "detail": "Антену адаптовано з моделі Mars Reconnaissance Orbiter: NASA Science / NASA-JPL. Художня модель і масштаб.",
-          "assets": ["res://ASS/Station/Space_Station.glb"],
+          "assets": [
+            "res://ASS/Station/Space_Station.glb"
+          ],
           "links": [
-            {"label": "Матеріали White Cat", "url": "https://github.com/RevulerDenUA/White-cat"},
-            {"label": "NASA · модель MRO", "url": "https://science.nasa.gov/3d-resources/mars-reconnaissance-orbiter-mro-c/"}
+            {
+              "label": "Матеріали White Cat",
+              "url": "https://github.com/RevulerDenUA/White-cat"
+            },
+            {
+              "label": "NASA · модель MRO",
+              "url": "https://science.nasa.gov/3d-resources/mars-reconnaissance-orbiter-mro-c/"
+            }
           ]
         },
         {
-          "title": "Марсіанський гелікоптер White Cat",
+          "title": "Інжінюїті White Cat",
           "credit": "Геометрію та текстури створено для White Cat за наданим зображенням.",
           "detail": "Палітра узгоджена з марсоходом і станцією проєкту.",
-          "assets": ["res://ASS/Helicopter/Mars_Helicopter.glb"],
+          "assets": [
+            "res://ASS/Helicopter/Mars_Helicopter.glb"
+          ],
           "links": [
-            {"label": "Матеріали White Cat", "url": "https://github.com/RevulerDenUA/White-cat"}
+            {
+              "label": "Матеріали White Cat",
+              "url": "https://github.com/RevulerDenUA/White-cat"
+            }
           ]
         },
         {
           "title": "1987 Jeep Comanche",
           "credit": "tonielpro520 · CC BY 4.0.",
-          "detail": "Автор, джерело та ліцензія з метаданих оригінального імпорту scene.gltf.",
-          "assets": ["res://ASS/JEEP/scene.gltf"],
+          "detail": "Кредит з метаданих первинного scene.gltf. Після оновлення сцени цей файл у робочому дереві відсутній; запис не приписує його авторство новому роверу White Cat.",
           "links": [
-            {"label": "Модель на Sketchfab", "url": "https://sketchfab.com/3d-models/1987-jeep-comanche-6380330f485d4798858d9c9027b281d9"},
-            {"label": "CC BY 4.0", "url": "https://creativecommons.org/licenses/by/4.0/"}
-          ]
+            {
+              "label": "Модель на Sketchfab",
+              "url": "https://sketchfab.com/3d-models/1987-jeep-comanche-6380330f485d4798858d9c9027b281d9"
+            },
+            {
+              "label": "CC BY 4.0",
+              "url": "https://creativecommons.org/licenses/by/4.0/"
+            }
+          ],
+          "usage": "Попередній імпорт · збережена атрибуція",
+          "scope": "legacy_asset"
         }
       ]
     },
@@ -64,7 +1601,12 @@
         {
           "title": "Музика меню та звуки інтерфейсу",
           "credit": "Процедурна композиція й тони, створені для White Cat без запозичених семплів.",
-          "assets": ["res://ASS/UI/Audio/orbital_ambient.wav", "res://ASS/UI/Audio/hover.wav", "res://ASS/UI/Audio/focus.wav", "res://ASS/UI/Audio/confirm.wav"]
+          "assets": [
+            "res://ASS/UI/Audio/orbital_ambient.wav",
+            "res://ASS/UI/Audio/hover.wav",
+            "res://ASS/UI/Audio/focus.wav",
+            "res://ASS/UI/Audio/confirm.wav"
+          ]
         },
         {
           "title": "Графіка інтерфейсу",
@@ -78,28 +1620,29 @@
         {
           "title": "Onest",
           "credit": "© 2021 The Onest Project Authors · SIL Open Font License 1.1.",
-          "assets": ["res://ASS/UI/Fonts/Onest.ttf"],
+          "assets": [
+            "res://ASS/UI/Fonts/Onest.ttf"
+          ],
           "license_file": "res://ASS/UI/Fonts/Onest-OFL.txt",
-          "links": [{"label": "Проєкт Onest", "url": "https://github.com/googlefonts/onest"}]
+          "links": [
+            {
+              "label": "Проєкт Onest",
+              "url": "https://github.com/googlefonts/onest"
+            }
+          ]
         },
         {
           "title": "Barlow Condensed Semibold",
           "credit": "© 2017 The Barlow Project Authors · SIL Open Font License 1.1.",
-          "assets": ["res://ASS/UI/Fonts/BarlowCondensed-SemiBold.ttf"],
+          "assets": [
+            "res://ASS/UI/Fonts/BarlowCondensed-SemiBold.ttf"
+          ],
           "license_file": "res://ASS/UI/Fonts/BarlowCondensed-OFL.txt",
-          "links": [{"label": "Проєкт Barlow", "url": "https://github.com/jpt/barlow"}]
-        }
-      ]
-    },
-    {
-      "title": "Наукові джерела",
-      "entries": [
-        {
-          "title": "Науковий пакет White Cat",
-          "credit": "Каталог джерел NASA, JPL, PDS, USGS та інших установ зібрано в окремому репозиторії даних.",
-          "detail": "Це довідкові матеріали. Їх наявність у пакеті не означає, що всі набори вже підключені до гри.",
           "links": [
-            {"label": "Повний каталог джерел", "url": "https://github.com/RevulerDenUA/White-cat/blob/main/data/sources.json"}
+            {
+              "label": "Проєкт Barlow",
+              "url": "https://github.com/jpt/barlow"
+            }
           ]
         }
       ]
@@ -111,7 +1654,12 @@
           "title": "Godot Engine",
           "credit": "Godot Engine contributors · Juan Linietsky та Ariel Manzur. Ліцензія MIT.",
           "runtime_license": "godot",
-          "links": [{"label": "Godot Engine", "url": "https://godotengine.org/"}]
+          "links": [
+            {
+              "label": "Godot Engine",
+              "url": "https://godotengine.org/"
+            }
+          ]
         },
         {
           "title": "Сторонні компоненти Godot",
@@ -120,5 +1668,6 @@
         }
       ]
     }
-  ]
+  ],
+  "audit_date": "2026-11-15"
 }

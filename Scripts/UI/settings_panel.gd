@@ -211,6 +211,7 @@ func _show_category(index: int) -> void:
 		6:
 			var credits := CreditsView.new()
 			credits.license_requested.connect(_open_license)
+			credits.document_requested.connect(_open_license)
 			_content.add_child(credits)
 	_scroll.scroll_vertical = 0
 	if restore_focus:
