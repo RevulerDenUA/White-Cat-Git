@@ -20,26 +20,41 @@ public struct PlanetData
 
 	public float Radius;
 	public float Gravity;
+
+	public float Mass;
 	public float Temperature;
+
+
 }
+
 
 public partial class SystemValues : Node3D
 {
 	// Allows other scripts to access the Inspector values on this node
 	public static SystemValues Instance { get; private set; } = new SystemValues();
 
+	public const float Gvalues = 6.67430f;
+
+
 	[Export] public int SystemSeed = 12345;
 	[Export] public int PlanetCount = 1;
 	[Export] public float MeshBaseRadius = 1.0f;
+
+
+	public void CalculateGravity(ref PlanetData dat)
+	{
+		float halfRadius = Mathf.Max(dat.Radius * 0.5f, 0.001f);
+		dat.Gravity = SystemValues.Gvalues * (dat.Mass / (halfRadius * halfRadius));
+	}
 
 
 	public static int Getplanet(int seed)
 	{
 		
 	RandomNumberGenerator rng = new RandomNumberGenerator();
-    rng.Seed = (ulong)Mathf.Abs(seed);
-    rng.Randi(); 
-    int count = rng.RandiRange(1, 9);
+	rng.Seed = (ulong)Mathf.Abs(seed);
+	rng.Randi(); 
+	int count = rng.RandiRange(1, 9);
 
 	GD.Print(count);
 

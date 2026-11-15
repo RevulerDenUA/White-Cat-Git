@@ -53,7 +53,7 @@ shader_parameter/reticle_alpha = 0.55
 [node name="Node3D" type="Node3D" unique_id=957672029]
 
 [node name="CharacterBody3D" parent="." unique_id=1208391488 node_paths=PackedStringArray("ExitPoint") instance=ExtResource("1_3ustj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05016011, 1.8825481, 13.729987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05016011, 2.0534465, 13.729987)
 ExitPoint = NodePath("DoorTrigger/ExitPoint")
 
 [node name="CollisionShape3D2" parent="CharacterBody3D" index="2" unique_id=205312687]
@@ -142,12 +142,11 @@ color = Color(1, 1, 1, 0)
 [node name="SpectatorMode" type="Camera3D" parent="." unique_id=1258418072]
 script = ExtResource("3_kmbin")
 
-[node name="CameraControl" type="Node3D" parent="." unique_id=1429019729 node_paths=PackedStringArray("Cameras", "ColorCameras", "SpecCamera", "Filter")]
+[node name="CameraControl" type="Node3D" parent="." unique_id=1429019729 node_paths=PackedStringArray("Cameras", "SpecCamera")]
 script = ExtResource("4_kmbin")
 Cameras = [NodePath("../CharacterBody3D/CarCamera"), NodePath("../CharacterBody3D/CarCamera2"), null, NodePath("../FlyingJeep/CamBW"), NodePath("../FlyingJeep/CamColor")]
 ColorCameras = [NodePath("../FlyingJeep/CamColor")]
 SpecCamera = NodePath("../SpectatorMode")
-Filter = NodePath("../Shader/Filter")
 
 [node name="DrillManager" type="Node3D" parent="." unique_id=1730255001]
 script = ExtResource("drill_mgr")
