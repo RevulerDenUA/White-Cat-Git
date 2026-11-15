@@ -1,16 +1,10 @@
 [gd_scene format=3 uid="uid://7xye8xkp5v31"]
 
 [ext_resource type="Script" uid="uid://yfaks876t78r" path="res://Scripts/TerrainWorld.cs" id="1_d48c2"]
+[ext_resource type="Script" uid="uid://wx54acoirnn" path="res://Scripts/DirectionalLight3d.cs" id="2_3hs8j"]
 [ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="3_m50oi"]
 [ext_resource type="PackedScene" path="res://Scene/Rover.tscn" id="4_3hs8j"]
-[ext_resource type="Script" uid="uid://dlxdo8fpkeuo6" path="res://Scripts/SpectatorMode/SpectatorMode.cs" id="5_spec"]
 [ext_resource type="Shader" uid="uid://bdrf3l2s7ry0e" path="res://shader/MahNutsHurt.gdshader" id="6_s8iv6"]
-[ext_resource type="PackedScene" path="res://Scene/Command/CommandRoom.tscn" id="8_room"]
-[ext_resource type="Script" path="res://Scripts/Command/RemoteVehicle.cs" id="9_remote"]
-[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Rover/01_front.png" id="10_rover_front"]
-[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Rover/02_left.png" id="11_rover_side"]
-[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Ingenuity/01_front.png" id="12_ingenuity_front"]
-[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Ingenuity/05_top.png" id="13_ingenuity_top"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m50oi"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -23,7 +17,7 @@ sky_material = SubResource("ProceduralSkyMaterial_m50oi")
 background_mode = 2
 sky = SubResource("Sky_jugq3")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_b2g0b"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3hs8j"]
 shader = ExtResource("6_s8iv6")
 shader_parameter/color_mode = false
 shader_parameter/chroma_shift = 6.0
@@ -53,6 +47,7 @@ shader_parameter/reticle_alpha = 0.55
 
 [node name="WorldGen" type="Node3D" unique_id=1762984832 node_paths=PackedStringArray("Player", "FogEnvironment")]
 script = ExtResource("1_d48c2")
+Seed = 12348
 Player = NodePath("Rover")
 HeightScale = 10.0
 FogEnvironment = NodePath("WorldEnvironment")
@@ -60,39 +55,27 @@ FogEnvironment = NodePath("WorldEnvironment")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=353566445]
 environment = SubResource("Environment_3hs8j")
 
-[node name="SpectatorMode" type="Camera3D" parent="." unique_id=329043058]
-transform = Transform3D(1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 12, 30)
-script = ExtResource("5_spec")
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1386947868]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+script = ExtResource("2_3hs8j")
 
-[node name="CommandRoom" parent="." instance=ExtResource("8_room")]
-
-[node name="CameraControl" type="Node" parent="." node_paths=PackedStringArray("RoomView", "SpecCamera", "Filter")]
+[node name="CameraControl" type="Node3D" parent="." unique_id=329043057 node_paths=PackedStringArray("Cameras", "Filter")]
 script = ExtResource("3_m50oi")
-RoomView = NodePath("../CommandRoom")
-SpecCamera = NodePath("../SpectatorMode")
+Cameras = [NodePath("../Rover/CarCamera"), NodePath("../Rover/CarCamera2")]
 Filter = NodePath("../Shader/Filter")
 
 [node name="Rover" parent="." unique_id=73140632 instance=ExtResource("4_3hs8j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05016011, 2.0534465, 13.729987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.963835, 0)
+collision_mask = 1
 
-[node name="RemoteVehicle" type="Node" parent="Rover" node_paths=PackedStringArray("Vehicle", "Cameras")]
-script = ExtResource("9_remote")
-TargetId = "rover"
-DisplayName = "Марсохід"
-Vehicle = NodePath("..")
-Cameras = [NodePath("../CarCamera"), NodePath("../CarCamera2")]
-RecoverOnRelease = true
-IdentificationImages = [ExtResource("10_rover_front"), ExtResource("11_rover_side")]
+[node name="Shader" type="CanvasLayer" parent="." unique_id=315058984]
+visible = false
 
-[node name="Shader" type="CanvasLayer" parent="." unique_id=2061094753]
-
-[node name="Filter" type="ColorRect" parent="Shader" unique_id=657333048]
-material = SubResource("ShaderMaterial_b2g0b")
+[node name="Filter" type="ColorRect" parent="Shader" unique_id=775133974]
+material = SubResource("ShaderMaterial_3hs8j")
 use_parent_material = true
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+offset_right = 40.230118
+offset_bottom = 40.0
+scale = Vector2(47.80001, 27.080002)
 color = Color(1, 1, 1, 0)
