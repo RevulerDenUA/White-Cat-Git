@@ -283,9 +283,12 @@ func execute_command(command: String) -> void:
 	if parts.size() == 1 and parts[0].to_lower() == "help":
 		_show_help()
 	elif parts.size() == 2 and parts[0].to_lower() == "connect":
-		var error: String = controller.connect_target(parts[1])
+		# Апарати шатла висаджуються на його планету; тестовий полігон кімнати недоступний.
+		var error: String = controller.connect_shuttle(parts[1])
 		if not error.is_empty():
 			terminal.write_line(error)
+		else:
+			terminal.write_line("Висадка…")
 	elif parts.size() == 1 and parts[0].to_lower() == "telescope":
 		var telescope_error := open_telescope()
 		if not telescope_error.is_empty():
@@ -296,18 +299,22 @@ func execute_command(command: String) -> void:
 		terminal.write_line("Невідома команда або зайві аргументи. Доступні команди — у help.")
 
 func _show_help() -> void:
-	terminal.write_line("help — апарати та камери\nconnect апарат — камера і керування\nconnect апарат/камера — вибір конкретної камери\ntelescope — телескоп: планета й апарат для висадки\nfullscreen — термінал на весь екран (%s)\nEsc — до кімнати\n" % _binding(FULLSCREEN_ACTION))
-	var targets: Array = controller.catalog()
-	if targets.is_empty():
-		terminal.write_line("Підключених апаратів немає.")
-	for target: Dictionary in targets:
-		terminal.write_line("%s — %s" % [target["id"], target["name"]])
-		if target["cameras"].is_empty():
-			terminal.write_line("  Камери не підключено.")
-		else:
-			terminal.write_line("  connect " + str(target["id"]))
-		for camera: Dictionary in target["cameras"]:
-			terminal.write_line("  connect " + str(camera["address"]))
+	terminal.write_line("help — апарати та камери
+connect апарат — висадити апарат на планету шатла
+connect апарат/камера — з вибором камери
+telescope — телескоп: планета й апарат для висадки
+fullscreen — термінал на весь екран (%s)
+Esc — до кімнати
+" % _binding(FULLSCREEN_ACTION))
+	var place: String = controller.shuttle_location()
+	terminal.write_line("Шатл: " + (place if not place.is_empty() else "на орбіті — спершу виберіть планету в telescope"))
+	for target: Dictionary in controller.shuttle_catalog():
+		terminal.write_line("%s — %s, %s" % [target["id"], target["name"], target["state"]])
+		if not target["available"]:
+			continue
+		terminal.write_line("  connect " + str(target["id"]))
+		for address: String in target["cameras"]:
+			terminal.write_line("  connect " + address)
 
 func _registry_changed() -> void:
 	if terminal != null and terminal.visible:

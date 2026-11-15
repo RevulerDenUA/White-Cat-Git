@@ -72,7 +72,9 @@ public partial class PlanetSession : Node
 		if (_vehicles.TryGetValue(_active, out RemoteVehicle chosen) && RemoteVehicle.IsLive(chosen.Vehicle))
 		{
 			Terrain.Player = chosen.Vehicle; // шматки рельєфу вантажаться навколо керованого апарата
-			string error = Controller?.connect_target(_active) ?? "Немає контролера керування.";
+			string address = ShuttleState.PendingCamera != "" ? $"{_active}/{ShuttleState.PendingCamera}" : _active;
+			string error = Controller?.connect_target(address) ?? "Немає контролера керування.";
+			if (error != "" && address != _active) error = Controller.connect_target(_active); // камери немає — перша
 			if (error != "") _status = error;
 		}
 		else _status = "Апарата немає в сцені.";

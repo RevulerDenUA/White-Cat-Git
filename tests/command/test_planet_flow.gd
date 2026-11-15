@@ -61,6 +61,17 @@ func wait_scene(path: String) -> bool:
 
 func _run() -> void:
 	await open_shuttle_scene("res://Scene/A.tscn")
+	# connect із термінала не дає тестовий полігон; поки шатл на орбіті — відмова з підказкою
+	var shuttle_room: Node = current_scene.get_node("CommandRoom")
+	current_scene.get_node("CameraControl").open_terminal()
+	await frames()
+	shuttle_room.execute_command("connect rover")
+	await frames(6)
+	check(current_scene.scene_file_path == "res://Scene/A.tscn", "connect left the shuttle with no planet")
+	check(current_scene.get_node("CameraControl").snapshot()["target_id"] == "", "connect reached the test ground rover")
+	check("telescope" in shuttle_room.terminal.output.text, "connect without a planet did not point to telescope")
+	current_scene.get_node("CameraControl").return_to_room()
+	await frames()
 	# Телескоп будується заздалегідь, прихованим
 	var preloaded: Control = current_scene.get_node("CommandRoom").find_child("Telescope", true, false)
 	check(preloaded != null and not preloaded.visible, "telescope is not preloaded hidden")
@@ -180,6 +191,18 @@ func _run() -> void:
 	if rover != null:
 		check(rover.global_position.distance_to(parked) < 2.0, "parked rover moved: %s vs %s" % [rover.global_position, parked])
 	check(world.get_node("CameraControl").snapshot()["target_id"] == "ingenuity", "drone not connected on relaunch")
+
+	# connect із термінала шатла висаджує на планету шатла, з вибраною камерою
+	await key(KEY_ESCAPE)
+	check(await wait_scene("res://Scene/A.tscn"), "Esc did not return to the shuttle")
+	var room: Node = current_scene.get_node("CommandRoom")
+	current_scene.get_node("CameraControl").open_terminal()
+	await frames()
+	room.execute_command("connect ingenuity/cambw")
+	check(await wait_scene("res://Scene/WorldGen.tscn"), "terminal connect did not land on the shuttle planet")
+	var snap: Dictionary = current_scene.get_node("CameraControl").snapshot()
+	check(snap["target_id"] == "ingenuity" and snap["camera_id"] == "cambw", "terminal connect ignored the camera: %s" % snap)
+	check(current_scene.get_node_or_null("Rover") != null, "parked rover missing after terminal connect")
 	_finish()
 
 func _veins(world: Node) -> int:

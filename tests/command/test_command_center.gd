@@ -81,7 +81,8 @@ func _run() -> void:
 	check(room.get_display_viewport().gui_get_focus_owner() == room.terminal.entry, "Terminal did not focus command input")
 	check(root.get_camera_3d() == room.view_camera, "Opening terminal changed the scene camera")
 	room.terminal.entry.text_submitted.emit("help")
-	check("connect rover" in room.terminal.output.text and "ingenuity/camcolor" in room.terminal.output.text, "help did not list real vehicle/camera addresses")
+	# Шатл на орбіті: help показує апарати шатла й підказує telescope, адрес для висадки ще немає
+	check("rover" in room.terminal.output.text and "ingenuity" in room.terminal.output.text and "telescope" in room.terminal.output.text, "help did not list shuttle vehicles")
 	key(KEY_W, true, 119)
 	key(KEY_C, true, 99)
 	await frames()
@@ -89,7 +90,13 @@ func _run() -> void:
 	check(is_zero_approx(game.get_node("CharacterBody3D").engine_force), "Typing in terminal applied engine force")
 	check(game.get_node("FlyingJeep").velocity.is_zero_approx(), "Typing in terminal moved ingenuity")
 	key(KEY_C, false)
+	# Тестовий полігон із термінала недоступний: connect веде тільки на планету шатла
 	room.terminal.entry.text_submitted.emit("connect rover")
+	await frames()
+	check(controller.snapshot()["context"] == "terminal" and controller.snapshot()["target_id"] == "", "Terminal connect reached the test ground vehicle")
+	check("telescope" in room.terminal.output.text, "Terminal connect without a planet did not explain what to do")
+	# Перевірки відеопотоку на моніторі — через API контролера (тільки для автотестів)
+	controller.connect_target("rover")
 	await frames()
 	check(controller.snapshot()["target_id"] == "rover", "connect did not grant vehicle control")
 	check(not controller.snapshot()["input_armed"], "Held terminal movement key leaked into piloting")

@@ -207,6 +207,35 @@ public partial class CameraControl : Node
 		return "";
 	}
 
+	// Термінал шатла: «connect» висаджує апарат на планету шатла (той самий шлях, що й телескоп).
+	// Тестові апарати сцени кімнати лишаються доступні тільки через connect_target (автотести).
+	public string connect_shuttle(string address)
+	{
+		string error = ShuttleState.CheckConnect(address, out string vehicle, out string camera);
+		if (error != "") return error;
+		string scene = GetTree().CurrentScene?.SceneFilePath ?? "";
+		// зміна сцени одразу прибирає поточну з дерева — після обробки команди
+		Callable.From(() => ShuttleState.Launch(GetTree(), ShuttleState.Planet, vehicle, scene, camera)).CallDeferred();
+		return "";
+	}
+
+	// Апарати шатла для help: id, name, state, cameras (адреси)
+	public Godot.Collections.Array<GDictionary> shuttle_catalog()
+	{
+		var result = new Godot.Collections.Array<GDictionary>();
+		foreach (string id in ShuttleState.VehicleIds)
+		{
+			var cameras = new Godot.Collections.Array<string>();
+			foreach (string cam in ShuttleState.VehicleCameras[id]) cameras.Add(id + "/" + cam);
+			string state = ShuttleState.IsOutside(id) ? "на поверхні" : "у шатлі";
+			result.Add(new GDictionary { ["id"] = id, ["name"] = ShuttleState.VehicleName(id), ["state"] = state,
+				["cameras"] = cameras, ["available"] = ShuttleState.HasPlanet && ShuttleState.CanLaunch(ShuttleState.Planet, id) == "" });
+		}
+		return result;
+	}
+
+	public string shuttle_location() => ShuttleState.HasPlanet ? PlanetSelector.PlanetName(ShuttleState.Planet) : "";
+
 	public void open_terminal()
 	{
 		if (GameData.Context != ControlContext.Room) return;

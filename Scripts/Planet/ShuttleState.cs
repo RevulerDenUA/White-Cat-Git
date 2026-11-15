@@ -13,11 +13,19 @@ public static class ShuttleState
 
 	public static readonly string[] VehicleIds = { RoverId, IngenuityId };
 
+	// Камери апаратів у сцені планети (імена вузлів у нижньому регістрі, як у RemoteVehicle.CameraId)
+	public static readonly Dictionary<string, string[]> VehicleCameras = new()
+	{
+		[RoverId] = new[] { "carcamera", "carcamera2" },
+		[IngenuityId] = new[] { "camcolor", "cambw" },
+	};
+
 	public static bool HasPlanet { get; private set; }
 	public static PlanetData Planet { get; private set; }
 
 	// Апарат, яким гравець керуватиме після завантаження сцени планети
 	public static string PendingVehicle { get; private set; } = "";
+	public static string PendingCamera { get; private set; } = ""; // порожньо — перша камера апарата
 
 	// Куди повертатись з планети (сцена з командною кімнатою, звідки запустили)
 	public static string ReturnScene { get; private set; } = "res://Scene/A.tscn";
@@ -60,7 +68,7 @@ public static class ShuttleState
 	}
 
 	// Летимо (або лишаємось на тій самій планеті) і передаємо керування апарату
-	public static string Launch(SceneTree tree, PlanetData target, string vehicleId, string returnScene)
+	public static string Launch(SceneTree tree, PlanetData target, string vehicleId, string returnScene, string cameraId = "")
 	{
 		string error = CanLaunch(target, vehicleId);
 		if (error != "") return error;
@@ -74,8 +82,30 @@ public static class ShuttleState
 
 		if (!string.IsNullOrEmpty(returnScene)) ReturnScene = returnScene;
 		PendingVehicle = vehicleId;
+		PendingCamera = cameraId ?? "";
 		CurrentGen.SavePlanetForTransition(target);
 		tree.ChangeSceneToFile(PlanetScene);
+		return "";
+	}
+
+	// Команда термінала «connect апарат[/камера]»: апарат висаджується на планету, де стоїть шатл.
+	// Тестовий полігон кімнати гравцю недоступний. Порожній рядок — можна летіти.
+	public static string CheckConnect(string address, out string vehicleId, out string cameraId)
+	{
+		vehicleId = cameraId = "";
+		string[] parts = (address ?? "").Trim().ToLowerInvariant().Split('/');
+		if (parts.Length > 2 || parts[0] == "")
+			return "Формат: connect апарат або connect апарат/камера.";
+		if (!VehicleCameras.TryGetValue(parts[0], out string[] cameras))
+			return $"Апарат не знайдено. Доступні: {string.Join(", ", VehicleIds)}.";
+		if (parts.Length == 2 && System.Array.IndexOf(cameras, parts[1]) < 0)
+			return "Камеру не знайдено. Доступні адреси — у help.";
+		if (!HasPlanet)
+			return "Шатл ще на орбіті. Спершу виберіть планету в telescope.";
+		string error = CanLaunch(Planet, parts[0]);
+		if (error != "") return error;
+		vehicleId = parts[0];
+		cameraId = parts.Length == 2 ? parts[1] : "";
 		return "";
 	}
 
@@ -85,6 +115,7 @@ public static class ShuttleState
 		HasPlanet = false;
 		Planet = default;
 		PendingVehicle = "";
+		PendingCamera = "";
 		_outside.Clear();
 	}
 }
