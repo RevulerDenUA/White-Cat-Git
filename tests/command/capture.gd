@@ -4,6 +4,7 @@ func _initialize() -> void:
 func _run() -> void:
 	var size := Vector2i(1600, 900)
 	var mode := "room"
+	var scene := "res://Scene/A.tscn"
 	var path := "/tmp/white-cat-command-room.png"
 	for arg: String in OS.get_cmdline_user_args():
 		if arg.begins_with("--size="):
@@ -11,6 +12,8 @@ func _run() -> void:
 			size = Vector2i(int(parts[0]), int(parts[1]))
 		elif arg.begins_with("--mode="):
 			mode = arg.trim_prefix("--mode=")
+		elif arg.begins_with("--scene="):
+			scene = arg.trim_prefix("--scene=")
 		elif arg.begins_with("--output="):
 			path = arg.trim_prefix("--output=")
 	var viewport := SubViewport.new()
@@ -22,7 +25,7 @@ func _run() -> void:
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	viewport.msaa_3d = Viewport.MSAA_2X
 	root.add_child(viewport)
-	var game: Node = load("res://Scene/A.tscn").instantiate()
+	var game: Node = load(scene).instantiate()
 	viewport.add_child(game)
 	await create_timer(1.0).timeout
 	var controller: Node = game.get_node("CameraControl")

@@ -1,0 +1,20 @@
+        // ==========================================
+        if (d.Type == "GasGigant")
+        {
+            mainNoise.Frequency = 0.035f;
+            mainMat.Uv1Scale = new Vector3(1.2f, 6.0f, 1.2f); // More, thinner gas bands
+            mainMat.Roughness = 1.0f;
+
+            cloudNoise.Frequency = 0.05f;
+            cloudMat.Uv1Scale = new Vector3(2.5f, 5.0f, 2.5f); // Many small storm bands
+        }
+        else if (d.Type == "Rocky")
+        {
+            mainNoise.Frequency = 0.045f;
+            mainNoise.FractalOctaves = 5;
+            mainMat.Uv1Scale = new Vector3(2.5f, 2.5f, 2.5f); // Smaller, more numerous continents
+            mainMat.Roughness = 0.85f;
+
+            cloudNoise.Frequency = 0.06f;
+            cloudMat.Uv1Scale = new Vector3(3.5f, 3.5f, 3.5f); // Fits 4x more clouds on the planet
+        }

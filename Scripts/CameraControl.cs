@@ -43,6 +43,7 @@ public partial class CameraControl : Node
 		GameData.InputArmed = false;
 		GameData.CameraIndex = -1;
 		GameData.Context = ControlContext.Room;
+		ControlInput.Reset();
 		_filterMat = Filter?.Material as ShaderMaterial;
 		if (RemoteVehicle.IsLive(RoomView) && RoomView.HasMethod("get_room_camera"))
 			_roomCamera = RoomView.Call("get_room_camera").AsGodotObject() as Camera3D;
@@ -160,6 +161,7 @@ public partial class CameraControl : Node
 		["camera_name"] = RemoteVehicle.IsLive(_camera) && _active != null ? _camera.Name.ToString() : "",
 		["input_armed"] = GameData.InputArmed,
 		["vertical_control"] = RemoteVehicle.IsLive(_active) && _active.SupportsVerticalControl,
+		["look_control"] = _camera is VehicleCamera camera && camera.EnableLook,
 		["identification_images"] = RemoteVehicle.IsLive(_active) ? _active.IdentificationImages : new Godot.Collections.Array<Texture2D>(),
 	};
 
@@ -189,6 +191,7 @@ public partial class CameraControl : Node
 		GameData.Context = ControlContext.Vehicle;
 		GameData.CameraIndex = cameras.IndexOf(chosen);
 		GameData.InputArmed = false;
+		ControlInput.Reset();
 		chosen.MakeCurrent();
 		Input.MouseMode = Input.MouseModeEnum.Visible;
 		EmitSignal(SignalName.SessionChanged);
@@ -220,6 +223,7 @@ public partial class CameraControl : Node
 
 	private void ReleaseTarget()
 	{
+		ControlInput.Reset();
 		RemoteVehicle previous = _active;
 		_active = null;
 		GameData.ActiveVehicle = null;
@@ -281,6 +285,7 @@ public partial class CameraControl : Node
 			|| (GameData.Context != ControlContext.Vehicle && GameData.Context != ControlContext.Spectator)) return;
 		foreach (string action in MovementActions)
 			if (InputMap.HasAction(action) && Input.IsActionPressed(action)) return;
+		ControlInput.Reset();
 		GameData.InputArmed = true;
 		EmitSignal(SignalName.SessionChanged);
 	}
@@ -289,6 +294,7 @@ public partial class CameraControl : Node
 	{
 		if (what != NotificationApplicationFocusOut || !GameData.InputArmed) return;
 		GameData.InputArmed = false;
+		ControlInput.Reset();
 		EmitSignal(SignalName.SessionChanged);
 	}
 
@@ -318,6 +324,7 @@ public partial class CameraControl : Node
 			_settings.Disconnect("changed", _settingsCallback);
 		foreach (RemoteVehicle target in new List<RemoteVehicle>(_watchers.Keys)) Unwatch(target);
 		_targets.Clear();
+		ControlInput.Reset();
 		GameData.ActiveVehicle = null;
 		GameData.InputArmed = false;
 		GameData.Context = ControlContext.Room;

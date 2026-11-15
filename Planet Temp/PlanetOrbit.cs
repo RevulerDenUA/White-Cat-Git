@@ -2,6 +2,8 @@ using Godot;
 
 public partial class PlanetOrbit : Node3D
 {
+	[Export] public string TargetScenePath = "res://planet_tweak.tscn"; // Path to the splanet node
+	[Export] public WorldEnvironment WorldEnv;
 	[Export] public Node3D StarNode;
 	[Export] public Node3D OrbitRingMesh;
 	[Export] public Node3D PlanetNode;
@@ -18,12 +20,21 @@ public partial class PlanetOrbit : Node3D
 	private float _speed = 0.1f;
 	private float _angleE = 0.0f;
 
+	public double timerultra = 0.0f;
+
+	public bool dimed = false;
+
+	public void _on_local_planet_tree_entered ()
+	{
+	SystemValues.Instance.PlanetCount = SystemValues.Getplanet(SystemValues.Instance.SystemSeed);
+	}
+
 	public override void _Ready()
 	{
 		donotopen();
 	}
 
-	public void donotopen()
+public void donotopen()
 	{
 		if (!_isClone)
 			SystemValues.Planets.Clear();
@@ -44,12 +55,23 @@ public partial class PlanetOrbit : Node3D
 		_angleE = rng.RandfRange(0.0f, Mathf.Tau);
 
 		SetupOrbit(Data);
+
+		// [1] Connect the Area3D trigger right here after the planet is set up
+		if (PlanetNode != null)
+		{
+			Area3D trigger = PlanetNode.GetNodeOrNull<Area3D>("Area3D");
+			if (trigger != null)
+			{
+				trigger.AreaEntered += OnTriggerEntered;
+				trigger.BodyEntered += OnTriggerEntered;
+			}
+		}
+
 		SystemValues.Planets.Add(this);
 
 		if (!_isClone && count > 1)
 			SpawnClones(count - 1);
 	}
-
 	public void SpawnClones(int extraCount)
 	{
 		SystemValues.SpawnClones(this, extraCount);
@@ -76,13 +98,62 @@ public partial class PlanetOrbit : Node3D
 			AphelionPoint.Position = new Vector3(-d.Aphelion, 0f, 0f);
 
 		if (PlanetNode != null)
-			PlanetNode.Scale = Vector3.One * d.Radius;
+		{
 
+			// [1] Squish based on rotation speed
+			PlanetNode.Scale = new Vector3(d.Radius, d.Radius * d.Squish, d.Radius);
+
+			// Tilt the planet's poles
+			PlanetNode.RotationDegrees = new Vector3(0f, 0f, d.AxialTilt);
+
+			PlanetPackets.ApplyTexture(PlanetNode, d); 
+		}
 		RotationDegrees = new Vector3(d.Inclination, d.OrbitYaw, 0f);
+	}
+
+	// Fires when a PhysicsBody3D or Area3D touches the planet's Area3D
+	private void OnTriggerEntered(Node3D other)
+	{
+		if (!other.IsInGroup("Player") && (other.GetParent() == null || !other.GetParent().IsInGroup("Player")))
+			return;
+
+		CurrentGen.SavePlanetForTransition(this.Data);
+
+		CallDeferred(MethodName.SwitchToPlanetNode);
+	}
+
+	// Unloads the current solar system and switches to the new node/scene
+	private void SwitchToPlanetNode()
+	{
+		GetTree().ChangeSceneToFile(TargetScenePath);
 	}
 
 	public override void _Process(double delta)
 	{
+
+	if (!_isClone && WorldEnv?.Environment != null)
+		{
+			if (timerultra <= 0)
+			{
+				if (dimed)
+				{
+					WorldEnv.Environment.BackgroundEnergyMultiplier = 1.0f;
+					dimed = false;
+					timerultra = 0.1;
+				}
+				else
+				{
+					WorldEnv.Environment.BackgroundEnergyMultiplier = 0.8f;
+					dimed = true; // <-- THIS WAS MISSING
+					timerultra = 0.1;
+				}
+			}
+			else
+			{
+				timerultra -= delta;
+			}
+		}
+
 		if (PlanetNode == null) return;
 
 		float dt = (float)(delta * SystemValues.WarpSpeed);

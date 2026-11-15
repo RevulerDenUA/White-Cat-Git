@@ -19,6 +19,12 @@ const ACTIONS := [
 	["righty", "Поворот праворуч", "Техніка", KEY_D],
 	["spacy", "Підйом апарата", "Техніка", KEY_SPACE],
 	["flight_descend", "Зниження апарата", "Техніка", KEY_SHIFT],
+	["CameraLeft", "Огляд ліворуч", "Техніка", KEY_LEFT],
+	["CameraRight", "Огляд праворуч", "Техніка", KEY_RIGHT],
+	["DrillPlace", "Схема бура / скасувати", "Техніка", KEY_B],
+	["DrillConfirm", "Установити бур", "Техніка", KEY_ENTER],
+	["interact", "Зібрати ресурси", "Техніка", KEY_G],
+	["DrillPickup", "Розібрати бур (утримувати)", "Техніка", KEY_X],
 	["CameraChange", "Наступна камера", "Загальні", KEY_C],
 	["SpectatorMode", "Вільна камера (розробка)", "Загальні", KEY_F],
 	["spectator_forward", "Рух уперед", "Вільна камера", KEY_W],
@@ -36,6 +42,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_ensure_buses()
 	var file := ConfigFile.new()
+	var saved_bindings := {}
 	if file.load(PATH) == OK:
 		for key: String in DEFAULTS:
 			var stored: Variant = file.get_value("settings", key, DEFAULTS[key])
@@ -45,7 +52,10 @@ func _ready() -> void:
 			var code := int(file.get_value("bindings", action, bindings[action]))
 			if code > 0 and code != KEY_ESCAPE and code < (1 << 25):
 				bindings[action] = code
+				if file.has_section_key("bindings", action):
+					saved_bindings[action] = true
 	values = validated(values)
+	_preserve_saved_bindings(saved_bindings)
 	_normalize_bindings()
 	apply_all()
 
@@ -71,6 +81,17 @@ static func validated(input: Dictionary) -> Dictionary:
 	var resolution: Vector2i = result["resolution"]
 	result["resolution"] = Vector2i(clampi(resolution.x, 960, 7680), clampi(resolution.y, 540, 4320))
 	return result
+
+func _preserve_saved_bindings(saved: Dictionary) -> void:
+	# A newly added default must not erase an existing player's custom shortcut.
+	for row: Array in ACTIONS:
+		var action: String = row[0]
+		if saved.has(action) or binding_conflict(action, bindings[action], bindings).is_empty():
+			continue
+		for code: int in [row[3], KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_0, KEY_F1, KEY_F2, KEY_F3, KEY_F4, KEY_F5, KEY_F6, KEY_F7, KEY_F8, KEY_F9, KEY_F10, KEY_F11, KEY_F12]:
+			if binding_conflict(action, code, bindings).is_empty():
+				bindings[action] = code
+				break
 
 func _normalize_bindings() -> void:
 	for row: Array in ACTIONS:

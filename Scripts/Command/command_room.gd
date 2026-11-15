@@ -260,6 +260,8 @@ func _sync_session() -> void:
 		if state["vertical_control"]:
 			movement += "   %s / %s — підйом / зниження" % [UserSettings.binding_text("spacy"), UserSettings.binding_text("flight_descend")]
 		_controls.text = "%s\n%s — камера   Esc — до кімнати" % [movement, UserSettings.binding_text("CameraChange")]
+		if state["look_control"]:
+			_controls.text += "   %s / %s — огляд" % [UserSettings.binding_text("CameraLeft"), UserSettings.binding_text("CameraRight")]
 		if not state["input_armed"]:
 			_controls.text += "   Відпустіть клавіші руху"
 	elif context == "spectator":

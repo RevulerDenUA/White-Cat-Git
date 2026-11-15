@@ -28,12 +28,12 @@ public partial class FlyingJeep : CharacterBody3D
 		float forward = 0f, turn = 0f, vertical = 0f;
 		if (controlled)
 		{
-			if (Input.IsActionPressed("forwardy")) forward += 1f;
-			if (Input.IsActionPressed("backwardy")) forward -= 1f;
-			if (Input.IsActionPressed("lefty")) turn += 1f;
-			if (Input.IsActionPressed("righty")) turn -= 1f;
-			if (Input.IsActionPressed("spacy")) vertical += 1f;
-			if (Input.IsActionPressed("flight_descend")) vertical -= 1f;
+			if (ControlInput.IsPressed("forwardy")) forward += 1f;
+			if (ControlInput.IsPressed("backwardy")) forward -= 1f;
+			if (ControlInput.IsPressed("lefty")) turn += 1f;
+			if (ControlInput.IsPressed("righty")) turn -= 1f;
+			if (ControlInput.IsPressed("spacy")) vertical += 1f;
+			if (ControlInput.IsPressed("flight_descend")) vertical -= 1f;
 		}
 
 		RotateY(turn * FlyJeepData.TurnSpeed * dt);

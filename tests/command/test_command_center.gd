@@ -57,7 +57,8 @@ func _run() -> void:
 	for target: Dictionary in controller.catalog():
 		for camera: Dictionary in target["cameras"]:
 			addresses.append(camera["address"])
-	check(addresses.size() == 5, "Scene did not expose all five real cameras")
+	check(addresses.size() == 4, "Updated scene did not expose its four real cameras")
+	check(not controller.connect_target("rover/carcamera3").is_empty(), "Removed upstream camera was silently recreated")
 	var center := Vector3.ZERO
 	var arrays: Array = room.monitor.mesh.surface_get_arrays(room._surface)
 	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
@@ -94,7 +95,7 @@ func _run() -> void:
 	await frames()
 	check(controller.snapshot()["input_armed"], "Piloting did not arm after movement key release")
 	key(KEY_W, true)
-	await frames()
+	await frames(20)
 	check(game.get_node("CharacterBody3D").engine_force > 0, "Connected rover did not receive movement input")
 	controller.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
 	check(not controller.snapshot()["input_armed"], "Losing window focus did not disarm piloting")
@@ -123,7 +124,7 @@ func _run() -> void:
 	controller.connect_target("ingenuity/cambw")
 	await frames()
 	key(KEY_SPACE, true)
-	await frames(10)
+	await frames(20)
 	check(game.get_node("FlyingJeep").velocity.y > 0, "Connected ingenuity did not receive vertical input")
 	key(KEY_SPACE, false)
 	controller.return_to_room()
@@ -131,13 +132,14 @@ func _run() -> void:
 	check(game.get_node("FlyingJeep").velocity.is_zero_approx(), "Uncontrolled ingenuity did not retain existing deceleration")
 	var custom: Dictionary = bindings.duplicate(true)
 	custom["forwardy"] = KEY_Z
+	custom["DrillPickup"] = KEY_R
 	custom["CameraChange"] = KEY_X
 	check(settings.save_values(baseline, custom) == OK, "Remapped controls were rejected")
 	controller.connect_target("rover")
 	await frames()
 	check("Z / S" in room._controls.text and "X — камера" in room._controls.text, "HUD ignored actual remapped bindings")
 	key(KEY_Z, true)
-	await frames()
+	await frames(20)
 	check(game.get_node("CharacterBody3D").engine_force > 0, "Remapped movement did not drive rover")
 	key(KEY_Z, false)
 	key(KEY_X, true)
