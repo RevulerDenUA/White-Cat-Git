@@ -180,6 +180,10 @@ func _run() -> void:
 	check(controller.snapshot()["context"] == "room", "Updated terrain scene did not enter the command room")
 	check(controller.catalog().size() == 1 and controller.catalog()[0]["cameras"].size() == 2, "Rover preset in terrain scene has an invalid adapter")
 	check(controller.connect_target("rover/carcamera2").is_empty(), "Terrain rover cannot be controlled through the shared terminal controller")
+	var terrain_room: Node = game.get_node("CommandRoom")
+	terrain_room.set_display_expanded(true)
+	check(terrain_room.is_display_expanded() and terrain_room._source_camera == controller.get_active_camera(), "Updated terrain scene cannot expand its real rover feed")
+	check(float(game.get_node("DirectionalLight3D").get("CycleSeconds")) > 0.0, "Incoming day/night script did not bind to its C# filename")
 	current_scene = null
 	game.queue_free()
 	await frames()

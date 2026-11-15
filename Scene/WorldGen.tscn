@@ -4,7 +4,12 @@
 [ext_resource type="Script" uid="uid://wx54acoirnn" path="res://Scripts/DirectionalLight3d.cs" id="2_3hs8j"]
 [ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="3_m50oi"]
 [ext_resource type="PackedScene" path="res://Scene/Rover.tscn" id="4_3hs8j"]
+[ext_resource type="Script" uid="uid://dlxdo8fpkeuo6" path="res://Scripts/SpectatorMode/SpectatorMode.cs" id="5_spec"]
 [ext_resource type="Shader" uid="uid://bdrf3l2s7ry0e" path="res://shader/MahNutsHurt.gdshader" id="6_s8iv6"]
+[ext_resource type="PackedScene" path="res://Scene/Command/CommandRoom.tscn" id="8_room"]
+[ext_resource type="Script" path="res://Scripts/Command/RemoteVehicle.cs" id="9_remote"]
+[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Rover/01_front.png" id="10_rover_front"]
+[ext_resource type="Texture2D" path="res://ASS/UI/VehicleViews/Rover/02_left.png" id="11_rover_side"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m50oi"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -60,14 +65,30 @@ transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545
 shadow_enabled = true
 script = ExtResource("2_3hs8j")
 
-[node name="CameraControl" type="Node3D" parent="." unique_id=329043057 node_paths=PackedStringArray("Cameras", "Filter")]
+[node name="SpectatorMode" type="Camera3D" parent="." unique_id=329043058]
+transform = Transform3D(1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 12, 30)
+script = ExtResource("5_spec")
+
+[node name="CommandRoom" parent="." instance=ExtResource("8_room")]
+
+[node name="CameraControl" type="Node" parent="." unique_id=329043057 node_paths=PackedStringArray("RoomView", "SpecCamera", "Filter")]
 script = ExtResource("3_m50oi")
-Cameras = [NodePath("../Rover/CarCamera"), NodePath("../Rover/CarCamera2")]
+RoomView = NodePath("../CommandRoom")
+SpecCamera = NodePath("../SpectatorMode")
 Filter = NodePath("../Shader/Filter")
 
 [node name="Rover" parent="." unique_id=73140632 instance=ExtResource("4_3hs8j")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.963835, 0)
 collision_mask = 1
+
+[node name="RemoteVehicle" type="Node" parent="Rover" node_paths=PackedStringArray("Vehicle", "Cameras")]
+script = ExtResource("9_remote")
+TargetId = "rover"
+DisplayName = "Марсохід"
+Vehicle = NodePath("..")
+Cameras = [NodePath("../CarCamera"), NodePath("../CarCamera2")]
+RecoverOnRelease = true
+IdentificationImages = [ExtResource("10_rover_front"), ExtResource("11_rover_side")]
 
 [node name="Shader" type="CanvasLayer" parent="." unique_id=315058984]
 visible = false

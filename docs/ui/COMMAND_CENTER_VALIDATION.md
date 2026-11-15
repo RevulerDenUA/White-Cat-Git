@@ -3,10 +3,14 @@
 Godot 4.7.2 .NET, .NET SDK 8.0.426. Command-room checkpoint: `9d59e5e`.
 Gameplay source: `origin/dev` at `f2dda94`, including the latest merged rover
 preset/physics commit `76cae39`. The engine SDK remains 4.7.2.
+The current YuRa merge also preserves `6147c7b`, including the team's
+`488a5bf` sky/day-night and terrain updates. Its WorldGen scene was reconnected
+to the existing controller/room/rover adapter, and the day-night C# class was
+matched to `DirectionalLight3d.cs` so Godot can instantiate it.
 All tests and captures use separate `XDG_DATA_HOME` directories.
 
 - `dotnet build Jeep..csproj --no-restore`: success, zero warnings/errors.
-- `tests/command/test_command_center.gd`: **134 checks, zero failures**.
+- `tests/command/test_command_center.gd`: **138 checks, zero failures**.
   Room camera, authored monitor ray, one-click entry, terminal focus, all four
   current camera addresses, rejected removed camera, delayed movement and
   vertical controls, held-key/focus isolation, remapped keys and prompts,
@@ -22,7 +26,16 @@ All tests and captures use separate `XDG_DATA_HOME` directories.
   one shared-world stream excluding the room, transparent cutouts with no frames,
   housing and keyboard framing at 1280×720 / 2560×1080 / 1920×1440, and return to
   the authored overview with retained terminal history.
-- `tests/command/test_upstream_integration.gd`: **69 checks, zero failures**.
+- `tests/command/test_display_modes.gd`: **87 checks, zero failures**.
+  Actual shortcut presses and pointer clicks on the fullscreen and authored
+  physical display, retained terminal draft/caret/history/focus, all four
+  real camera addresses, next-camera shortcut, both vehicle controls, held
+  movement across mode changes, no gameplay-session changes, one shared
+  texture, host pixel/logical sizing at 720p/ultrawide/4:3, remapped prompts,
+  printable remapped shortcut isolation, old F10 binding migration, Esc and
+  selected-vehicle deletion. Defaults remain the physical monitor; the scene
+  remembers the selected presentation for later connections.
+- `tests/command/test_upstream_integration.gd`: **72 checks, zero failures**.
   Old shortcut preservation when new defaults conflict, new-action conflicts
   and rebinding, delayed command isolation across vehicles, named descend
   action replacing hard-coded Shift, camera look, throttle reset, actual drill
@@ -30,9 +43,12 @@ All tests and captures use separate `XDG_DATA_HOME` directories.
   the player is in the room/terminal, collection, hold-to-dismantle, 50% refund
   rounded down, save reload, upstream emergency kit, and WorldGen's rover adapter.
   Also checks the single-row inventory, clear centre of the feed, hidden recipe
-  during ordinary driving, and two-line contextual build instructions.
-- Existing frontend suite: **46 checks, zero failures**. Includes approved
-  settings/rebinding/credits and the actual menu transition into `Scene/A.tscn`.
+  during ordinary driving, two-line contextual build instructions, expanded
+  WorldGen rover feed and the incoming day/night C# script binding.
+- Existing frontend suite: **50 checks, zero failures**. Includes approved
+  settings/rebinding/credits, the actual menu transition into `Scene/A.tscn`,
+  and the complete read-only source reader with its original item-level image
+  credits, retained pending settings and focus after closing.
 - Existing menu layout suite: **711 visible controls, zero failures**.
 - Native Vulkan Forward+ captures on AMD Radeon Graphics: physical monitor
   with its keyboard and real terminal, transparent rover cutouts with compact
@@ -40,6 +56,14 @@ All tests and captures use separate `XDG_DATA_HOME` directories.
   Current images: `previews/monitor-terminal.png`, `monitor-rover-720.png`,
   `monitor-ingenuity-wide.png`, `monitor-hover.png`.
   Earlier images preserve the integration history, including WorldGen terrain.
+- Additional native captures: `terminal-expanded.png` at 1600×900,
+  `rover-expanded-720.png` at 1280×720, `ingenuity-expanded-wide.png` at
+  2560×1080, `terrain-expanded.png` with the merged WorldGen scene,
+  `science-credits.png` and `science-reader.png` in the approved settings.
+- `tools/audit_science_credits.py`: all 31 companion source IDs covered,
+  60 concrete evidence files, all 50 individually credited images, 208 source
+  archive files present; 207 original hashes match and the changed expanded
+  source index is recorded explicitly. See `SCIENTIFIC_SOURCES.md`.
 - Scene resource references and `git diff --check` checked during integration.
   A stale upstream rover model UID and obsolete DoorTrigger signal connections
   were removed; scene paths point to the real files.

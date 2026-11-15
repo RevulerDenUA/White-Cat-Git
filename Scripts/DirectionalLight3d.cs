@@ -1,7 +1,7 @@
 
 using Godot;
 
-public partial class SunCycle : DirectionalLight3D
+public partial class DirectionalLight3d : DirectionalLight3D
 {
 	[ExportGroup("Time")]
 	[Export] public float CycleSeconds = 600f;

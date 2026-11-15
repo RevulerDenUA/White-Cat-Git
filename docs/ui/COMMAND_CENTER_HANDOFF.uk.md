@@ -11,6 +11,10 @@
 `76cae39`). `main` на момент інтеграції ще не містив нової фізики.
 Окрема `Scene/WorldGen.tscn` зберігає генерацію рельєфу та готовий
 `Rover.tscn`; до неї підключено той самий командний пункт з одним марсоходом.
+Також збережено оновлення `YuRa` з `6147c7b`: нове небо, цикл дня/ночі,
+генератор рельєфу, seed і позицію старту. Після злиття відновлено адаптер і
+кімнату в WorldGen та узгоджено назву C#-класу `DirectionalLight3d` із файлом,
+інакше імпортований цикл дня/ночі не інстанціювався.
 У `A.tscn` тепер **чотири** реальні камери: дві марсохода й дві Інжінюїті.
 Прибрана командою третя камера марсохода не відновлюється штучно.
 
@@ -310,12 +314,14 @@ dotnet build Jeep..csproj --no-restore
 XDG_DATA_HOME=/tmp/white-cat-command-tests godot --headless --path . --script res://tests/command/test_command_center.gd
 XDG_DATA_HOME=/tmp/white-cat-upstream-resource-tests godot --headless --path . --script res://tests/command/test_upstream_integration.gd
 XDG_DATA_HOME=/tmp/white-cat-physical-monitor-tests godot --headless --path . --script res://tests/command/test_physical_monitor.gd
+XDG_DATA_HOME=/tmp/white-cat-display-mode-tests godot --headless --path . --script res://tests/command/test_display_modes.gd
 XDG_DATA_HOME=/tmp/white-cat-front-tests godot --headless --path . --script res://tests/ui/test_frontend.gd
 XDG_DATA_HOME=/tmp/white-cat-layout-tests godot --headless --path . --script res://tests/ui/test_layout.gd
 XDG_DATA_HOME=/tmp/white-cat-command-captures godot --path . --display-driver x11 --script res://tests/command/capture.gd -- --mode=ingenuity/camcolor --size=1600x900 --output=/tmp/white-cat-ingenuity.png
 ```
 
 Режими capture: `room`, `hover`, `terminal` або адреса апарата/камери.
+Прапорець `--expanded` показує розгорнуте представлення термінала або апарата.
 Для рельєфу capture приймає `--scene=res://Scene/WorldGen.tscn`.
 Наукових показників у терміналі не вигадано. Наявний фільтр залежить від
 світового Y і швидкості; це візуальна симуляція перешкод, не вимір радіозв'язку.
