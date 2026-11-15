@@ -1,9 +1,6 @@
 [gd_scene format=4 uid="uid://cngcee24uhrrv"]
 
 [ext_resource type="Script" uid="uid://bk5e7t255ry0v" path="res://Scripts/Jeep.cs" id="1_prh16"]
-[ext_resource type="Texture2D" uid="uid://cv480r0pwj7vm" path="res://ASS/JEEP/suv_pixelatedredandwhite.png" id="2_prh16"]
-[ext_resource type="Texture2D" uid="uid://bj6cepbp5vuep" path="res://ASS/JEEP/suvinterior_pixelatedredandwhitewindows.png" id="3_2fht4"]
-[ext_resource type="Script" uid="uid://4jvk6f12nmo7" path="res://Scripts/SteeringWheel.cs" id="4_3y52s"]
 [ext_resource type="PackedScene" uid="uid://b86wxsbspqjfb" path="res://ASS/RoverNew/White-Cat-Rover.glb" id="9_rover"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_prh16"]
@@ -13,7 +10,6 @@ radius = 0.8690131
 resource_name = "Car"
 transparency = 4
 cull_mode = 2
-albedo_texture = ExtResource("2_prh16")
 roughness = 0.9
 texture_filter = 2
 
@@ -54,7 +50,6 @@ shadow_mesh = SubResource("ArrayMesh_tmem5")
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kn0yc"]
 resource_name = "Car"
 cull_mode = 2
-albedo_texture = ExtResource("3_2fht4")
 roughness = 0.5
 texture_filter = 2
 
@@ -130,7 +125,6 @@ radius = 0.2982597
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14t5u"]
 resource_name = "Car"
 cull_mode = 2
-albedo_texture = ExtResource("2_prh16")
 roughness = 0.9
 texture_filter = 2
 
@@ -271,7 +265,7 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_62hje")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_prh16"]
-size = Vector3(1.8, 0.96, 2.7)
+size = Vector3(1.4, 0.7, 2.7)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_rixf1"]
 size = Vector3(2.2592773, 1, 3.4193726)
@@ -301,24 +295,6 @@ debug_color = Color(0.99435204, 0, 0.2307297, 0.41960785)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3821136, 0.055543337, -0.0050763953)
 gizmo_extents = 0.69
 
-[node name="SUV" type="Node3D" parent="." unique_id=1314932996]
-visible = false
-
-[node name="Body" type="MeshInstance3D" parent="SUV" unique_id=2120983169]
-transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, 0, 0, 0)
-mesh = SubResource("ArrayMesh_2fht4")
-
-[node name="Interior" type="MeshInstance3D" parent="SUV" unique_id=1957073122]
-transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, 0, -1.214817, -0.39827067)
-gi_mode = 2
-mesh = SubResource("ArrayMesh_mygdf")
-
-[node name="SteeringWheel" type="MeshInstance3D" parent="SUV" unique_id=1837925857]
-transform = Transform3D(1.8, 0, 0, 0, 1.6914467, -0.6156362, 0, 0.6156362, 1.6914467, 0.5867296, 0.13521382, 0.20177495)
-gi_mode = 2
-mesh = SubResource("ArrayMesh_02uqh")
-script = ExtResource("4_3y52s")
-
 [node name="Rover" parent="." unique_id=1323145135 instance=ExtResource("9_rover")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.82, -1.49, -0.96)
 
@@ -343,77 +319,61 @@ shape = SubResource("SphereShape3D_rixf1")
 disabled = true
 
 [node name="VehicleWheel3D" type="VehicleWheel3D" parent="." unique_id=1509441137]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.92, -0.98, 0.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.92, -0.88, 0.65)
 use_as_steering = true
 wheel_radius = 0.29
-wheel_rest_length = 0.15
-suspension_travel = 0.2
-suspension_stiffness = 40.0
+wheel_rest_length = 0.3
+suspension_travel = 0.35
+suspension_stiffness = 50.0
 suspension_max_force = 60000.0
-damping_compression = 0.88
-damping_relaxation = 0.88
+damping_compression = 0.4
+damping_relaxation = 0.6
+wheel_friction_slip = 3.0
 wheel_roll_influence = 0.1
-
-[node name="FLWheel" type="MeshInstance3D" parent="VehicleWheel3D" unique_id=1874347128]
-transform = Transform3D(2.1739128, 0, 0, 0, 2.1739128, 0, 0, 0, 2.1739128, -0.2036742, -0.0064964294, -0.0020208359)
-visible = false
-mesh = SubResource("ArrayMesh_3y52s")
 
 [node name="VehicleWheel3D2" type="VehicleWheel3D" parent="." unique_id=2026923059]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.92, -0.98, 0.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.92, -0.88, 0.65)
 use_as_steering = true
 wheel_radius = 0.29
-wheel_rest_length = 0.15
-suspension_travel = 0.2
-suspension_stiffness = 40.0
+wheel_rest_length = 0.3
+suspension_travel = 0.35
+suspension_stiffness = 50.0
 suspension_max_force = 60000.0
-damping_compression = 0.88
-damping_relaxation = 0.88
+damping_compression = 0.4
+damping_relaxation = 0.6
+wheel_friction_slip = 3.0
 wheel_roll_influence = 0.1
-
-[node name="FRWheel" type="MeshInstance3D" parent="VehicleWheel3D2" unique_id=1913315528]
-transform = Transform3D(2.1505373, 0, 0, 0, 2.1505373, 0, 0, 0, 2.1505373, 0.19595897, 0.0021209717, -0.0067806244)
-visible = false
-mesh = SubResource("ArrayMesh_gimfl")
 
 [node name="VehicleWheel3D3" type="VehicleWheel3D" parent="." unique_id=1461640576]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.92, -0.98, -0.78)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.92, -0.88, -0.78)
 engine_force = 100.0
 use_as_traction = true
 wheel_radius = 0.29
-wheel_rest_length = 0.15
-suspension_travel = 0.2
-suspension_stiffness = 40.0
+wheel_rest_length = 0.3
+suspension_travel = 0.35
+suspension_stiffness = 50.0
 suspension_max_force = 60000.0
-damping_compression = 0.88
-damping_relaxation = 0.88
+damping_compression = 0.4
+damping_relaxation = 0.6
+wheel_friction_slip = 3.0
 wheel_roll_influence = 0.1
-
-[node name="RLWheel" type="MeshInstance3D" parent="VehicleWheel3D3" unique_id=1286154970]
-transform = Transform3D(2.1739128, 0, 0, 0, 2.1739128, 0, 0, 0, 2.1739128, -0.2036742, 0.0036559105, -0.0054194927)
-visible = false
-mesh = SubResource("ArrayMesh_7cvpm")
 
 [node name="VehicleWheel3D4" type="VehicleWheel3D" parent="." unique_id=672747028]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.92, -0.98, -0.78)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.92, -0.88, -0.78)
 engine_force = 100.0
 use_as_traction = true
 wheel_radius = 0.29
-wheel_rest_length = 0.15
-suspension_travel = 0.2
-suspension_stiffness = 40.0
+wheel_rest_length = 0.3
+suspension_travel = 0.35
+suspension_stiffness = 50.0
 suspension_max_force = 60000.0
-damping_compression = 0.88
-damping_relaxation = 0.88
+damping_compression = 0.4
+damping_relaxation = 0.6
+wheel_friction_slip = 3.0
 wheel_roll_influence = 0.1
 
-[node name="RRWheel" type="MeshInstance3D" parent="VehicleWheel3D4" unique_id=1311231455]
-transform = Transform3D(2.1739128, 0, 0, 0, 2.1739128, 0, 0, 0, 2.1739128, 0.20008159, 0.004114628, -0.0016605854)
-visible = false
-mesh = SubResource("ArrayMesh_vg0s3")
-
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=966506361]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.53, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 shape = SubResource("BoxShape3D_prh16")
 debug_color = Color(0, 0.6, 0.69803923, 0.3529412)
 

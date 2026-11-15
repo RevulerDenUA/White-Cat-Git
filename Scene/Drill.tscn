@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Drill/Drill.cs" id="1_drill"]
+[ext_resource type="PackedScene" uid="uid://cgkgwqym4j03q" path="res://ASS/Drill/Research_Drill/Research_Drill.glb" id="2_model"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_drill"]
+size = Vector3(0.66, 1.32, 0.8)
+
+[node name="Drill" type="StaticBody3D"]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_drill")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.66, -0.17)
+shape = SubResource("BoxShape3D_drill")
