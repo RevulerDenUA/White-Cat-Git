@@ -459,25 +459,68 @@ public partial class DrillManager : Node3D
 		public string VeinPath { get; set; }
 	}
 
-	private class SaveFile
+	// Бури однієї планети + коли їх востаннє зберегли (для офлайн-видобутку саме цієї планети)
+	private class PlanetDrills
 	{
 		public long SavedAtUnix { get; set; }
+		public List<DrillSave> Drills { get; set; }
+	}
+
+	private class SaveFile
+	{
+		public long SavedAtUnix { get; set; }          // для Drills (сцени без планети, напр. A.tscn)
 		public Dictionary<string, int> Storage { get; set; }
 		public List<DrillSave> Drills { get; set; }
+		public Dictionary<string, PlanetDrills> Planets { get; set; } // ключ — PlanetKey
+	}
+
+	// Ключ планети для збережень бурів. null — сцена без планети (бури в SaveFile.Drills).
+	// Планетний режим — лише коли менеджер стоїть на терені (TerrainWorld) і планету вибрано:
+	// у шатлі CurrentGen.HasActivePlanet лишається true, але там свої бури.
+	private string PlanetKey
+	{
+		get
+		{
+			if (!CurrentGen.HasActivePlanet) return null;
+			bool onTerrain = false;
+			for (Node n = this; n != null; n = n.GetParent())
+				if (n is TerrainWorld) { onTerrain = true; break; }
+			if (!onTerrain) return null;
+			PlanetData p = CurrentGen.ActivePlanet;
+			return $"{(p.IsMoon ? "moon" : "planet")}_{p.PlanetSeed}";
+		}
+	}
+
+	private static SaveFile ReadSave()
+	{
+		if (!FileAccess.FileExists(SavePath)) return null;
+		try
+		{
+			using var f = FileAccess.Open(SavePath, FileAccess.ModeFlags.Read);
+			return f == null ? null : JsonSerializer.Deserialize<SaveFile>(f.GetAsText());
+		}
+		catch (Exception) { return null; }
 	}
 
 	public void Save()
 	{
+		long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+		var drills = new List<DrillSave>();
+		var existing = ReadSave();
+		string key = PlanetKey;
 		var data = new SaveFile
 		{
-			SavedAtUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
 			Storage = GameData.Storage.GetAll(),
-			Drills = new List<DrillSave>(),
+			// бури інших місць лишаються як були
+			SavedAtUnix = key == null ? now : existing?.SavedAtUnix ?? now,
+			Drills = key == null ? drills : existing?.Drills ?? new List<DrillSave>(),
+			Planets = existing?.Planets ?? new Dictionary<string, PlanetDrills>(),
 		};
+		if (key != null) data.Planets[key] = new PlanetDrills { SavedAtUnix = now, Drills = drills };
 		foreach (var d in _drills)
 		{
 			var t = d.GlobalTransform;
-			data.Drills.Add(new DrillSave
+			drills.Add(new DrillSave
 			{
 				Transform = new[] { t.Basis.X.X, t.Basis.X.Y, t.Basis.X.Z, t.Basis.Y.X, t.Basis.Y.Y, t.Basis.Y.Z,
 				                    t.Basis.Z.X, t.Basis.Z.Y, t.Basis.Z.Z, t.Origin.X, t.Origin.Y, t.Origin.Z },
@@ -522,11 +565,25 @@ public partial class DrillManager : Node3D
 		if (data.Storage != null)
 			foreach (var (n, a) in data.Storage) GameData.Storage.Add(n, a);
 
+		// Бури цього місця: планети (за ключем) або сцени без планети
+		string key = PlanetKey;
+		List<DrillSave> drills = data.Drills;
+		long savedAt = data.SavedAtUnix;
+		if (key != null)
+		{
+			drills = null;
+			if (data.Planets != null && data.Planets.TryGetValue(key, out var planet) && planet != null)
+			{
+				drills = planet.Drills;
+				savedAt = planet.SavedAtUnix;
+			}
+		}
+
 		// Скільки часу гри не було. Якщо годинник перевели назад — нічого не нараховуємо.
-		double away = Math.Max(0, DateTimeOffset.UtcNow.ToUnixTimeSeconds() - data.SavedAtUnix);
+		double away = Math.Max(0, DateTimeOffset.UtcNow.ToUnixTimeSeconds() - savedAt);
 		int offlineTotal = 0;
 
-		foreach (var ds in data.Drills ?? new List<DrillSave>())
+		foreach (var ds in drills ?? new List<DrillSave>())
 		{
 			if (ds.Transform == null || ds.Transform.Length != 12) continue;
 			var a = ds.Transform;

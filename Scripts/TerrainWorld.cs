@@ -20,6 +20,9 @@ public partial class TerrainWorld : Node3D
 	[Export] public Node3D Player;
 	[Export] public bool DebugGround = true;
 
+	// Шар 1 — машини, шар 2 — «земля» для бурів, ніжок бура й Інжінюїті (collision_mask = 2).
+	[Export(PropertyHint.Layers3DPhysics)] public uint TerrainCollisionLayer = 1u | 2u;
+
 	// Rocky settings
 	[ExportGroup("Rocky Planet")]
 	[Export] public float HeightScale = 20f;
@@ -70,6 +73,11 @@ public partial class TerrainWorld : Node3D
 
 	private FastNoiseLite _noise;
 	private Material _material;
+	private bool _initialized;
+
+	// Кольори ґрунту з даних планети (ті самі, що в текстури планети на орбіті)
+	private bool _hasPlanetGround;
+	private Color _groundDark, _groundLight;
 
 	private readonly Dictionary<Vector2I, Node3D> _chunks = new();
 
@@ -92,30 +100,13 @@ public partial class TerrainWorld : Node3D
 			return;
 		}
 
-		// Load generated planet data before
-		// initializing noise and materials.
-		ApplyActivePlanet();
-
-		_noise = new FastNoiseLite
-		{
-			Seed = Seed,
-			NoiseType = FastNoiseLite.NoiseTypeEnum.Perlin,
-			Frequency = NoiseFrequency
-		};
+		// Дані планети й шум (може вже бути зроблено раніше через GetHeightAt)
+		EnsureInitialized();
 
 		switch (Planet)
 		{
 			case PlanetType.Rocky:
-				_material = new StandardMaterial3D
-				{
-					AlbedoColor =
-						new Color(0.35f, 0.65f, 0.3f),
-
-					Roughness = 1f,
-
-					CullMode =
-						BaseMaterial3D.CullModeEnum.Disabled
-				};
+				_material = CreateRockyMaterial();
 				break;
 
 			case PlanetType.Gas:
@@ -133,6 +124,128 @@ public partial class TerrainWorld : Node3D
 
 		ConfigurePlanetAtmosphere();
 		UpdateChunks();
+	}
+
+	// Дані планети й шум висот. Викликається з _Ready або раніше — з GetHeightAt
+	// (дочірні вузли, напр. OreGenerator, отримують _Ready раніше за корінь-терен).
+	private void EnsureInitialized()
+	{
+		if (_initialized) return;
+		_initialized = true;
+
+		// Load generated planet data before
+		// initializing noise and materials.
+		ApplyActivePlanet();
+
+		_noise = new FastNoiseLite
+		{
+			Seed = Seed,
+			NoiseType = FastNoiseLite.NoiseTypeEnum.Perlin,
+			Frequency = NoiseFrequency
+		};
+	}
+
+	// ==================================================
+	// SURFACE HEIGHT
+	// ==================================================
+
+	// Точна висота згенерованої поверхні (глобальні координати) — та сама тріангуляція,
+	// що й у GenerateChunk: клітинка a(0,0) b(1,0) c(0,1) d(1,1), трикутники a→b→c і b→d→c.
+	public float GetHeightAt(float worldX, float worldZ)
+	{
+		EnsureInitialized();
+
+		Vector3 local = IsInsideTree()
+			? ToLocal(new Vector3(worldX, 0f, worldZ))
+			: new Vector3(worldX, 0f, worldZ);
+
+		float h;
+		if (Planet == PlanetType.Gas || CellSize <= 0f)
+		{
+			h = GasSurfaceHeight;
+		}
+		else
+		{
+			float gx = local.X / CellSize;
+			float gz = local.Z / CellSize;
+			int ix = Mathf.FloorToInt(gx);
+			int iz = Mathf.FloorToInt(gz);
+			float fx = gx - ix;
+			float fz = gz - iz;
+
+			float ha = SampleHeight(ix, iz);
+			float hb = SampleHeight(ix + 1, iz);
+			float hc = SampleHeight(ix, iz + 1);
+
+			if (fx + fz <= 1f)
+			{
+				h = ha + (hb - ha) * fx + (hc - ha) * fz;
+			}
+			else
+			{
+				float hd = SampleHeight(ix + 1, iz + 1);
+				h = hd + (hc - hd) * (1f - fx) + (hb - hd) * (1f - fz);
+			}
+		}
+
+		if (!IsInsideTree()) return h;
+		return ToGlobal(new Vector3(local.X, h, local.Z)).Y;
+	}
+
+	// Висота вершини сітки (індекси — як worldX/worldZ у GetVertex)
+	private float SampleHeight(int gridX, int gridZ)
+	{
+		return Planet == PlanetType.Gas
+			? GasSurfaceHeight
+			: _noise.GetNoise2D(gridX, gridZ) * HeightScale;
+	}
+
+	// Ґрунт кам'янистої планети: шум у кольорах планети з орбіти,
+	// без активної планети — колишній рівний колір.
+	private Material CreateRockyMaterial()
+	{
+		if (!_hasPlanetGround)
+		{
+			return new StandardMaterial3D
+			{
+				AlbedoColor =
+					new Color(0.35f, 0.65f, 0.3f),
+
+				Roughness = 1f,
+
+				CullMode =
+					BaseMaterial3D.CullModeEnum.Disabled
+			};
+		}
+
+		var ramp = new Gradient();
+		ramp.SetColor(0, _groundDark);
+		ramp.SetColor(1, _groundLight);
+
+		var texture = new NoiseTexture2D
+		{
+			Noise = new FastNoiseLite
+			{
+				Seed = Seed,
+				NoiseType = FastNoiseLite.NoiseTypeEnum.SimplexSmooth,
+				Frequency = 0.02f,
+				FractalOctaves = 5
+			},
+			ColorRamp = ramp,
+			Seamless = true
+		};
+
+		return new StandardMaterial3D
+		{
+			AlbedoTexture = texture,
+			Uv1Triplanar = true,
+			Uv1WorldTriplanar = true,
+			Uv1Scale = Vector3.One * 0.02f,
+			Roughness = 1f,
+
+			CullMode =
+				BaseMaterial3D.CullModeEnum.Disabled
+		};
 	}
 
 	// ==================================================
@@ -155,9 +268,13 @@ public partial class TerrainWorld : Node3D
 		PlanetData p = CurrentGen.ActivePlanet;
 
 		// Select planet type from colleague's data.
+		// Генератор системи дає "Rocky" / "GasGigant" (місяці — "Rocky" з IsMoon)
 		switch (p.Type?.Trim().ToLowerInvariant())
 		{
 			case "gas":
+			case "gasgigant":
+			case "gasgiant":
+			case "gas_giant":
 				Planet = PlanetType.Gas;
 				break;
 
@@ -176,6 +293,10 @@ public partial class TerrainWorld : Node3D
 
 		// NoiseSeed controls procedural terrain.
 		Seed = p.NoiseSeed;
+
+		// Колір ґрунту — як текстура планети з орбіти
+		(_groundDark, _groundLight) = PlanetPackets.SurfaceColors(p);
+		_hasPlanetGround = true;
 
 		// Check whether sky colors were generated.
 		bool hasSkyColors =
@@ -512,7 +633,7 @@ public partial class TerrainWorld : Node3D
 			var body = new StaticBody3D
 			{
 				Name = "TerrainBody",
-				CollisionLayer = 1,
+				CollisionLayer = TerrainCollisionLayer,
 				CollisionMask = 1
 			};
 
