@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cf65oht5rlkbv" path="res://Scripts/FlyingJeep.cs" id="1_fly"]
 [ext_resource type="PackedScene" uid="uid://b1ejlge6uj1cp" path="res://ASS/Helicopter/Mars_Helicopter.glb" id="2_heli"]
+[ext_resource type="Script" path="res://Scripts/VehicleCamera.cs" id="3_cam"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_fly"]
 size = Vector3(2.4, 3.3, 2.4)
@@ -22,7 +23,9 @@ shape = SubResource("BoxShape3D_fly")
 [node name="CamBW" type="Camera3D" parent="." unique_id=1786704608]
 transform = Transform3D(-1, 8.742278e-08, 0, 3.821371e-15, 4.371139e-08, 1, 8.742278e-08, 1, -4.371139e-08, -7.528525e-08, -0.31244022, 0.13883708)
 fov = 99.9
+script = ExtResource("3_cam")
 
 [node name="CamColor" type="Camera3D" parent="." unique_id=73320357]
 transform = Transform3D(-1, 8.742278e-08, 0, 8.742278e-08, 1, -8.742278e-08, -7.642742e-15, -8.742278e-08, -1, 0, -0.3, 1)
 fov = 90.0
+script = ExtResource("3_cam")

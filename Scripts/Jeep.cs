@@ -85,11 +85,11 @@ public partial class Jeep : VehicleBody3D
         steerInput = 0.0f;
         
 
-        if (Input.IsActionPressed("lefty"))
+        if (ControlInput.IsPressed("lefty"))
         {
             steerInput = 1.0f;
         }
-        else if (Input.IsActionPressed("righty"))
+        else if (ControlInput.IsPressed("righty"))
         {
             steerInput = -1.0f;
         }
@@ -103,11 +103,11 @@ public partial class Jeep : VehicleBody3D
 
         gasInput = 0.0f;
 
-        if (Input.IsActionPressed("forwardy"))
+        if (ControlInput.IsPressed("forwardy"))
         {
             gasInput = JeepData.Speed;
         }
-        else if (Input.IsActionPressed("backwardy"))
+        else if (ControlInput.IsPressed("backwardy"))
         {
             gasInput = -JeepData.Speed;
         }
