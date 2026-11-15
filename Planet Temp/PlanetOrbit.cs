@@ -24,6 +24,10 @@ public partial class PlanetOrbit : Node3D
 
 	public bool dimed = false;
 
+	// Ставить PlanetSelector: FreezeOrbit — планета стоїть на орбіті, FreezeSpin — не крутиться навколо осі
+	public bool FreezeOrbit = false;
+	public bool FreezeSpin = false;
+
 	public void _on_local_planet_tree_entered ()
 	{
 	SystemValues.Instance.PlanetCount = SystemValues.Getplanet(SystemValues.Instance.SystemSeed);
@@ -103,6 +107,10 @@ public void donotopen()
 			// [1] Squish based on rotation speed
 			PlanetNode.Scale = new Vector3(d.Radius, d.Radius * d.Squish, d.Radius);
 
+			// Тригер-сфера має лишатись рівномірно масштабованою (Jolt не підтримує сплюснуту сферу)
+			if (d.Squish > 0.001f && PlanetNode.GetNodeOrNull<Area3D>("Area3D") is { } area)
+				area.Scale = new Vector3(1f, 1f / d.Squish, 1f);
+
 			// Tilt the planet's poles
 			PlanetNode.RotationDegrees = new Vector3(0f, 0f, d.AxialTilt);
 
@@ -158,6 +166,10 @@ public void donotopen()
 
 		float dt = (float)(delta * SystemValues.WarpSpeed);
 
+		if (!FreezeSpin)
+			PlanetNode.RotateY(Data.rotationspeed * dt);
+		if (FreezeOrbit) return;
+
 		float cosE = Mathf.Cos(_angleE);
 		float sinE = Mathf.Sin(_angleE);
 
@@ -170,6 +182,5 @@ public void donotopen()
 		_angleE = (_angleE + _speed * (_a / dist) * dt) % Mathf.Tau;
 
 		PlanetNode.Position = new Vector3(x, 0f, z);
-		PlanetNode.RotateY(Data.rotationspeed * dt);
 	}
 }
