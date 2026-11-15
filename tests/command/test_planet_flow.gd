@@ -158,6 +158,16 @@ func _run() -> void:
 	check(rover.global_position.y > ground - 0.5, "rover spawned under the terrain")
 	check(world.get_node("ShuttlePad").IsDocked(rover), "rover did not start inside the shuttle")
 	check("жили поруч" in world.get_node("PlanetSession").CardFacts, "rocky planet card does not list veins")
+	# виїзд своїм ходом: газ уперед — через поміст і рампу на ґрунт
+	var pad_now: Node3D = world.get_node("ShuttlePad")
+	Input.action_press("forwardy")
+	for index: int in 900:
+		await physics_frame
+		if rover.global_position.z - pad_now.global_position.z > 18.0:
+			break
+	Input.action_release("forwardy")
+	check(not pad_now.IsDocked(rover) and rover.global_position.z - pad_now.global_position.z > 18.0, "rover could not drive out of the shuttle: %s" % (rover.global_position - pad_now.global_position))
+	check(rover.global_position.y < pad_now.global_position.y + 1.0, "rover did not come down the ramp")
 	# виводимо марсохід за рампу і лишаємо там
 	var outside: Node3D = world.get_node("ShuttlePad")
 	rover.global_position = outside.global_position + Vector3(0, 0, 70)
@@ -190,6 +200,12 @@ func _run() -> void:
 	check(rover != null, "parked rover disappeared")
 	if rover != null:
 		check(rover.global_position.distance_to(parked) < 2.0, "parked rover moved: %s vs %s" % [rover.global_position, parked])
+		# апарат без керування заморожений: не падає, навіть коли ґрунт під ним вивантажено
+		check(rover.process_mode == Node.PROCESS_MODE_DISABLED, "parked rover is still simulated")
+		var drone_now: Node3D = world.get_node("FlyingJeep")
+		drone_now.global_position = rover.global_position + Vector3(400, 30, 400)
+		await frames(40)
+		check(rover.global_position.distance_to(parked) < 2.0, "parked rover fell when its ground was unloaded")
 	check(world.get_node("CameraControl").snapshot()["target_id"] == "ingenuity", "drone not connected on relaunch")
 
 	# connect із термінала шатла висаджує на планету шатла, з вибраною камерою

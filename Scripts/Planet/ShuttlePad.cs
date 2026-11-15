@@ -70,9 +70,15 @@ public partial class ShuttlePad : Node3D
 		AddBox(body, "Roof", new Vector3(HullWidth + t, t, HullLength), new Vector3(0, HullHeight, 0), Hull, true);
 		AddBox(body, "Bow", new Vector3(HullWidth + t, HullHeight, t), new Vector3(0, HullHeight / 2f, -hl), Hull, true);
 
-		// рампа від корми вниз до рельєфу. Кінець має лягти на ґрунт по всій ширині:
-		// беремо найнижчу точку під кінцем і трохи заглиблюємо, щоб не було сходинки.
-		float z0 = PadRadius - 0.5f; // рампа починається з краю майданчика
+		// Рівний поміст від корми до краю майданчика (круглий край палуби інакше дає сходинки
+		// біля рампи). Верх — урівень із палубою (y = 0).
+		float z0 = PadRadius + 0.5f; // тут починається рампа
+		float apronLen = z0 - hl;
+		AddBox(body, "Apron", new Vector3(RampWidth, 0.4f, apronLen), new Vector3(0, -0.2f, hl + apronLen / 2f), Deck, false);
+
+		// Рампа від помосту вниз до рельєфу. Верх починається точно на краю помосту (без виступу
+		// назад — інакше нахилена плита стирчить над палубою), кінець лягає на найнижчу точку
+		// ґрунту під собою по всій ширині й трохи заглиблюється.
 		float drop = 0f, length = 8f;
 		for (int i = 0; i < 4; i++)
 		{
@@ -83,9 +89,12 @@ public partial class ShuttlePad : Node3D
 			length = Mathf.Clamp(Mathf.Abs(drop) / Mathf.Tan(Mathf.DegToRad(MaxRampSlopeDeg)), 5f, 40f);
 		}
 		float slope = Mathf.Atan2(drop, length);
-		float span = Mathf.Sqrt(length * length + drop * drop) + 1f;
-		var ramp = AddBox(body, "Ramp", new Vector3(RampWidth, 0.4f, span),
-			new Vector3(0, -drop / 2f - 0.2f, z0 + length / 2f), Deck, false);
+		const float thickness = 0.4f, endExtra = 1f; // подовження тільки на кінці (у ґрунт)
+		float span = Mathf.Sqrt(length * length + drop * drop) + endExtra;
+		var dir = new Vector3(0, -drop, length).Normalized();      // уздовж рампи, від помосту
+		var up = new Vector3(0, length, drop).Normalized();        // нормаль верхньої грані
+		Vector3 center = new Vector3(0, 0, z0) + dir * (span / 2f) - up * (thickness / 2f);
+		var ramp = AddBox(body, "Ramp", new Vector3(RampWidth, thickness, span), center, Deck, false);
 		ramp.Mesh.Rotation = ramp.Shape.Rotation = new Vector3(slope, 0, 0);
 		_rampEndZ = z0 + length;
 

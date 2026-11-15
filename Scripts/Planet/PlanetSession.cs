@@ -56,6 +56,7 @@ public partial class PlanetSession : Node
 			if (ShuttleState.TryGetOutside(id, out Transform3D saved))
 			{
 				Place(body, saved.Translated(Vector3.Up * 0.3f)); // лишився на поверхні
+				if (id != _active) Park(body);
 			}
 			else if (id == _active)
 			{
@@ -80,6 +81,14 @@ public partial class PlanetSession : Node
 		else _status = "Апарата немає в сцені.";
 
 		FillPlanetCard();
+	}
+
+	// Апарат без керування не симулюється: шматки рельєфу далеко від керованого апарата
+	// вивантажуються, і без цього він провалювався б. Колізія лишається (статична).
+	private static void Park(Node3D body)
+	{
+		if (body is CollisionObject3D co) co.DisableMode = CollisionObject3D.DisableModeEnum.MakeStatic;
+		body.ProcessMode = ProcessModeEnum.Disabled;
 	}
 
 	private static void Place(Node3D body, Transform3D xf)
