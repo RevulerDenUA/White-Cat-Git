@@ -23,7 +23,7 @@ public partial class FlyingJeep : CharacterBody3D
 	public override void _PhysicsProcess(double delta)
 	{
 		float dt = (float)delta;
-		bool controlled = !GameData.InSpectatorMode && GameData.ActiveVehicle == this;
+		bool controlled = GameData.CanDrive(this);
 
 		float forward = 0f, turn = 0f, vertical = 0f;
 		if (controlled)

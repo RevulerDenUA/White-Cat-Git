@@ -20,7 +20,7 @@ const ACTIONS := [
 	["spacy", "Підйом апарата", "Техніка", KEY_SPACE],
 	["flight_descend", "Зниження апарата", "Техніка", KEY_SHIFT],
 	["CameraChange", "Наступна камера", "Загальні", KEY_C],
-	["SpectatorMode", "Вільна камера", "Загальні", KEY_F],
+	["SpectatorMode", "Вільна камера (розробка)", "Загальні", KEY_F],
 	["spectator_forward", "Рух уперед", "Вільна камера", KEY_W],
 	["spectator_backward", "Рух назад", "Вільна камера", KEY_S],
 	["spectator_left", "Ліворуч", "Вільна камера", KEY_A],
@@ -178,6 +178,17 @@ func apply_bindings() -> void:
 
 func get_value(key: String) -> Variant:
 	return values.get(key, DEFAULTS.get(key))
+
+func binding_text(action: StringName) -> String:
+	var labels := PackedStringArray()
+	for event: InputEvent in InputMap.action_get_events(action):
+		if event is InputEventKey:
+			var code: int = event.physical_keycode if event.physical_keycode != 0 else event.keycode
+			var label := OS.get_keycode_string(code)
+			labels.append("Пробіл" if code == KEY_SPACE else label)
+		else:
+			labels.append(event.as_text())
+	return " / ".join(labels) if not labels.is_empty() else "Не призначено"
 
 func register_resource_provider(provider: Node) -> bool:
 	if not is_instance_valid(provider) or not provider.has_method("set_debug_infinite_resources"):

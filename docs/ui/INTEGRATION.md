@@ -71,3 +71,7 @@ XDG_DATA_HOME=/tmp/white-cat-ui-captures godot --path . --display-driver x11 --s
 ```
 
 Capture options: `settings0` through `settings6` (credits), `license` for the offline licence reader, or `launch1.8` for an actual frame 1.8 seconds into the transition. Add `--scroll=1800` to inspect lower settings content. The capture uses the real 3D renderer and a fixed-size SubViewport so tiling window managers cannot resize the output. `--headless` cannot capture graphics. Inspect native keyboard focus, popup focus, scroll content, display rollback, audio cancellation, saved bindings and scene launch. Physical controller behaviour still needs a connected-device check.
+
+## Command terminal
+
+`Scene/A.tscn` now opens the supplied command-room model. One click on its highlighted monitor opens `help` / `connect`; connecting selects both the real camera and control recipient. Command API, scene adapters, vehicle reference images, import provenance, tests and the pending recovery-delivery contract: [command centre integration](COMMAND_CENTER_HANDOFF.uk.md).

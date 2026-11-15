@@ -18,7 +18,7 @@ public partial class Jeep : VehicleBody3D
     public override void _PhysicsProcess(double delta)
     {
 
-        if (GameData.InSpectatorMode || GameData.ActiveVehicle != this)
+        if (!GameData.CanDrive(this))
         {
             EngineForce = 0;
             return;
