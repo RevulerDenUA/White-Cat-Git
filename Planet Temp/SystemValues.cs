@@ -11,8 +11,8 @@ public struct PlanetData
 
 	public float rotationspeed;
 
-	public float Perihelion;
-	public float Aphelion;
+	public float Perihelion; // Closest distance to the star
+	public float Aphelion; // Farthest distance from the star
 	public float Distance;
 	public float BaseSpeed;
 	public float Inclination;
@@ -29,8 +29,23 @@ public partial class SystemValues : Node3D
 	public static SystemValues Instance { get; private set; } = new SystemValues();
 
 	[Export] public int SystemSeed = 12345;
-	[Export] public int PlanetCount = 7;
+	[Export] public int PlanetCount = 1;
 	[Export] public float MeshBaseRadius = 1.0f;
+
+
+	public static int Getplanet(int seed)
+	{
+		
+	RandomNumberGenerator rng = new RandomNumberGenerator();
+    rng.Seed = (ulong)Mathf.Abs(seed);
+    rng.Randi(); 
+    int count = rng.RandiRange(1, 9);
+
+	GD.Print(count);
+
+	return count;
+		
+	}
 
 	public static double WarpSpeed = 1.0;
 	public static List<PlanetOrbit> Planets = new List<PlanetOrbit>();

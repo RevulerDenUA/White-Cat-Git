@@ -2,24 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cam04x37d6uri"
-path.s3tc="res://.godot/imported/suvinterior_pixelatedredandwhite.png-e59d9808e8e2dc513ada8f77d6f7db9e.s3tc.ctex"
+uid="uid://c4kitg6s5bcqu"
+path="res://.godot/imported/mc-camera2.png-3ed6d9f40bd444b0d462df6e4c63a76c.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
-}
-generator_parameters={
-"md5": "e18ef59ca8e30f8f77a4fb2507e5a5ef"
+"vram_texture": false
 }
 
 [deps]
 
-source_file="res://ASS/JEEP/suvinterior_pixelatedredandwhite.png"
-dest_files=["res://.godot/imported/suvinterior_pixelatedredandwhite.png-e59d9808e8e2dc513ada8f77d6f7db9e.s3tc.ctex"]
+source_file="res://godot-freecam-plugin-11a229982a39a4f1551db1971f7a92efc862c0d7/addons/freecam_3D/mc-camera2.png"
+dest_files=["res://.godot/imported/mc-camera2.png-3ed6d9f40bd444b0d462df6e4c63a76c.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -27,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -41,4 +37,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1

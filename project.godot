@@ -34,7 +34,6 @@ project/assembly_name="Jeep."
 
 folder_colors={
 "res://ASS/": "yellow",
-"res://ASS/JEEP/": "pink",
 "res://MISC/": "gray",
 "res://Scene/": "red",
 "res://Scripts/": "purple",
