@@ -32,8 +32,8 @@ public static class SpaceGlobals
 
 		if (type == "Rocky")
 		{
-			d.Perihelion = baseDist + rng.RandfRange(-1.5f, 1.5f);
-			d.Aphelion = d.Perihelion + rng.RandfRange(1.0f, 6.0f);
+			d.Perihelion = baseDist + rng.RandfRange(-3f, 1.5f);
+			d.Aphelion = d.Perihelion + rng.RandfRange(1.0f, 15.0f);
 			d.Distance = (d.Aphelion + d.Perihelion) * 0.5f;
 
 			d.Inclination = rng.RandfRange(-7.0f, 7.0f);
