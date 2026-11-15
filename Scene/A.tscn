@@ -6,6 +6,8 @@
 [ext_resource type="Shader" uid="uid://bdrf3l2s7ry0e" path="res://shader/MahNutsHurt.gdshader" id="6_1n6c4"]
 [ext_resource type="PackedScene" uid="uid://bfblajavp7fl4" path="res://Scene/FLYJEEP.tscn" id="7_fly"]
 [ext_resource type="Script" uid="uid://qsy2ajsgyv57" path="res://Scripts/CameraLook.cs" id="cam_look"]
+[ext_resource type="Script" uid="uid://cjhjyt5juikse" path="res://Scripts/Drill/DrillManager.cs" id="drill_mgr"]
+[ext_resource type="PackedScene" path="res://Scene/Vein.tscn" id="vein"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r0yfe"]
 albedo_color = Color(0.5931336, 0.59313357, 0.59313357, 1)
@@ -142,9 +144,22 @@ script = ExtResource("3_kmbin")
 
 [node name="CameraControl" type="Node3D" parent="." unique_id=1429019729 node_paths=PackedStringArray("Cameras", "ColorCameras", "SpecCamera", "Filter")]
 script = ExtResource("4_kmbin")
-Cameras = [NodePath("../CharacterBody3D/CarCamera"), NodePath("../CharacterBody3D/CarCamera2"), NodePath(""), NodePath("../FlyingJeep/CamBW"), NodePath("../FlyingJeep/CamColor")]
+Cameras = [NodePath("../CharacterBody3D/CarCamera"), NodePath("../CharacterBody3D/CarCamera2"), null, NodePath("../FlyingJeep/CamBW"), NodePath("../FlyingJeep/CamColor")]
 ColorCameras = [NodePath("../FlyingJeep/CamColor")]
 SpecCamera = NodePath("../SpectatorMode")
 Filter = NodePath("../Shader/Filter")
+
+[node name="DrillManager" type="Node3D" parent="." unique_id=1730255001]
+script = ExtResource("drill_mgr")
+
+[node name="VeinIron" parent="." unique_id=1730255002 instance=ExtResource("vein")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 22)
+
+[node name="VeinIce" parent="." unique_id=1730255003 instance=ExtResource("vein")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 22)
+ResourceName = "Лід"
+ItemsPerMinute = 10.0
+DrillCapacity = 80
+MarkerColor = Color(0.5, 0.85, 1, 1)
 
 [editable path="CharacterBody3D"]

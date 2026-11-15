@@ -62,4 +62,33 @@ public class Resources
             result[item.Name] = item.Amount;
         return result;
     }
+
+    // Чи вистачає всього зі списку (наприклад, вартість будівлі)
+    public bool HasAll(IReadOnlyDictionary<string, int> cost)
+    {
+        foreach (var (name, amount) in cost)
+            if (!Has(name, amount)) return false;
+        return true;
+    }
+
+    // Чого саме не вистачає: назва -> скільки бракує
+    public Dictionary<string, int> Missing(IReadOnlyDictionary<string, int> cost)
+    {
+        var result = new Dictionary<string, int>();
+        foreach (var (name, amount) in cost)
+        {
+            int lack = amount - GetAmount(name);
+            if (lack > 0) result[name] = lack;
+        }
+        return result;
+    }
+
+    // Списати все зі списку. Якщо чогось не вистачає — нічого не списує і повертає false.
+    public bool RemoveAll(IReadOnlyDictionary<string, int> cost)
+    {
+        if (!HasAll(cost)) return false;
+        foreach (var (name, amount) in cost)
+            if (amount > 0) Remove(name, amount);
+        return true;
+    }
 }
