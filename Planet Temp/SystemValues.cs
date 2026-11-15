@@ -9,8 +9,6 @@ public struct PlanetData
 	public int PlanetSeed;
 	public int NoiseSeed;
 
-	public float rotationspeed;
-
 	public float Perihelion; // Closest distance to the star
 	public float Aphelion; // Farthest distance from the star
 	public float Distance;
@@ -18,11 +16,21 @@ public struct PlanetData
 	public float Inclination;
 	public float OrbitYaw;
 
+
+	public float rotationspeed;
 	public float Radius;
 	public float Gravity;
-
 	public float Mass;
 	public float Temperature;
+	public float AxialTilt; 
+	public float Squish;  
+
+
+
+	public Color SkyDark;
+	public Color SkyMid;
+	public Color SkyLight;
+	public Color SkyFog;
 
 
 }
@@ -45,6 +53,26 @@ public partial class SystemValues : Node3D
 	{
 		float halfRadius = Mathf.Max(dat.Radius * 0.5f, 0.001f);
 		dat.Gravity = SystemValues.Gvalues * (dat.Mass / (halfRadius * halfRadius));
+	}
+
+
+public static void GenerateSkyColors(ref PlanetData d)
+	{
+
+		RandomNumberGenerator rng = new RandomNumberGenerator();
+		rng.Seed = (ulong)Mathf.Abs(d.NoiseSeed + 555);
+
+		float baseHue = rng.Randf();
+
+		d.SkyDark = Color.FromHsv(baseHue, rng.RandfRange(0.6f, 0.9f), rng.RandfRange(0.08f, 0.22f));
+
+		float midHue = (baseHue + rng.RandfRange(-0.08f, 0.08f) + 1.0f) % 1.0f;
+		d.SkyMid = Color.FromHsv(midHue, rng.RandfRange(0.4f, 0.75f), rng.RandfRange(0.35f, 0.55f));
+
+		float lightHue = (baseHue + rng.RandfRange(-0.15f, 0.15f) + 1.0f) % 1.0f;
+		d.SkyLight = Color.FromHsv(lightHue, rng.RandfRange(0.25f, 0.5f), rng.RandfRange(0.7f, 0.95f));
+
+		d.SkyFog = Color.FromHsv(lightHue, rng.RandfRange(0.1f, 0.35f), rng.RandfRange(0.6f, 0.85f));
 	}
 
 

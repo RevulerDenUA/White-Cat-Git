@@ -199,8 +199,10 @@ public partial class TerrainWorld : Node3D
 				Vector3 c = GetVertex(coord, x, z + 1);
 				Vector3 d = GetVertex(coord, x + 1, z + 1);
 
-				AddTriangle(st, a, c, b);
-				AddTriangle(st, b, c, d);
+				// Godot: лицева сторона — вершини за годинниковою стрілкою (якщо дивитись на неї).
+				// Зверху це a→b→c і b→d→c, тоді лицем угору — і світло, і колізія працюють правильно.
+				AddTriangle(st, a, b, c);
+				AddTriangle(st, b, d, c);
 			}
 		}
 
@@ -271,7 +273,8 @@ public partial class TerrainWorld : Node3D
 
 	private static void AddTriangle(SurfaceTool st, Vector3 a, Vector3 b, Vector3 c)
 	{
-		Vector3 normal = (b - a).Cross(c - a).Normalized();
+		// при порядку за годинниковою (як у Godot) нормаль лицевої сторони = (c - a) × (b - a)
+		Vector3 normal = (c - a).Cross(b - a).Normalized();
 		st.SetNormal(normal);
 		st.AddVertex(a);
 		st.SetNormal(normal);

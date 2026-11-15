@@ -26,23 +26,43 @@ public partial class CameraControl : Node
 		_filterMat = Filter?.Material as ShaderMaterial;
 		if (_filterMat == null)
 			GD.PushWarning("CameraControl: не призначено Filter (або в нього немає ShaderMaterial) — фільтр і кольорові камери не працюватимуть");
-		SpecCamera?.MakeCurrent();
+		if (SpecCamera != null)
+		{
+			SpecCamera.MakeCurrent();
+			GameData.InSpectatorMode = true;
+		}
+		else
+		{
+			// камери спостерігача немає — одразу сідаємо в першу машину
+			GameData.InSpectatorMode = true; // щоб NextCamera взяв поточний індекс, а не наступний
+			GameData.CameraIndex = 0;
+			NextCamera();
+			GameData.InSpectatorMode = GameData.ActiveVehicle == null;
+		}
 	}
 
 	// GameData.CameraIndex — індекс камери, яка зараз (або востаннє) активна.
 	// З режиму спостерігача C повертає на ту саму камеру, а в машині — перемикає на наступну.
 	private void NextCamera()
 	{
-		if (Cameras.Count == 0) return;
+		int count = Cameras.Count;
+		if (count == 0) { GD.PushWarning("CameraControl: список Cameras порожній — нема в яку машину сісти"); return; }
 
 		if (!GameData.InSpectatorMode)
 			GameData.CameraIndex++;
-		GameData.CameraIndex = ((GameData.CameraIndex % Cameras.Count) + Cameras.Count) % Cameras.Count;
 
-		Camera3D cam = Cameras[GameData.CameraIndex];
-		if (cam == null) return;
-		cam.MakeCurrent();
-		GameData.ActiveVehicle = FindVehicle(cam);
+		// пропускаємо порожні слоти в списку камер
+		for (int i = 0; i < count; i++)
+		{
+			int idx = (((GameData.CameraIndex + i) % count) + count) % count;
+			Camera3D cam = Cameras[idx];
+			if (cam == null || !IsInstanceValid(cam)) continue;
+			GameData.CameraIndex = idx;
+			cam.MakeCurrent();
+			GameData.ActiveVehicle = FindVehicle(cam);
+			return;
+		}
+		GD.PushWarning("CameraControl: у списку Cameras немає жодної камери");
 	}
 
 	private static Node3D FindVehicle(Node node)
@@ -66,7 +86,7 @@ public partial class CameraControl : Node
 			NextCamera();
 			GameData.InSpectatorMode = false;
 		}
-		else if (Input.IsActionJustReleased("SpectatorMode"))
+		else if (Input.IsActionJustReleased("SpectatorMode") && SpecCamera != null)
 		{
 			SpecCamera.MakeCurrent();
 			GameData.InSpectatorMode = true;

@@ -102,21 +102,40 @@ public partial class Jeep : VehicleBody3D
 
 
         gasInput = 0.0f;
+        if (ControlInput.IsPressed("forwardy")) gasInput = 1f;
+        else if (ControlInput.IsPressed("backwardy")) gasInput = -1f;
 
-        if (ControlInput.IsPressed("forwardy"))
-        {
-            gasInput = JeepData.Speed;
-        }
-        else if (ControlInput.IsPressed("backwardy"))
-        {
-            gasInput = -JeepData.Speed;
-        }
+        // «педаль» натискається плавно, відпускається швидко
+        float rate = (Mathf.Abs(gasInput) > Mathf.Abs(_throttle) && Mathf.Sign(gasInput) == Mathf.Sign(_throttle) || _throttle == 0f)
+            ? 1f / Mathf.Max(0.01f, JeepData.ThrottleRiseTime)
+            : 4f;
+        _throttle = Mathf.MoveToward(_throttle, gasInput, rate * (float)delta);
 
-        EngineForce = gasInput * JeepData.MaxEngineForce;
+        EngineForce = _throttle == 0f ? 0f : _throttle * DriveForce(_throttle > 0) / Mathf.Max(1, _tractionWheels);
 
         // Без газу на малій швидкості — ручник, щоб машина не котилась і не гойдалась
         Brake = (gasInput == 0f && LinearVelocity.Length() < JeepData.IdleBrakeSpeed) ? JeepData.IdleBrake : 0f;
 
+    }
+
+    // ---------- Двигун ----------
+
+    private int _tractionWheels;
+    private float _throttle; // плавна «педаль газу», -1..1
+
+    // Сумарна тяга на всі ведучі колеса, Н.
+    // Тягне з повною силою на малій швидкості, далі — скільки дозволяє потужність,
+    // і плавно вимикається біля максимальної швидкості.
+    private float DriveForce(bool forward)
+    {
+        float v = LinearVelocity.Dot(GlobalBasis.Z);     // швидкість уперед (+Z), м/с
+        if (!forward) v = -v;
+        float maxV = forward ? JeepData.MaxSpeed : JeepData.MaxReverseSpeed;
+
+        float force = Mathf.Min(JeepData.MaxTractionForce, JeepData.EnginePower / Mathf.Max(Mathf.Abs(v), 0.1f));
+        // останні 20% швидкості — плавне зменшення до нуля
+        float limit = Mathf.Clamp((maxV - v) / (maxV * 0.2f), 0f, 1f);
+        return force * limit;
     }
 
     // ---------- Стабілізатори ----------
@@ -127,7 +146,11 @@ public partial class Jeep : VehicleBody3D
     private void CacheWheelMounts()
     {
         foreach (var c in GetChildren())
-            if (c is VehicleWheel3D w) _wheelMounts[w] = w.Position;
+            if (c is VehicleWheel3D w)
+            {
+                _wheelMounts[w] = w.Position;
+                if (w.UseAsTraction) _tractionWheels++;
+            }
     }
 
     // Наскільки стиснута пружина колеса, м (0 — колесо в повітрі / повністю розтиснуте)
