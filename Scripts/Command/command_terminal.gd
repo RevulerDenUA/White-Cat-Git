@@ -4,9 +4,11 @@ extends Control
 
 signal command_submitted(command: String)
 signal content_changed
+signal display_toggle_requested
 const HISTORY_LIMIT := 160
 var entry: LineEdit
 var output: RichTextLabel
+var display_toggle: Button
 var _lines: Array[String] = []
 var _accepts_commands := false
 
@@ -31,6 +33,11 @@ func _ready() -> void:
 	var title := WhiteCatTheme.label("Командний термінал", 25)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	heading.add_child(title)
+	display_toggle = Button.new()
+	display_toggle.focus_mode = Control.FOCUS_NONE
+	display_toggle.add_theme_font_size_override("font_size", 19)
+	display_toggle.pressed.connect(func() -> void: display_toggle_requested.emit())
+	heading.add_child(display_toggle)
 	heading.add_child(WhiteCatTheme.label("Esc — до кімнати", 21, WhiteCatTheme.MUTED))
 	body.add_child(WhiteCatTheme.rule())
 	output = RichTextLabel.new()

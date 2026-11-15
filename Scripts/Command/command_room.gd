@@ -1,6 +1,6 @@
 class_name CommandRoomView
 extends Node3D
-## One physical screen: the actual terminal or a single shared-world camera feed.
+## One display/terminal/feed, presented on the physical monitor or across the game window.
 
 @export var controller_path: NodePath
 @export var display_size := Vector2i(1920, 752)
@@ -36,6 +36,10 @@ var _close_view := false
 var _screen_vertices: PackedVector3Array
 var _screen_indices: PackedInt32Array
 var _screen_uvs: PackedVector2Array
+var _expanded := false
+var _expanded_surface: TextureRect
+var _view_toggle: Button
+var _pointer_inside := false
 
 func _ready() -> void:
 	# Copy after source cameras have applied their movement tilt and player look.
@@ -200,10 +204,24 @@ func _build_ui() -> void:
 	_controls.offset_right = -24
 	_controls.offset_top = -82
 	_controls.offset_bottom = -14
+	_view_toggle = Button.new()
+	_view_toggle.name = "DisplayMode"
+	_view_toggle.theme = WhiteCatTheme.create()
+	_view_toggle.focus_mode = Control.FOCUS_NONE
+	_view_toggle.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_view_toggle.add_theme_font_size_override("font_size", 18)
+	_view_toggle.pressed.connect(toggle_display_mode)
+	ui.add_child(_view_toggle)
+	_view_toggle.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	_view_toggle.offset_left = -274
+	_view_toggle.offset_right = -24
+	_view_toggle.offset_top = 124
+	_view_toggle.offset_bottom = 164
 	terminal = CommandTerminal.new()
 	terminal.name = "Terminal"
 	ui.add_child(terminal)
 	terminal.command_submitted.connect(execute_command)
+	terminal.display_toggle_requested.connect(toggle_display_mode)
 	terminal.content_changed.connect(_refresh_standby)
 	terminal.write_line("White Cat
 Доставка апаратів ще не підключена.
@@ -217,6 +235,57 @@ func _build_ui() -> void:
 	_hint.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	_hint.offset_top = -70
 	_hint.offset_bottom = -24
+	var expanded_layer := CanvasLayer.new()
+	expanded_layer.name = "ExpandedDisplay"
+	expanded_layer.layer = 8
+	add_child(expanded_layer)
+	_expanded_surface = TextureRect.new()
+	_expanded_surface.name = "DisplaySurface"
+	_expanded_surface.texture = _monitor_viewport.get_texture()
+	_expanded_surface.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_expanded_surface.stretch_mode = TextureRect.STRETCH_SCALE
+	_expanded_surface.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	expanded_layer.add_child(_expanded_surface)
+	_expanded_surface.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_expanded_surface.hide()
+
+func is_display_expanded() -> bool:
+	return _expanded_surface != null and _expanded_surface.visible
+
+func toggle_display_mode() -> void:
+	set_display_expanded(not _expanded)
+
+func set_display_expanded(value: bool) -> void:
+	if not _context in ["terminal", "vehicle"]:
+		return
+	_expanded = value
+	_update_display_presentation()
+	if _context == "terminal":
+		terminal._restore_focus.call_deferred()
+
+func _update_display_presentation() -> void:
+	if _expanded_surface == null:
+		return
+	_set_display_pointer_inside(false)
+	var full := _expanded and _context in ["terminal", "vehicle"]
+	_expanded_surface.visible = full
+	# Resize the same render target; never create another stream, terminal or session.
+	var logical := Vector2i(get_viewport().get_visible_rect().size) if full else Vector2i(1280, 502)
+	_monitor_viewport.size_2d_override = logical
+	_monitor_viewport.size = Vector2i(get_viewport().get_texture().get_size()) if full else display_size
+	var text := "%s — %s" % [UserSettings.binding_text("command_display"), "До монітора" if full else "На весь екран"]
+	_view_toggle.text = text
+	_view_toggle.visible = _context == "vehicle"
+	terminal.display_toggle.text = text
+
+func _set_display_pointer_inside(value: bool) -> void:
+	if value == _pointer_inside:
+		return
+	_pointer_inside = value
+	if value:
+		_monitor_viewport.notify_mouse_entered()
+	else:
+		_monitor_viewport.notify_mouse_exited()
 
 func _refresh_standby() -> void:
 	if _monitor_viewport != null and _context == "room":
@@ -257,7 +326,7 @@ func execute_command(command: String) -> void:
 		terminal.write_line("Невідома команда або зайві аргументи. Доступні команди — у help.")
 
 func _show_help() -> void:
-	terminal.write_line("help — апарати та камери\nconnect апарат — камера і керування\nconnect апарат/камера — вибір конкретної камери\nEsc — до кімнати\n")
+	terminal.write_line("help — апарати та камери\nconnect апарат — камера і керування\nconnect апарат/камера — вибір конкретної камери\n%s — монітор / весь екран\nEsc — до кімнати\n" % UserSettings.binding_text("command_display"))
 	var targets: Array = controller.catalog()
 	if targets.is_empty():
 		terminal.write_line("Підключених апаратів немає.")
@@ -323,6 +392,7 @@ func _sync_session() -> void:
 	else:
 		_hint.text = "Натисніть, щоб відкрити термінал" if hovered else "Наведіть на монітор"
 	_set_work_view(_context in ["terminal", "vehicle"], bool(UserSettings.get_value("reduced_motion")))
+	_update_display_presentation()
 
 func _copy_camera_settings() -> void:
 	if not is_instance_valid(_source_camera):
@@ -356,6 +426,7 @@ func _set_work_view(active: bool, immediate: bool = false) -> void:
 func _resize_work_view() -> void:
 	if _close_view:
 		_set_work_view(true, true)
+	_update_display_presentation()
 
 func _work_view_pose() -> Transform3D:
 	var points: Array[Vector3] = []
@@ -424,21 +495,31 @@ func _physics_process(_delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if keyboard != null and event is InputEventKey:
 		keyboard.handle_key(event)
-	if terminal == null or _context != "terminal" or event.is_action("ui_cancel"):
+	if terminal == null or not _context in ["terminal", "vehicle"] or event.is_action("ui_cancel"):
 		return
-	if event is InputEventKey:
+	# Intercept before the focused LineEdit can turn a remapped shortcut into text.
+	if event.is_action("command_display"):
+		if event.is_action_pressed("command_display") and not event.is_echo():
+			toggle_display_mode()
+		get_viewport().set_input_as_handled()
+		return
+	if event is InputEventKey and _context == "terminal":
 		_monitor_viewport.push_input(event, true)
 		get_viewport().set_input_as_handled()
 	elif event is InputEventMouse:
-		var uv := monitor_uv(event.position)
-		if uv.x >= 0.0:
+		var uv: Vector2 = event.position / get_viewport().get_visible_rect().size if is_display_expanded() else monitor_uv(event.position)
+		var inside := Rect2(Vector2.ZERO, Vector2.ONE).has_point(uv)
+		_set_display_pointer_inside(inside)
+		# Deliver releases outside the glass too, so a drag cannot leave a GUI button held.
+		if inside or (event is InputEventMouseButton and not event.pressed):
 			var mapped := event.duplicate() as InputEventMouse
 			mapped.position = uv * Vector2(_monitor_viewport.size_2d_override)
 			mapped.global_position = mapped.position
-			_monitor_viewport.notify_mouse_entered()
 			_monitor_viewport.push_input(mapped, true)
-			get_viewport().set_input_as_handled()
-		terminal._restore_focus.call_deferred()
+			if _context == "terminal" or _monitor_viewport.is_input_handled():
+				get_viewport().set_input_as_handled()
+		if _context == "terminal":
+			terminal._restore_focus.call_deferred()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if terminal == null or _context != "room":

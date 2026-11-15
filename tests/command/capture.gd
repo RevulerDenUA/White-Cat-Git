@@ -6,6 +6,7 @@ func _run() -> void:
 	var mode := "room"
 	var scene := "res://Scene/A.tscn"
 	var path := "/tmp/white-cat-command-room.png"
+	var expanded := false
 	for arg: String in OS.get_cmdline_user_args():
 		if arg.begins_with("--size="):
 			var parts := arg.trim_prefix("--size=").split("x")
@@ -16,6 +17,8 @@ func _run() -> void:
 			scene = arg.trim_prefix("--scene=")
 		elif arg.begins_with("--output="):
 			path = arg.trim_prefix("--output=")
+		elif arg == "--expanded":
+			expanded = true
 	var viewport := SubViewport.new()
 	viewport.size = size
 	var aspect := float(size.x) / float(size.y)
@@ -38,6 +41,8 @@ func _run() -> void:
 		room._set_hovered(true)
 	elif mode != "room":
 		controller.connect_target(mode)
+	if expanded:
+		room.set_display_expanded(true)
 	await create_timer(0.3).timeout
 	await RenderingServer.frame_post_draw
 	DirAccess.make_dir_recursive_absolute(path.get_base_dir())

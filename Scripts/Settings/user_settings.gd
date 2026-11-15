@@ -26,6 +26,7 @@ const ACTIONS := [
 	["interact", "Зібрати ресурси", "Техніка", KEY_G],
 	["DrillPickup", "Розібрати бур (утримувати)", "Техніка", KEY_X],
 	["CameraChange", "Наступна камера", "Загальні", KEY_C],
+	["command_display", "Монітор / весь екран", "Загальні", KEY_F10],
 	["SpectatorMode", "Вільна камера (розробка)", "Загальні", KEY_F],
 	["spectator_forward", "Рух уперед", "Вільна камера", KEY_W],
 	["spectator_backward", "Рух назад", "Вільна камера", KEY_S],
