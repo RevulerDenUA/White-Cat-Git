@@ -24,6 +24,8 @@ public partial class CameraControl : Node
 	public override void _Ready()
 	{
 		_filterMat = Filter?.Material as ShaderMaterial;
+		if (_filterMat == null)
+			GD.PushWarning("CameraControl: не призначено Filter (або в нього немає ShaderMaterial) — фільтр і кольорові камери не працюватимуть");
 		SpecCamera?.MakeCurrent();
 	}
 

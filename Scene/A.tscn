@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="4_kmbin"]
 [ext_resource type="Shader" uid="uid://bdrf3l2s7ry0e" path="res://shader/MahNutsHurt.gdshader" id="6_1n6c4"]
 [ext_resource type="PackedScene" uid="uid://bfblajavp7fl4" path="res://Scene/FLYJEEP.tscn" id="7_fly"]
-[ext_resource type="Script" uid="uid://qsy2ajsgyv57" path="res://Scripts/CameraLook.cs" id="cam_look"]
+[ext_resource type="Script" path="res://Scripts/VehicleCamera.cs" id="cam_look"]
 [ext_resource type="Script" uid="uid://cjhjyt5juikse" path="res://Scripts/Drill/DrillManager.cs" id="drill_mgr"]
 [ext_resource type="PackedScene" path="res://Scene/Vein.tscn" id="vein"]
 
@@ -56,36 +56,6 @@ shader_parameter/reticle_alpha = 0.55
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05016011, 2.0534465, 13.729987)
 ExitPoint = NodePath("DoorTrigger/ExitPoint")
 
-[node name="CollisionShape3D2" parent="CharacterBody3D" index="2" unique_id=205312687]
-transform = Transform3D(1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 1.0256777, -1.1330054, 0.65079707)
-
-[node name="CollisionShape3D3" parent="CharacterBody3D" index="3" unique_id=692384796]
-transform = Transform3D(1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, -1.0207697, -1.1375473, 0.65037555)
-
-[node name="CollisionShape3D4" parent="CharacterBody3D" index="4" unique_id=969670280]
-transform = Transform3D(1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 1.0285413, -1.098231, -0.7385142)
-
-[node name="CollisionShape3D5" parent="CharacterBody3D" index="5" unique_id=1197928817]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9099696, -1.1283544, -0.78112537)
-
-[node name="VehicleWheel3D" parent="CharacterBody3D" index="6" unique_id=1509441137]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.9787572, -1.1282598, 0.65676534)
-
-[node name="VehicleWheel3D2" parent="CharacterBody3D" index="7" unique_id=2026923059]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -1.0181854, -1.1215577, 0.65)
-
-[node name="VehicleWheel3D3" parent="CharacterBody3D" index="8" unique_id=1461640576]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.9787572, -1.1282598, -0.7732346)
-
-[node name="VehicleWheel3D4" parent="CharacterBody3D" index="9" unique_id=672747028]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -1.0181854, -1.1215577, -0.78)
-
-[node name="CollisionShape3D" parent="CharacterBody3D" index="10" unique_id=966506361]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.9446043, 0)
-
-[node name="CollisionShape3D6" parent="CharacterBody3D" index="11" unique_id=845427127]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.016357422, 0.13204831, -0.9139099)
-
 [node name="Lights" parent="CharacterBody3D" index="12" unique_id=2089141798]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.70636237, 0)
 
@@ -96,6 +66,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.078360334, -0.048604846, 4.
 transform = Transform3D(-1, -3.813328e-09, -8.733957e-08, 0, 0.99904823, -0.043619387, 8.742278e-08, -0.043619387, -0.99904823, -0.32808316, -0.6013149, 1.1050764)
 current = true
 fov = 99.9
+script = ExtResource("cam_look")
+PitchPerSpeed = 0.0
+PitchPerAccel = -0.9
+RollPerYawRate = 0.0
+RollPerLatAccel = 0.9
+MaxPitch = 6.0
+MaxRoll = 8.0
 
 [node name="SpringArm3D" type="SpringArm3D" parent="CharacterBody3D" unique_id=713791297]
 transform = Transform3D(-1, -3.3173112e-08, 8.088439e-08, 0, 0.9252097, 0.3794561, -8.742278e-08, 0.37945616, -0.9252096, 0, 1.984, 0)
@@ -109,6 +86,13 @@ fov = 72.4
 near = 0.001
 far = 4106.83
 script = ExtResource("cam_look")
+EnableLook = true
+PitchPerSpeed = 0.0
+PitchPerAccel = -0.9
+RollPerYawRate = 0.0
+RollPerLatAccel = 0.9
+MaxPitch = 6.0
+MaxRoll = 8.0
 
 [node name="FlyingJeep" parent="." unique_id=213530330 instance=ExtResource("7_fly")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.263918, 2.0272086, 13.8810425)
@@ -142,11 +126,12 @@ color = Color(1, 1, 1, 0)
 [node name="SpectatorMode" type="Camera3D" parent="." unique_id=1258418072]
 script = ExtResource("3_kmbin")
 
-[node name="CameraControl" type="Node3D" parent="." unique_id=1429019729 node_paths=PackedStringArray("Cameras", "SpecCamera")]
+[node name="CameraControl" type="Node3D" parent="." unique_id=1429019729 node_paths=PackedStringArray("Cameras", "ColorCameras", "SpecCamera", "Filter")]
 script = ExtResource("4_kmbin")
 Cameras = [NodePath("../CharacterBody3D/CarCamera"), NodePath("../CharacterBody3D/CarCamera2"), null, NodePath("../FlyingJeep/CamBW"), NodePath("../FlyingJeep/CamColor")]
 ColorCameras = [NodePath("../FlyingJeep/CamColor")]
 SpecCamera = NodePath("../SpectatorMode")
+Filter = NodePath("../Shader/Filter")
 
 [node name="DrillManager" type="Node3D" parent="." unique_id=1730255001]
 script = ExtResource("drill_mgr")
