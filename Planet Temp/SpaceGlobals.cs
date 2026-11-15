@@ -41,10 +41,10 @@ public static class SpaceGlobals
 
             d.Radius = rng.RandfRange(0.4f, 0.9f);
 
-            // [1] Rocky Mass in Godot kg (yields ~3.5 to 11.5 m/s^2 gravity)
+            // [1] Rocky Mass & Gravity via SystemValues
             float halfR = d.Radius * 0.5f;
             d.Mass = (halfR * halfR) * rng.RandfRange(0.55f, 1.70f);
-            d.CalculateGravity();
+            SystemValues.Instance.CalculateGravity(ref d);
 
             d.Temperature = (300.0f / Mathf.Sqrt(d.Distance)) + rng.RandfRange(-20.0f, 20.0f);
             d.rotationspeed = rng.RandfRange(0.5f, 2.0f);
@@ -60,10 +60,10 @@ public static class SpaceGlobals
 
             d.Radius = rng.RandfRange(4.0f, 9.0f);
 
-            // [2] Gas Giant Mass in Godot kg (yields ~12.0 to 25.0 m/s^2 gravity)
+            // [2] Gas Giant Mass & Gravity via SystemValues
             float halfR = d.Radius * 0.5f;
             d.Mass = (halfR * halfR) * rng.RandfRange(1.80f, 3.75f);
-            d.CalculateGravity();
+            SystemValues.Instance.CalculateGravity(ref d);
 
             d.Temperature = (300.0f / Mathf.Sqrt(d.Distance)) + rng.RandfRange(-40.0f, 10.0f);
             d.rotationspeed = rng.RandfRange(1.5f, 4.0f);

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public struct PlanetData
 {
-	public const float Gvalues = 6.67430f;
 	public string Type;
 	public int Order;
 	public int PlanetSeed;
@@ -25,21 +24,28 @@ public struct PlanetData
 	public float Mass;
 	public float Temperature;
 
-	public void CalculateGravity()
-	{
-		float halfRadius = Mathf.Max(this.Radius * 0.5f, 0.001f);
-		this.Gravity = Gvalues * (this.Mass / (halfRadius * halfRadius));
-	}
+
 }
+
 
 public partial class SystemValues : Node3D
 {
 	// Allows other scripts to access the Inspector values on this node
 	public static SystemValues Instance { get; private set; } = new SystemValues();
 
+	public const float Gvalues = 6.67430f;
+
+
 	[Export] public int SystemSeed = 12345;
 	[Export] public int PlanetCount = 1;
 	[Export] public float MeshBaseRadius = 1.0f;
+
+
+	public void CalculateGravity(ref PlanetData dat)
+	{
+		float halfRadius = Mathf.Max(dat.Radius * 0.5f, 0.001f);
+		dat.Gravity = SystemValues.Gvalues * (dat.Mass / (halfRadius * halfRadius));
+	}
 
 
 	public static int Getplanet(int seed)
