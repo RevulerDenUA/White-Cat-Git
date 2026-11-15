@@ -102,7 +102,12 @@ void fragment() {
 		if (GetViewport().GetCamera3D() is not SystemCamera cam) return;
 		if (p?.PlanetNode == null) { cam.ClearFocus(); return; }
 		float r = 0.5f * p.PlanetNode.GlobalBasis.Scale.X;
-		cam.FocusOn(p.PlanetNode, Mathf.Max(r * 9f, 6f));
+		// камера має стояти за орбітами місяців, інакше вони закривають кадр
+		float moons = 0f;
+		if (!p.Data.IsMoon)
+			foreach (var m in AllOrbits())
+				if (m.Data.IsMoon && m.ParentOrbit == p) moons = Mathf.Max(moons, m.Data.Aphelion);
+		cam.FocusOn(p.PlanetNode, Mathf.Max(Mathf.Max(r * 7f, moons * 1.6f), 4f));
 	}
 
 	private PlanetOrbit PickPlanet()
@@ -247,7 +252,7 @@ void fragment() {
 		_ => t,
 	};
 
-	private static string Ua(string s) => s switch
+	public static string Ua(string s) => s switch
 	{
 		null or "" => "—",
 		"None" => "немає",

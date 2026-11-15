@@ -29,6 +29,15 @@ public partial class TelescopeView : Control
 	public PlanetOrbit Target => _selector?.Selected;
 	public string Vehicle => _vehicle;
 
+	// Прості значення для GDScript (тести, інший UI): PlanetData — C#-структура, туди не видна
+	public string TargetType => Target?.Data.Type ?? "";
+	public bool TargetIsMoon => Target?.Data.IsMoon ?? false;
+	public int TargetSeed => Target?.Data.PlanetSeed ?? 0;
+	public bool TargetIsCurrent => Target != null && ShuttleState.IsCurrent(Target.Data);
+	public string VehicleState(string id) => ShuttleState.IsOutside(id) ? "outside" : "inside";
+	public string CanLaunchTo(string id) => Target != null ? ShuttleState.CanLaunch(Target.Data, id) : "no target";
+	public string Message => _message?.Text ?? "";
+
 	public override void _Ready()
 	{
 		SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
@@ -189,18 +198,25 @@ public partial class TelescopeView : Control
 	{
 		PlanetOrbit target = Target;
 		if (target == null) { _message_text = "Спершу виберіть планету."; Refresh(); return _message_text; }
-		string scene = GetTree().CurrentScene?.SceneFilePath ?? "";
-		string error = ShuttleState.Launch(GetTree(), target.Data, _vehicle, scene);
+		string error = ShuttleState.CanLaunch(target.Data, _vehicle);
 		_message_text = error;
 		Refresh();
+		// Зміна сцени одразу прибирає поточну з дерева — робимо її після обробки вводу
+		if (error == "") CallDeferred(MethodName.Launch, GetTree().CurrentScene?.SceneFilePath ?? "");
 		return error;
+	}
+
+	private void Launch(string returnScene)
+	{
+		if (!IsInsideTree() || Target == null) return;
+		ShuttleState.Launch(GetTree(), Target.Data, _vehicle, returnScene);
 	}
 
 	// ---------- Панель ----------
 
 	private void Refresh()
 	{
-		if (_title == null) return;
+		if (_title == null || !IsInsideTree()) return;
 		_shuttle.Text = ShuttleState.HasPlanet ? $"шатл: {PlanetSelector.PlanetName(ShuttleState.Planet)}" : "шатл: на орбіті";
 
 		PlanetOrbit t = Target;
@@ -219,7 +235,7 @@ public partial class TelescopeView : Control
 				$"{kind}{moons}\n" +
 				$"радіус {d.Radius:0.00} · гравітація {d.Gravity:0.0}\n" +
 				$"температура {d.Temperature:0} · тиск {d.AtmospherePressure:0.##}\n" +
-				$"надра: {d.CoreTemplate ?? "—"}";
+				$"надра: {PlanetSelector.Ua(d.CoreTemplate)} · атмосфера: {PlanetSelector.Ua(d.AtmoTemplate)}";
 		}
 
 		foreach (string id in ShuttleState.VehicleIds)

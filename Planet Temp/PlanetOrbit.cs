@@ -185,7 +185,6 @@ public partial class PlanetOrbit : Node3D
 
 		if (!FreezeSpin)
 			PlanetNode.RotateObjectLocal(Vector3.Up, Data.rotationspeed * dt); // навколо нахиленої осі
-		if (FreezeOrbit) return;
 
 		float cosE = Mathf.Cos(_angleE);
 		float sinE = Mathf.Sin(_angleE);
@@ -196,7 +195,10 @@ public partial class PlanetOrbit : Node3D
 		float dist = Mathf.Sqrt(x * x + z * z);
 		if (dist < 0.001f) dist = _a;
 
-		_angleE = (_angleE + _speed * (_a / dist) * dt) % Mathf.Tau;
+		// FreezeOrbit зупиняє тільки рух по орбіті; позицію на орбіті ставимо завжди,
+		// інакше планета, заморожена до першого кадру, лишається в точці зі сцени (всередині зірки)
+		if (!FreezeOrbit)
+			_angleE = (_angleE + _speed * (_a / dist) * dt) % Mathf.Tau;
 
 		PlanetNode.Position = new Vector3(x, 0f, z);
 	}

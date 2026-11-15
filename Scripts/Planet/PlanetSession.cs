@@ -87,7 +87,8 @@ public partial class PlanetSession : Node
 			if (Pad != null && Pad.IsDocked(adapter.Vehicle)) ShuttleState.SetInside(id);
 			else ShuttleState.SetOutside(id, adapter.Vehicle.GlobalTransform);
 		}
-		GetTree().ChangeSceneToFile(ShuttleState.ReturnScene);
+		// після обробки Esc: зміна сцени одразу прибирає поточну з дерева
+		GetTree().CallDeferred(SceneTree.MethodName.ChangeSceneToFile, ShuttleState.ReturnScene);
 	}
 
 	// ---------- HUD ----------

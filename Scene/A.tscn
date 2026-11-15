@@ -188,7 +188,7 @@ script = ExtResource("drill_mgr")
 
 [node name="VeinIron" parent="." unique_id=1730255002 instance=ExtResource("vein")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 22)
-ResourceName = "Титан"
+ResourceName = "Титанова руда"
 
 [node name="VeinIce" parent="." unique_id=1730255003 instance=ExtResource("vein")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 22)

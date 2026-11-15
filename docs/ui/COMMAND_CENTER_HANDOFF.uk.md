@@ -207,11 +207,40 @@ room.display_point(screen_point)      # екран -> координати ди�
 його перебування в шатлі. Майбутній контролер шатла має перевіряти фактичний
 стан завантаження перед початком відльоту незалежно від способу подання команди.
 
-Логіки шатла, завантаження та відльоту зараз у проєкті немає. Правило є
-вимогою наступного етапу, а не позначенням уже реалізованої перевірки.
-Тоді потрібно перевірити чотири випадки: обидва зовні, лише марсохід усередині,
-лише Інжінюїті всередині, обидва всередині. Ця умова дозволяє відліт тільки
-в останньому випадку.
+Правило реалізовано в `ShuttleState.CanLaunch` (див. наступний розділ):
+відліт на іншу планету дозволено, тільки коли жоден апарат не лишився зовні.
+«Всередині» означає фактичне перебування апарата в зоні стикування шатла
+на момент виходу з планети, а не запит `RecoveryRequested`.
+
+## Шатл, телескоп і висадка
+
+Погоджено з користувачем: телескоп відкривається командою термінала,
+після вибору планети гравець одразу керує апаратом на поверхні (без кімнати),
+Esc повертає в шатл; апарат повертається в шатл своїм ходом.
+
+- `telescope` у терміналі відкриває `Scene/Telescope.tscn` (`Scripts/Planet/TelescopeView.cs`).
+  A / D — планета, W / S — місяці вибраної планети, 1 / 2 — марсохід / Інжінюїті,
+  Enter — летіти, Backspace — назад до термінала. Клавіші руху беруться з `InputMap`.
+  Вид системи — та сама `Scene/system.tscn` у власному `World3D`; `PlanetSelector`
+  там працює без миші, камера (`SystemCamera.FocusOn`) летить до вибраного тіла.
+- На газовій планеті висаджується тільки Інжінюїті. Шатл не летить на іншу планету,
+  поки апарат зовні; на ту саму планету можна висадити другий апарат.
+- `Scripts/Planet/ShuttleState.cs` — стан між сценами: планета шатла, які апарати
+  зовні та де їх залишили. Живе тільки протягом сесії гри, у файл не пишеться.
+- `Scene/WorldGen.tscn` — сцена планети. `PlanetSession` ставить шатл (`ShuttlePad`)
+  на рельєф, розставляє апарати й викликає `connect_target` для вибраного.
+  `CameraControl` без `RoomView` працює напряму: камера апарата стає поточною,
+  фільтр перешкод на весь екран, Esc надсилає `ExitRequested`.
+- `ShuttlePad` — тимчасова геометрія (майданчик, корпус із відкритою кормою, рампа,
+  зона стикування): модель шатла є лише у `.blend`. Після експорту в `.glb`
+  достатньо призначити `ShuttleModel`; колізії й зона лишаються.
+- Дані планети передаються в `TerrainWorld` (тип, сід, кольори ґрунту з текстури
+  планети). `OreGenerator` розставляє жили за складом надр (`PlanetPackets.GenerateChemicals`);
+  на газових планетах жил немає. Бури зберігаються окремо для кожної планети.
+
+Перевірено чотири випадки правила відльоту в `tests/command/test_planet_flow.gd`
+у двох із них явно (марсохід зовні — відмова; обидва всередині — дозвіл), решта
+покривається тією самою перевіркою «хоч один зовні».
 
 ## Модель і екран
 
@@ -308,6 +337,7 @@ XDG_DATA_HOME=/tmp/white-cat-physical-monitor-tests godot --headless --path . --
 XDG_DATA_HOME=/tmp/white-cat-fullscreen-tests godot --headless --path . --script res://tests/command/test_terminal_fullscreen.gd
 XDG_DATA_HOME=/tmp/white-cat-front-tests godot --headless --path . --script res://tests/ui/test_frontend.gd
 XDG_DATA_HOME=/tmp/white-cat-layout-tests godot --headless --path . --script res://tests/ui/test_layout.gd
+XDG_DATA_HOME=/tmp/white-cat-planet-flow godot --headless --path . --script res://tests/command/test_planet_flow.gd
 XDG_DATA_HOME=/tmp/white-cat-command-captures godot --path . --display-driver x11 --script res://tests/command/capture.gd -- --mode=ingenuity/camcolor --size=1600x900 --output=/tmp/white-cat-ingenuity.png
 ```
 

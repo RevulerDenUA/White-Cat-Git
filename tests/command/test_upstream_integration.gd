@@ -146,7 +146,10 @@ func _run() -> void:
 	key(KEY_G, true)
 	key(KEY_G, false)
 	await frames()
-	check(int(saved()["Storage"].get("Залізна руда", 0)) > 0, "Collect action did not transfer produced resources")
+	# Жила в A.tscn дає справжню руду гри; вона може збігатися з ресурсом вартості бура.
+	var ore: String = game.get_node("VeinIron").ResourceName
+	var collected := int(saved()["Storage"].get(ore, 0))
+	check(collected > 0, "Collect action did not transfer produced resources")
 	manager.PickupHoldTime = 0.1
 	key(KEY_J, true)
 	await frames(12)
@@ -155,7 +158,12 @@ func _run() -> void:
 	var recovered: Dictionary = saved()
 	check(recovered["Drills"].is_empty(), "Holding the rebound pickup action did not dismantle the drill")
 	for resource: String in initial:
-		check(int(recovered["Storage"].get(resource, 0)) == floori(float(initial[resource]) * 0.5), "Dismantling did not refund 50 percent of " + resource)
+		var refund := floori(float(initial[resource]) * 0.5)
+		var stored := int(recovered["Storage"].get(resource, 0))
+		if resource == ore:
+			check(stored >= refund + collected, "Dismantling did not refund 50 percent of " + resource)
+		else:
+			check(stored == refund, "Dismantling did not refund 50 percent of " + resource)
 	current_scene = null
 	game.queue_free()
 	await frames()
@@ -165,10 +173,11 @@ func _run() -> void:
 	await frames()
 	game.get_node("DrillManager").Save()
 	var reloaded: Dictionary = saved()["Storage"]
-	check(int(reloaded.get("Залізна руда", 0)) == int(recovered["Storage"].get("Залізна руда", 0)), "Reloading lost or duplicated harvested inventory")
-	# Upstream explicitly tops up one build kit when no drills remain.
+	# Upstream explicitly tops up one build kit when no drills remain: only what is missing.
+	check(int(reloaded.get(ore, 0)) == maxi(int(recovered["Storage"].get(ore, 0)), int(initial.get(ore, 0))), "Reloading lost or duplicated harvested inventory")
 	for resource: String in initial:
-		check(int(reloaded.get(resource, 0)) == int(initial[resource]), "Upstream emergency build-kit recovery changed unexpectedly")
+		var expected := maxi(int(recovered["Storage"].get(resource, 0)), int(initial[resource]))
+		check(int(reloaded.get(resource, 0)) == expected, "Upstream emergency build-kit recovery changed unexpectedly")
 	current_scene = null
 	game.queue_free()
 	await frames()
@@ -177,7 +186,9 @@ func _run() -> void:
 	current_scene = game
 	await frames(10)
 	controller = game.get_node("CameraControl")
-	check(controller.snapshot()["context"] == "room", "Updated terrain scene did not enter the command room")
+	# Сцена планети без командної кімнати: одразу пряме керування апаратом (марсохід за замовчуванням),
+	# другий апарат лишається в шатлі.
+	check(controller.snapshot()["context"] == "vehicle" and controller.snapshot()["target_id"] == "rover", "Terrain scene did not hand control to the rover")
 	check(controller.catalog().size() == 1 and controller.catalog()[0]["cameras"].size() == 2, "Rover preset in terrain scene has an invalid adapter")
 	check(controller.connect_target("rover/carcamera2").is_empty(), "Terrain rover cannot be controlled through the shared terminal controller")
 	current_scene = null
