@@ -24,17 +24,23 @@ public partial class CameraControl : Node
 	public override void _Ready()
 	{
 		_filterMat = Filter?.Material as ShaderMaterial;
-		SpecCamera.MakeCurrent();
+		SpecCamera?.MakeCurrent();
 	}
 
+	// GameData.CameraIndex — індекс камери, яка зараз (або востаннє) активна.
+	// З режиму спостерігача C повертає на ту саму камеру, а в машині — перемикає на наступну.
 	private void NextCamera()
 	{
 		if (Cameras.Count == 0) return;
-		GameData.CameraIndex %= Cameras.Count;
+
+		if (!GameData.InSpectatorMode)
+			GameData.CameraIndex++;
+		GameData.CameraIndex = ((GameData.CameraIndex % Cameras.Count) + Cameras.Count) % Cameras.Count;
+
 		Camera3D cam = Cameras[GameData.CameraIndex];
+		if (cam == null) return;
 		cam.MakeCurrent();
 		GameData.ActiveVehicle = FindVehicle(cam);
-		GameData.CameraIndex = (GameData.CameraIndex + 1) % Cameras.Count;
 	}
 
 	private static Node3D FindVehicle(Node node)
