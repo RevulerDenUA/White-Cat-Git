@@ -2,25 +2,54 @@
 
 [ext_resource type="Script" uid="uid://yfaks876t78r" path="res://Scripts/TerrainWorld.cs" id="1_d48c2"]
 [ext_resource type="PackedScene" uid="uid://cngcee24uhrrv" path="res://Scene/JEEP.tscn" id="2_w222j"]
+[ext_resource type="Script" uid="uid://daolqnn3cgua8" path="res://Scripts/CameraControl.cs" id="3_m50oi"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m50oi"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_jugq3"]
+sky_material = SubResource("ProceduralSkyMaterial_m50oi")
+
+[sub_resource type="Environment" id="Environment_3hs8j"]
+background_mode = 2
+sky = SubResource("Sky_jugq3")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_w222j"]
 
-[node name="WorldGen" type="Node3D" unique_id=1762984832 node_paths=PackedStringArray("Player")]
+[node name="WorldGen" type="Node3D" unique_id=1762984832 node_paths=PackedStringArray("Player", "FogEnvironment")]
 script = ExtResource("1_d48c2")
-Seed = 12346
+Planet = 1
 Player = NodePath("CharacterBody3D")
+HeightScale = 10.0
+FogEnvironment = NodePath("WorldEnvironment")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=353566445]
+environment = SubResource("Environment_3hs8j")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1386947868]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
 
 [node name="CharacterBody3D" parent="." unique_id=73140632 node_paths=PackedStringArray("ExitPoint") instance=ExtResource("2_w222j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05016011, 112.44499, 13.729987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05016011, 23.79092, 13.729987)
 collision_mask = 3
+mass = 500.0
+engine_force = 1024.0
 ExitPoint = NodePath("DoorTrigger/ExitPoint")
 
 [node name="CollisionShape3D" parent="CharacterBody3D/DoorTrigger" parent_id_path=PackedInt32Array(73140632, 2062596507) index="0" unique_id=2102337142]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.056739748, 0, 0)
 shape = SubResource("BoxShape3D_w222j")
 
+[node name="VehicleWheel3D3" parent="CharacterBody3D" index="9" unique_id=1461640576]
+engine_force = 1024.0
+
+[node name="VehicleWheel3D4" parent="CharacterBody3D" index="10" unique_id=672747028]
+engine_force = 1024.0
+
 [node name="CarCamera" type="Camera3D" parent="CharacterBody3D" unique_id=1428337986]
-transform = Transform3D(-1, -3.813328e-09, -8.733957e-08, 0, 0.99904823, -0.043619387, 8.742278e-08, -0.043619387, -0.99904823, 0.047723338, 0.6605232, 2.406703)
+transform = Transform3D(-1, -3.813328e-09, -8.733957e-08, 0, 0.99904823, -0.043619387, 8.742278e-08, -0.043619387, -0.99904823, 0.047723338, 0.66052246, 1.2946157)
 current = true
 fov = 75.7
 
@@ -35,8 +64,12 @@ current = true
 fov = 75.7
 
 [node name="CarCamera3" type="Camera3D" parent="CharacterBody3D" unique_id=1493431340]
-transform = Transform3D(-1, 8.742278e-08, 0, 8.742278e-08, 1, -8.742278e-08, -7.642742e-15, -8.742278e-08, -1, 1.7752849, -0.3583837, 1.3931394)
+transform = Transform3D(-1, 8.742278e-08, 0, 8.742278e-08, 1, -8.742278e-08, -7.642742e-15, -8.742278e-08, -1, 0.63292354, -0.35838318, 0.24091434)
 current = true
 fov = 114.6
+
+[node name="CameraControl" type="Node3D" parent="." unique_id=329043057 node_paths=PackedStringArray("Cameras")]
+script = ExtResource("3_m50oi")
+Cameras = [NodePath("../CharacterBody3D/CarCamera"), NodePath("../CharacterBody3D/CarCamera2"), NodePath("../CharacterBody3D/CarCamera3")]
 
 [editable path="CharacterBody3D"]
